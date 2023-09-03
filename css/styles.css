@@ -16,21 +16,20 @@ body {
   color: #000;
 }
 .posts-expand .post-title-link {
-  color: #000;
+  color: #51346e;
 }
 .posts-expand .post-meta-container {
-  color: #800;
+  color: #66418a;
 }
 .sidebar {
   opacity: 0.7;
 }
 .header-inner {
-  background: rgba(255,255,255,0.7);
+  background: rgba(255,255,255,0.75);
 }
 .popup {
-  opacity: 0.5;
+  opacity: 0.67;
 }
 .main-inner {
-  background-color: rgba(255,255,255,0);
-  padding: 0px 40px 40px 40px;
+  opacity: 0.75;
 }
