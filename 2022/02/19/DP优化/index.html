@@ -17,7 +17,7 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"rabbiew.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":true},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"manual","top_n_per_article":-1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"rabbiew.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":-1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta name="description" content="各种 DP 优化的课件（学习笔记）">
@@ -127,6 +127,11 @@
         <li class="menu-item menu-item-about">
 
     <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">8</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
@@ -251,240 +256,141 @@
       
         <p>upd on 20220405 修了炸了的图和 LaTeX</p>
 <p>upd on 20230903 关于数据结构优化 DP，可以看看新写的博客~</p>
-<p>题单：<a target="_blank" rel="noopener" href="https://www.luogu.com.cn/training/144843" class="uri">https://www.luogu.com.cn/training/144843</a></p>
+<p>题单：<a target="_blank" rel="noopener" href="https://www.luogu.com.cn/training/144843">https://www.luogu.com.cn/training/144843</a></p>
 <p>有的时候，普通的动态规划不能通过题目，需要用到一些数据结构或思想进行优化。</p>
-<h1 id="单调队列优化">单调队列优化</h1>
-<h2 id="前置知识">前置知识</h2>
-<ul>
+<h1 id="单调队列优化"><a href="#单调队列优化" class="headerlink" title="单调队列优化"></a>单调队列优化</h1><h2 id="前置知识"><a href="#前置知识" class="headerlink" title="前置知识"></a>前置知识</h2><ul>
 <li>单调队列</li>
 </ul>
-<h2 id="主要思想">主要思想</h2>
-<p>在 dp 转移的时候，会取上一个阶段最优的答案进行转移得到现在的答案。</p>
+<h2 id="主要思想"><a href="#主要思想" class="headerlink" title="主要思想"></a>主要思想</h2><p>在 dp 转移的时候，会取上一个阶段最优的答案进行转移得到现在的答案。</p>
 <p>而一个一个枚举上一个阶段的所有情况会导致时间复杂度增加，所以我们可以使用单调队列进行优化。</p>
 <p>由于单调队列的时间复杂度很小，所以经常被使用。</p>
-<h2 id="例题">例题</h2>
-<p>CF372C Watching Fireworks is Fun <a target="_blank" rel="noopener" href="https://codeforces.com/problemset/problem/372/C" class="uri">https://codeforces.com/problemset/problem/372/C</a></p>
-<h3 id="解法">解法</h3>
-<p>普通的 dp 解法时间复杂度为 <span class="math inline">\(O(mn^2)\)</span>，显然过不去。</p>
-<p>观察转移方程：<span class="math inline">\(f_{i,j}\)</span>​ 表示第 <span class="math inline">\(i\)</span>​ 个烟花，在位置 <span class="math inline">\(j\)</span>​ 的最优答案。</p>
-<p><span class="math display">\[
-f_{i,j} = \max \limits _{k=1} ^{n} \{f_{i-1,k}+b_i-|a_i-j|\}
-\]</span></p>
-<p>由于我们枚举了 <span class="math inline">\(i\)</span> 和 <span class="math inline">\(j\)</span>，所以可以把确定的量提出来：</p>
-<p><span class="math display">\[
-f_{i,j} = \max \limits _{k=1} ^n \{f_{i-1,k}\}+b_i-|a_i-j|\}
-\]</span></p>
-<p>时间复杂度降为了 <span class="math inline">\(O(mn)\)</span>，可以过。</p>
-<h2 id="单调队列优化多重背包">单调队列优化多重背包</h2>
-<p>观察一下朴素多重背包算法的式子：</p>
-<p><span class="math display">\[
-f[i][j]=\max \limits _{k=0} ^{m[i]} \{ f[i-1][j-k\dot \space w[i]]+k\dot \space v[i] \}
-\]</span></p>
-<p>其中 <span class="math inline">\(i\)</span> 表示现在枚举到第 <span class="math inline">\(i\)</span> 中物品，<span class="math inline">\(j\)</span> 表示已经用了的背包容量，<span class="math inline">\(k\)</span> 表示第 <span class="math inline">\(i\)</span> 种物品放几个，<span class="math inline">\(w[i]\)</span> 表示体积，<span class="math inline">\(v[i]\)</span>​ 表示价值，<span class="math inline">\(m[i]\)</span> 表示物品个数。</p>
-<p>令 <span class="math inline">\(x=j-w[i]\)</span>，可以发现只有在 <span class="math inline">\(j \equiv x \space (mod\space w[i])\)</span>​ 的情况下才能转移。</p>
+<h2 id="例题"><a href="#例题" class="headerlink" title="例题"></a>例题</h2><p>CF372C Watching Fireworks is Fun <a target="_blank" rel="noopener" href="https://codeforces.com/problemset/problem/372/C">https://codeforces.com/problemset/problem/372/C</a></p>
+<h3 id="解法"><a href="#解法" class="headerlink" title="解法"></a>解法</h3><p>普通的 dp 解法时间复杂度为 $O(mn^2)$，显然过不去。</p>
+<p>观察转移方程：$f_{i,j}$​ 表示第 $i$​ 个烟花，在位置 $j$​ 的最优答案。</p>
+<p>$$<br>f_{i,j} &#x3D; \max \limits <em>{k&#x3D;1} ^{n} {f</em>{i-1,k}+b_i-|a_i-j|}<br>$$</p>
+<p>由于我们枚举了 $i$ 和 $j$，所以可以把确定的量提出来：</p>
+<p>$$<br>f_{i,j} &#x3D; \max \limits <em>{k&#x3D;1} ^n {f</em>{i-1,k}}+b_i-|a_i-j|}<br>$$</p>
+<p>时间复杂度降为了 $O(mn)$，可以过。</p>
+<h2 id="单调队列优化多重背包"><a href="#单调队列优化多重背包" class="headerlink" title="单调队列优化多重背包"></a>单调队列优化多重背包</h2><p>观察一下朴素多重背包算法的式子：</p>
+<p>$$<br>f[i][j]&#x3D;\max \limits _{k&#x3D;0} ^{m[i]} { f[i-1][j-k\dot \space w[i]]+k\dot \space v[i] }<br>$$</p>
+<p>其中 $i$ 表示现在枚举到第 $i$ 中物品，$j$ 表示已经用了的背包容量，$k$ 表示第 $i$ 种物品放几个，$w[i]$ 表示体积，$v[i]$​ 表示价值，$m[i]$ 表示物品个数。</p>
+<p>令 $x&#x3D;j-w[i]$，可以发现只有在 $j \equiv x \space (mod\space w[i])$​ 的情况下才能转移。</p>
 <p>我们把这个式子改一下：</p>
-<p><span class="math display">\[
-\begin{aligned}
-f[i][j+y\dot \space w[i]] &amp;=\max \limits _{k=1} ^{m[i]} \{ f[i-1][j+(y-k)w[i]]+k\dot \space v[i] \}\\
-&amp;= \max \limits _{k=1} ^{m[i]} \{ f[i-1][j+(y-k) \dot \space w[i]] -(y-k)v[i] \}+y\dot \space v[i]
-\end{aligned}
-\]</span></p>
-<p>令 <span class="math inline">\(t=y-k\)</span>​​，则</p>
-<p><span class="math display">\[
-f[i][j+y\dot \ w[i]]=\max \limits _{t=y-m[i]} ^{y-1} \{ f[i-1][j+t\dot \ w[i]] - t\dot \ v[i] \}+y\dot \ v[i]
-\]</span></p>
+<p>$$<br>\begin{aligned}<br>f[i][j+y\dot \space w[i]] &amp;&#x3D;\max \limits _{k&#x3D;1} ^{m[i]} { f[i-1][j+(y-k)w[i]]+k\dot \space v[i] }\<br>&amp;&#x3D; \max \limits _{k&#x3D;1} ^{m[i]} { f[i-1][j+(y-k) \dot \space w[i]] -(y-k)v[i] }+y\dot \space v[i]<br>\end{aligned}<br>$$</p>
+<p>令 $t&#x3D;y-k$​​，则</p>
+<p>$$<br>f[i][j+y\dot \ w[i]]&#x3D;\max \limits _{t&#x3D;y-m[i]} ^{y-1} { f[i-1][j+t\dot \ w[i]] - t\dot \ v[i] }+y\dot \ v[i]<br>$$</p>
 <p>花括号内的东西可以用单调队列维护。</p>
-<p>枚举 <span class="math inline">\(j\)</span>​ 的时间复杂度为 <span class="math inline">\(O(w[i])\)</span>​，枚举 <span class="math inline">\(t\)</span>​ 的时间复杂度为 <span class="math inline">\(O([\tfrac {W}{w[i]}])\)</span>​，</p>
-<p>总的时间复杂度就是 <span class="math inline">\(O(n)\times O(w[i]) \times O([\tfrac{W}{w[i]}])=O(nW)\)</span>​。</p>
-<h2 id="练习题">练习题</h2>
-<p>多重背包板子：Luogu P1776 宝物筛选 <a target="_blank" rel="noopener" href="https://www.luogu.com.cn/problem/P1776" class="uri">https://www.luogu.com.cn/problem/P1776</a>（用单调队列做）</p>
-<p>Loj #10183 股票交易 <a target="_blank" rel="noopener" href="https://loj.ac/p/10183" class="uri">https://loj.ac/p/10183</a></p>
-<h1 id="斜率优化">斜率优化</h1>
-<h2 id="主要思想-1">主要思想</h2>
-<p>有一些题目，可以把转移方程看做直线的方程，把问题转化为求二维平面上选择一些点，最小化直线的截距。</p>
-<h2 id="例题-1">例题</h2>
-<p>Loj 玩具装箱 <a target="_blank" rel="noopener" href="https://loj.ac/p/10188" class="uri">https://loj.ac/p/10188</a></p>
-<h3 id="解法-1">解法</h3>
-<p>状态转移方程：<span class="math inline">\(f_i\)</span>​​​ 表示以 <span class="math inline">\(i\)</span>​ 为右端点分一段的最小代价，<span class="math inline">\(sum_i\)</span>​ 表示 <span class="math inline">\(c\)</span>​​ 数组的前缀和。</p>
-<p><span class="math display">\[
-f_{i}=\min \limits _{j=0} ^{i-1} \{ f_j + (i-(j+1) + sum_i-sum_j - L) ^2 \}
-\]</span></p>
-<p>枚举 <span class="math inline">\(i\)</span>，把确定的提出来：</p>
-<p><span class="math display">\[
-\begin{aligned}
-f_i &amp;= \min \limits _{j=0} ^{i-1} \{ f_j + (i+sum_i - 1-L) ^2 + (j + sum_j) ^2 - 2 (i+sum_i-1-L)(j+sum_j) \}\\
-&amp;= \min \limits _{j=0} ^{i-1} \{ f_j+(j+sum_j) ^2 - 2(i + sum_i-1-L)(j + sum_j) \} + (i+sum_i - 1 - L) ^2
-\end{aligned}
-\]</span></p>
-<p>令 <span class="math inline">\(g_i=sum_i+i\)</span>，<span class="math inline">\(L&#39;=L+1\)</span>，则</p>
-<p><span class="math display">\[
-f_i-(g_i-L&#39;)^2 = \min \{ f_j+g_j\ ^2 - 2(g_i-L&#39;)g_j \}
-\]</span></p>
-<p>我们把直线的方程 <span class="math inline">\(y=kx+b\)</span>​ 变一下，就可以得到 <span class="math inline">\(b=y-kx\)</span>​。</p>
+<p>枚举 $j$​ 的时间复杂度为 $O(w[i])$​，枚举 $t$​ 的时间复杂度为 $O([\tfrac {W}{w[i]}])$​，</p>
+<p>总的时间复杂度就是 $O(n)\times O(w[i]) \times O([\tfrac{W}{w[i]}])&#x3D;O(nW)$​。</p>
+<h2 id="练习题"><a href="#练习题" class="headerlink" title="练习题"></a>练习题</h2><p>多重背包板子：Luogu P1776 宝物筛选 <a target="_blank" rel="noopener" href="https://www.luogu.com.cn/problem/P1776">https://www.luogu.com.cn/problem/P1776</a>（用单调队列做）</p>
+<p>Loj #10183 股票交易 <a target="_blank" rel="noopener" href="https://loj.ac/p/10183">https://loj.ac/p/10183</a></p>
+<h1 id="斜率优化"><a href="#斜率优化" class="headerlink" title="斜率优化"></a>斜率优化</h1><h2 id="主要思想-1"><a href="#主要思想-1" class="headerlink" title="主要思想"></a>主要思想</h2><p>有一些题目，可以把转移方程看做直线的方程，把问题转化为求二维平面上选择一些点，最小化直线的截距。</p>
+<h2 id="例题-1"><a href="#例题-1" class="headerlink" title="例题"></a>例题</h2><p>Loj 玩具装箱 <a target="_blank" rel="noopener" href="https://loj.ac/p/10188">https://loj.ac/p/10188</a></p>
+<h3 id="解法-1"><a href="#解法-1" class="headerlink" title="解法"></a>解法</h3><p>状态转移方程：$f_i$​​​ 表示以 $i$​ 为右端点分一段的最小代价，$sum_i$​ 表示 $c$​​ 数组的前缀和。</p>
+<p>$$<br>f_{i}&#x3D;\min \limits _{j&#x3D;0} ^{i-1} { f_j + (i-(j+1) + sum_i-sum_j - L) ^2 }<br>$$</p>
+<p>枚举 $i$，把确定的提出来：</p>
+<p>$$<br>\begin{aligned}<br>f_i &amp;&#x3D; \min \limits _{j&#x3D;0} ^{i-1} { f_j + (i+sum_i - 1-L) ^2 + (j + sum_j) ^2 - 2 (i+sum_i-1-L)(j+sum_j) }\<br>&amp;&#x3D; \min \limits _{j&#x3D;0} ^{i-1} { f_j+(j+sum_j) ^2 - 2(i + sum_i-1-L)(j + sum_j) } + (i+sum_i - 1 - L) ^2<br>\end{aligned}<br>$$</p>
+<p>令 $g_i&#x3D;sum_i+i$，$L’&#x3D;L+1$，则</p>
+<p>$$<br>f_i-(g_i-L’)^2 &#x3D; \min { f_j+g_j\ ^2 - 2(g_i-L’)g_j }<br>$$</p>
+<p>我们把直线的方程 $y&#x3D;kx+b$​ 变一下，就可以得到 $b&#x3D;y-kx$​。</p>
 <p>令</p>
-<p><span class="math display">\[
-b_i=f_i-(g_i-L&#39;) ^2\\
-y_j = f_j+g_j\ ^2\\
-k_i = 2(g_i-L&#39;)\\
-x_j = g_j
-\]</span></p>
+<p>$$<br>b_i&#x3D;f_i-(g_i-L’) ^2\<br>y_j &#x3D; f_j+g_j\ ^2\<br>k_i &#x3D; 2(g_i-L’)\<br>x_j &#x3D; g_j<br>$$</p>
 <p>我们就成功地把转移方程变成了直线方程：</p>
-<p><span class="math display">\[
-b_i=\min \limits _{j=0} ^{i-1} \{ y_j - k_i x_j \}
-\]</span></p>
-<p><span class="math inline">\(k_i\)</span> 表示一条经过点 <span class="math inline">\((x_j,y_j)\)</span>​ 的直线的斜率。</p>
-<p>把问题转化为了选择合适的 <span class="math inline">\(j\)</span>，使得 <span class="math inline">\(b_i\)</span>，也就是直线的<strong>截距</strong>最小。</p>
+<p>$$<br>b_i&#x3D;\min \limits _{j&#x3D;0} ^{i-1} { y_j - k_i x_j }<br>$$</p>
+<p>$k_i$ 表示一条经过点 $(x_j,y_j)$​ 的直线的斜率。</p>
+<p>把问题转化为了选择合适的 $j$，使得 $b_i$，也就是直线的<strong>截距</strong>最小。</p>
 <ul>
 <li>怎么求这个点呢？</li>
 </ul>
-<p>我们画一下图。<img src="https://img-blog.csdnimg.cn/img_convert/1a4c5acab541717529a52b690ea8b9f7.png" alt="qOAi8I.png" /></p>
-<p>红色直线的斜率为 <span class="math inline">\(k_i\)</span>。</p>
+<p>我们画一下图。<img src="https://img-blog.csdnimg.cn/img_convert/1a4c5acab541717529a52b690ea8b9f7.png" alt="qOAi8I.png"></p>
+<p>红色直线的斜率为 $k_i$。</p>
 <p>我们把这条直线向上移，直到碰到一个点：</p>
-<p><img src="https://img-blog.csdnimg.cn/img_convert/4b56c25dd85f3cce0c38a0cdc0bbd337.png" alt="qOAl2q.png" /> 碰到的第一个点就是要求的点。</p>
-<p>证明：反证法，若继续向上移，<span class="math inline">\(b_i\)</span> 会继续变大，所以后面的都不会比这个点更优。</p>
+<p><img src="https://img-blog.csdnimg.cn/img_convert/4b56c25dd85f3cce0c38a0cdc0bbd337.png" alt="qOAl2q.png"><br>碰到的第一个点就是要求的点。</p>
+<p>证明：反证法，若继续向上移，$b_i$ 会继续变大，所以后面的都不会比这个点更优。</p>
 <p>不难发现可能的答案在下凸壳（黑色线）上。</p>
 <p>所以我们不需要枚举每一个点，只需要维护下凸壳上的点即可。</p>
-<p>这个点的性质为：它和左边的点连成的直线的斜率 <span class="math inline">\(\leq k_i&lt;\)</span> 它和右边的点连成的直线的斜率。</p>
-<p>而本题中，<span class="math inline">\(k_i=2(g_i-L&#39;)\)</span>​​​，<span class="math inline">\(g_i\)</span>​​​ 随着 <span class="math inline">\(i\)</span>​​​ 的增加而增加，所以 <span class="math inline">\(k_i\)</span>​​​​ 是递增的。</p>
-<p>所以可以用单调队列维护下凸壳，用一个指针 <span class="math inline">\(ans\)</span> 维护答案。</p>
-<p>由于 <span class="math inline">\(k_i\)</span> 单调递增，所以每次 <span class="math inline">\(ans\)</span>​ 的移动次数为均摊 <span class="math inline">\(O(1)\)</span>。</p>
-<p>在更新完 <span class="math inline">\(f_i\)</span> 后，我们把 <span class="math inline">\((x_i,y_i)\)</span>​ 也加进去。</p>
-<p>这样，就成功地把时间复杂度降到了 <span class="math inline">\(O(n)\)</span>。</p>
-<h2 id="总结">总结</h2>
-<p>斜率优化的思想就是：把状态转移方程通过转化，把确定的量提到外面来，变成直线方程，使点的坐标代表待定的值，斜率和截距代表确定的值和待求的值，再转化成让截距最小的问题。</p>
-<h2 id="练习题-1">练习题</h2>
-<h3 id="sdoi2016-征途">[SDOI2016] 征途</h3>
-<p><a target="_blank" rel="noopener" href="https://loj.ac/p/2035" class="uri">https://loj.ac/p/2035</a> / <a target="_blank" rel="noopener" href="https://www.luogu.com.cn/problem/P4072" class="uri">https://www.luogu.com.cn/problem/P4072</a></p>
+<p>这个点的性质为：它和左边的点连成的直线的斜率 $\leq k_i&lt;$ 它和右边的点连成的直线的斜率。</p>
+<p>而本题中，$k_i&#x3D;2(g_i-L’)$​​​，$g_i$​​​ 随着 $i$​​​ 的增加而增加，所以 $k_i$​​​​ 是递增的。</p>
+<p>所以可以用单调队列维护下凸壳，用一个指针 $ans$ 维护答案。</p>
+<p>由于 $k_i$ 单调递增，所以每次 $ans$​ 的移动次数为均摊 $O(1)$。</p>
+<p>在更新完 $f_i$ 后，我们把 $(x_i,y_i)$​ 也加进去。</p>
+<p>这样，就成功地把时间复杂度降到了 $O(n)$。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>斜率优化的思想就是：把状态转移方程通过转化，把确定的量提到外面来，变成直线方程，使点的坐标代表待定的值，斜率和截距代表确定的值和待求的值，再转化成让截距最小的问题。</p>
+<h2 id="练习题-1"><a href="#练习题-1" class="headerlink" title="练习题"></a>练习题</h2><h3 id="SDOI2016-征途"><a href="#SDOI2016-征途" class="headerlink" title="[SDOI2016] 征途"></a>[SDOI2016] 征途</h3><p><a target="_blank" rel="noopener" href="https://loj.ac/p/2035">https://loj.ac/p/2035</a> &#x2F; <a target="_blank" rel="noopener" href="https://www.luogu.com.cn/problem/P4072">https://www.luogu.com.cn/problem/P4072</a></p>
 <p><strong>题解</strong></p>
-<p><span class="math display">\[
-\begin {aligned}
-ans &amp;= m ^2 \frac {\sum (dis[i]-average)^2}{m}\\
-&amp;= m\sum(dis[i]-average)^2\\
-&amp;= m\sum(dis[i] ^2 + average ^2 - 2dis[i]\dot \ average)\\
-&amp;= m\sum(dis[i]^2)-2\dot \ sumdis ^2 + m^2 \dot \ \frac {sumdis^2}{m^2}\\
-&amp;= m\sum(dis[i] ^2) - sumdis^2
-\end {aligned}
-\]</span></p>
-<p>所以问题变为了使 <span class="math inline">\(\sum (dis[i]^2)\)</span> 最小。</p>
+<p>$$<br>\begin {aligned}<br>ans &amp;&#x3D; m ^2 \frac {\sum (dis[i]-average)^2}{m}\<br>&amp;&#x3D; m\sum(dis[i]-average)^2\<br>&amp;&#x3D; m\sum(dis[i] ^2 + average ^2 - 2dis[i]\dot \ average)\<br>&amp;&#x3D; m\sum(dis[i]^2)-2\dot \ sumdis ^2 + m^2 \dot \ \frac {sumdis^2}{m^2}\<br>&amp;&#x3D; m\sum(dis[i] ^2) - sumdis^2<br>\end {aligned}<br>$$</p>
+<p>所以问题变为了使 $\sum (dis[i]^2)$ 最小。</p>
 <p>状态转移：</p>
-<p><span class="math display">\[
-f[i]=\min \limits _{j=0} ^{i-1} \{ f[j]+(s[i]-s[j])^2 \}\\
-\implies f[i] = \min \{ f[j]+s[i] ^2 + s[j] ^2 - 2 s[i]s[j] \}\\
-\implies f[i]-s[i] ^2 = \min \{ f[j]+s[j] ^2 - 2s[i]s[j] \}\\
-\implies b = \min \{ y-kx \}
-\]</span></p>
+<p>$$<br>f[i]&#x3D;\min \limits _{j&#x3D;0} ^{i-1} { f[j]+(s[i]-s[j])^2 }\<br>\implies f[i] &#x3D; \min { f[j]+s[i] ^2 + s[j] ^2 - 2 s[i]s[j] }\<br>\implies f[i]-s[i] ^2 &#x3D; \min { f[j]+s[j] ^2 - 2s[i]s[j] }\<br>\implies b &#x3D; \min { y-kx }<br>$$</p>
 <p>也就是：</p>
-<p><span class="math display">\[
-b[i]=f[i]-s[i] ^2\\
-y[j]=f[j]+s[j] ^2\\
-k[i]=2s[i]\\
-x[j]=s[j]
-\]</span></p>
+<p>$$<br>b[i]&#x3D;f[i]-s[i] ^2\<br>y[j]&#x3D;f[j]+s[j] ^2\<br>k[i]&#x3D;2s[i]\<br>x[j]&#x3D;s[j]<br>$$</p>
 <p>后面就和上面那道题一样了。</p>
-<h1 id="四边形不等式优化">四边形不等式优化</h1>
-<h2 id="四边形不等式">四边形不等式</h2>
-<blockquote>
-<p>设<span class="math inline">\(w(x,y)\)</span>是定义在整数集合上的二元函数。若对于定义域上的任意整数 <span class="math inline">\(a,b,c,d\)</span>​，其中 <span class="math inline">\(a\leq b \leq c \leq d\)</span>​，都有 <span class="math inline">\(w(a,d)+w(b,c) \geq w(a,c) + w(b,d)\)</span>​ 成立，则称函数 <span class="math inline">\(w\)</span>​​ 满足<strong>四边形不等式</strong>。</p>
+<h1 id="四边形不等式优化"><a href="#四边形不等式优化" class="headerlink" title="四边形不等式优化"></a>四边形不等式优化</h1><h2 id="四边形不等式"><a href="#四边形不等式" class="headerlink" title="四边形不等式"></a>四边形不等式</h2><blockquote>
+<p>设$w(x,y)$是定义在整数集合上的二元函数。若对于定义域上的任意整数 $a,b,c,d$​，其中 $a\leq b \leq c \leq d$​，都有 $w(a,d)+w(b,c) \geq w(a,c) + w(b,d)$​ 成立，则称函数 $w$​​ 满足<strong>四边形不等式</strong>。</p>
 <p>若等号永远成立，则称函数 满足<strong>四边形恒等式</strong>。</p>
 </blockquote>
-<h3 id="定理另一种定义">定理（另一种定义）</h3>
-<p>设 <span class="math inline">\(w(x,y)\)</span>​​ 是定义在整数集合上的二元函数。若对于定义域上的任意整数 <span class="math inline">\(a,b\)</span>​，其中 <span class="math inline">\(a &lt;b\)</span>​，</p>
-<p>都有 <span class="math inline">\(w(a,b + 1) + w(a+1,b) \geq w(a,b)+w(a+1,b+1)\)</span>​ 成立，则函数 <span class="math inline">\(w\)</span>​ 满足四边形不等式。</p>
-<h3 id="定理证明">定理证明</h3>
-<p>对于 <span class="math inline">\(a&lt;c\)</span>，有 <span class="math inline">\(w(a,c+1)+w(a+1,c) \geq w(a,c)+w(a+1,c+1)\)</span>；</p>
-<p>对于 <span class="math inline">\(a+1 &lt;c\)</span>，有 <span class="math inline">\(w(a+1,c+1)+w(a+2,c) \geq w(a+1,c)+w(a+1,c+1)\)</span>。</p>
-<p>两式相加，得到 <span class="math inline">\(w(a,c+1)+w(a+2,c) \geq w(a+1,c)+w(a+2,c+1)\)</span>。</p>
-<p>以此类推，对任意的 <span class="math inline">\(a \leq b \leq c\)</span>，有 <span class="math inline">\(w(a,c+1)+w(b,c) \geq w(a,c)+w(b,c+1)\)</span>。</p>
-<p>同理，对任意的 <span class="math inline">\(a\leq b \leq c \leq d\)</span>，有 <span class="math inline">\(w(a,d)+w(b,c) \geq w(a,c)+w(b,d)\)</span>。</p>
-<h2 id="一维线性-dp-的四边形不等式优化">一维线性 dp 的四边形不等式优化</h2>
-<h3 id="决策单调性">决策单调性</h3>
-<p>对于形如 <span class="math inline">\(f[i]=\min \limits _{j=0} ^{i-1} \{ f[j] + val(j,i) \}\)</span> 的转移方程，记 <span class="math inline">\(p[i]\)</span> 为令 <span class="math inline">\(f[i]\)</span> 取到最小值的值，即 <span class="math inline">\(f[i]\)</span> 的最优决策。若 <span class="math inline">\(p\)</span> 单调不减，则称 <span class="math inline">\(f\)</span>​ 具有决策单调性。</p>
-<h3 id="定理">定理</h3>
-<p>在状态转移方程 <span class="math inline">\(f[i]=\min \limits _{j=0} ^{i-1} \{ f[j] + val(j,i) \}\)</span> 中，若函数 <span class="math inline">\(val\)</span> 满足四边形不等式，则 <span class="math inline">\(f\)</span>​ 具有决策单调性。</p>
-<h3 id="定理证明-1">定理证明</h3>
-<p><span class="math display">\[
-f[i]=\min {f[j]+w(j,i)}\\
-\implies f[p[i]]+w(p[i],i) \leq f[j]+w(j,i) \space\space\space\space\space (1)\\
-j\leq p[i] \leq i \leq i&#39; \\
-\implies w(j,i&#39;)+w(p[i],i)\geq w(j,i)+w(p[i],i&#39;)\\
-\implies w(j,i&#39;)-w(j,i) \geq w(p[i],i&#39;) - w(p[i],i)\space\space\space\space\space (2)\\
-(1)+(2) \implies f[j]+w(j,i&#39;) \geq f[p[i]]+w(p[i],i&#39;)
-\]</span></p>
-<p>也就是对于 <span class="math inline">\(i&#39;\)</span> 来说，<span class="math inline">\(p[i]\)</span> 比 <span class="math inline">\(j\)</span> 更优，即 <span class="math inline">\(p[i&#39;] \geq p[i]\)</span>。</p>
-<h3 id="优化过程">优化过程</h3>
-<p>当 <span class="math inline">\(f\)</span> 具有决策单调性时，<span class="math inline">\(p\)</span> 会被分成若干段，使每一段中所有元素的值相同，如下图：</p>
-<figure>
-<img src="https://img-blog.csdnimg.cn/img_convert/edb2e1339326ae02e80406e57aa745ba.png" alt="qOkLgx.png" /><figcaption>qOkLgx.png</figcaption>
-</figure>
-<p>当我们求出了一个新的 <span class="math inline">\(f[i]\)</span>，就可以通过一些操作计算出有哪些 <span class="math inline">\(i&#39;\)</span> 的最优决策是 <span class="math inline">\(p[i]\)</span>。</p>
-<p>根据决策单调性，我们一定可以找出一个位置 <span class="math inline">\(pos\)</span>，使得 <span class="math inline">\(pos\)</span> 之前的所有位置目前存储的决策比 <span class="math inline">\(p[i]\)</span> 更优，而 <span class="math inline">\(pos\)</span> 及以后的所有位置目前存储的决策不比 <span class="math inline">\(p[i]\)</span>​ 更优。</p>
-<p>我们的目标就变为了找出 <span class="math inline">\(pos\)</span>，并把 <span class="math inline">\(pos\)</span> 及以后的所有位置存储的决策更新为 <span class="math inline">\(p[i]\)</span>。</p>
+<h3 id="定理（另一种定义）"><a href="#定理（另一种定义）" class="headerlink" title="定理（另一种定义）"></a>定理（另一种定义）</h3><p>设 $w(x,y)$​​ 是定义在整数集合上的二元函数。若对于定义域上的任意整数 $a,b$​，其中 $a &lt;b$​，</p>
+<p>都有 $w(a,b + 1) + w(a+1,b) \geq w(a,b)+w(a+1,b+1)$​ 成立，则函数 $w$​ 满足四边形不等式。</p>
+<h3 id="定理证明"><a href="#定理证明" class="headerlink" title="定理证明"></a>定理证明</h3><p>对于 $a&lt;c$，有 $w(a,c+1)+w(a+1,c) \geq w(a,c)+w(a+1,c+1)$；</p>
+<p>对于 $a+1 &lt;c$，有 $w(a+1,c+1)+w(a+2,c) \geq w(a+1,c)+w(a+1,c+1)$。</p>
+<p>两式相加，得到 $w(a,c+1)+w(a+2,c) \geq w(a+1,c)+w(a+2,c+1)$。</p>
+<p>以此类推，对任意的 $a \leq b \leq c$，有 $w(a,c+1)+w(b,c) \geq w(a,c)+w(b,c+1)$。</p>
+<p>同理，对任意的 $a\leq b \leq c \leq d$，有 $w(a,d)+w(b,c) \geq w(a,c)+w(b,d)$。</p>
+<h2 id="一维线性-dp-的四边形不等式优化"><a href="#一维线性-dp-的四边形不等式优化" class="headerlink" title="一维线性 dp 的四边形不等式优化"></a>一维线性 dp 的四边形不等式优化</h2><h3 id="决策单调性"><a href="#决策单调性" class="headerlink" title="决策单调性"></a>决策单调性</h3><p>对于形如 $f[i]&#x3D;\min \limits _{j&#x3D;0} ^{i-1} { f[j] + val(j,i) }$ 的转移方程，记 $p[i]$ 为令 $f[i]$ 取到最小值的值，即 $f[i]$ 的最优决策。若 $p$ 单调不减，则称 $f$​ 具有决策单调性。</p>
+<h3 id="定理"><a href="#定理" class="headerlink" title="定理"></a>定理</h3><p>在状态转移方程 $f[i]&#x3D;\min \limits _{j&#x3D;0} ^{i-1} { f[j] + val(j,i) }$ 中，若函数 $val$ 满足四边形不等式，则 $f$​ 具有决策单调性。</p>
+<h3 id="定理证明-1"><a href="#定理证明-1" class="headerlink" title="定理证明"></a>定理证明</h3><p>$$<br>f[i]&#x3D;\min {f[j]+w(j,i)}\<br>\implies f[p[i]]+w(p[i],i) \leq f[j]+w(j,i) \space\space\space\space\space (1)\<br>j\leq p[i] \leq i \leq i’ \<br>\implies w(j,i’)+w(p[i],i)\geq w(j,i)+w(p[i],i’)\<br>\implies w(j,i’)-w(j,i) \geq w(p[i],i’) - w(p[i],i)\space\space\space\space\space (2)\<br>(1)+(2) \implies f[j]+w(j,i’) \geq f[p[i]]+w(p[i],i’)<br>$$</p>
+<p>也就是对于 $i’$ 来说，$p[i]$ 比 $j$ 更优，即 $p[i’] \geq p[i]$。</p>
+<h3 id="优化过程"><a href="#优化过程" class="headerlink" title="优化过程"></a>优化过程</h3><p>当 $f$ 具有决策单调性时，$p$ 会被分成若干段，使每一段中所有元素的值相同，如下图：</p>
+<p><img src="https://img-blog.csdnimg.cn/img_convert/edb2e1339326ae02e80406e57aa745ba.png" alt="qOkLgx.png"></p>
+<p>当我们求出了一个新的 $f[i]$，就可以通过一些操作计算出有哪些 $i’$ 的最优决策是 $p[i]$。</p>
+<p>根据决策单调性，我们一定可以找出一个位置 $pos$，使得 $pos$ 之前的所有位置目前存储的决策比 $p[i]$ 更优，而 $pos$ 及以后的所有位置目前存储的决策不比 $p[i]$​ 更优。</p>
+<p>我们的目标就变为了找出 $pos$，并把 $pos$ 及以后的所有位置存储的决策更新为 $p[i]$。</p>
 <p>直接暴力修改显然会超时，还不如不优化。这时，我们可以借助队列。</p>
-<p>我们把 <span class="math inline">\(p\)</span>​​​​ 的每一段用一个三元组记录下来：<span class="math inline">\((p_t,l_t,r_t)\)</span>​​​​​，其中 <span class="math inline">\(p\)</span>​​​ 记录的是当前存储的决策，<span class="math inline">\(l\)</span>​​​ 和 <span class="math inline">\(r\)</span>​​​ 分别时这一段的左端点和右端点。设队尾为 <span class="math inline">\((p_0,l_0,r_0)\)</span>​​​。</p>
-<p>如果对于 <span class="math inline">\(l_0\)</span>​ 来说，<span class="math inline">\(p[i]\)</span>​ 比 <span class="math inline">\(p_0\)</span>​​​ 更优，则代表我们需要更新这一段存储的决策，直接弹出队尾；</p>
-<p>如果对于 <span class="math inline">\(r_0\)</span>​​​ 来说，<span class="math inline">\(p_0\)</span>​​​ 比 <span class="math inline">\(p[i]\)</span>​​​ 更优，则代表我们已经找到了最右的存储决策比 <span class="math inline">\(p[i]\)</span> 更优的点，即 <span class="math inline">\(pos-1\)</span>​，把新的三元组 <span class="math inline">\((p[i],r_0+1,n)\)</span>​​ 插入队尾；</p>
-<p>否则，进行二分查找，找到 <span class="math inline">\(pos\)</span>，更新 <span class="math inline">\(r_0\)</span>，把新三元组 <span class="math inline">\((p[i],pos,n)\)</span>​ 插入队尾。</p>
-<p>这样，我们就把 <span class="math inline">\(O(n^2)\)</span> 的时间复杂度优化到了 <span class="math inline">\(O(n \log n)\)</span>​。</p>
-<h2 id="二维区间dp的四边形不等式优化">二维区间dp的四边形不等式优化</h2>
-<p>朴素的转移方程：<span class="math inline">\(f(i,j)=\min \limits _{i \leq k &lt; j} \{ f(i,k)+f(k+1,j)+w(i,j) \}\)</span></p>
-<h3 id="定理1">定理1</h3>
-<p>在转移方程 <span class="math inline">\(f(i,j)=\min \limits _{i \leq k &lt; j} \{ f(i,k)+f(k+1,j)+w(i,j) \}\)</span>（<span class="math inline">\(f(i,i)=w(i,i)=0\)</span>）中，如果下面两个条件成立：</p>
-<ol type="1">
-<li><span class="math inline">\(w\)</span> 满足四边形不等式；</li>
-<li>对于任意的 <span class="math inline">\(a\leq b \leq c \leq d\)</span>，有 <span class="math inline">\(w(a,d) \geq w(b,c)\)</span>​。</li>
+<p>我们把 $p$​​​​ 的每一段用一个三元组记录下来：$(p_t,l_t,r_t)$​​​​​，其中 $p$​​​ 记录的是当前存储的决策，$l$​​​ 和 $r$​​​ 分别时这一段的左端点和右端点。设队尾为 $(p_0,l_0,r_0)$​​​。</p>
+<p>如果对于 $l_0$​ 来说，$p[i]$​ 比 $p_0$​​​ 更优，则代表我们需要更新这一段存储的决策，直接弹出队尾；</p>
+<p>如果对于 $r_0$​​​ 来说，$p_0$​​​ 比 $p[i]$​​​ 更优，则代表我们已经找到了最右的存储决策比 $p[i]$ 更优的点，即 $pos-1$​，把新的三元组 $(p[i],r_0+1,n)$​​ 插入队尾；</p>
+<p>否则，进行二分查找，找到 $pos$，更新 $r_0$，把新三元组 $(p[i],pos,n)$​ 插入队尾。</p>
+<p>这样，我们就把 $O(n^2)$ 的时间复杂度优化到了 $O(n \log n)$​。</p>
+<h2 id="二维区间dp的四边形不等式优化"><a href="#二维区间dp的四边形不等式优化" class="headerlink" title="二维区间dp的四边形不等式优化"></a>二维区间dp的四边形不等式优化</h2><p>朴素的转移方程：$f(i,j)&#x3D;\min \limits _{i \leq k &lt; j} { f(i,k)+f(k+1,j)+w(i,j) }$</p>
+<h3 id="定理1"><a href="#定理1" class="headerlink" title="定理1"></a>定理1</h3><p>在转移方程 $f(i,j)&#x3D;\min \limits _{i \leq k &lt; j} { f(i,k)+f(k+1,j)+w(i,j) }$（$f(i,i)&#x3D;w(i,i)&#x3D;0$）中，如果下面两个条件成立：</p>
+<ol>
+<li>$w$ 满足四边形不等式；</li>
+<li>对于任意的 $a\leq b \leq c \leq d$，有 $w(a,d) \geq w(b,c)$​。</li>
 </ol>
-<p>那么 <span class="math inline">\(f\)</span> 也满足四边形不等式。</p>
-<h3 id="定理2二维决策单调性">定理2（二维决策单调性）</h3>
-<p>在转移方程 <span class="math inline">\(f(i,j)=\min \limits _{i \leq k &lt; j} \{ f(i,k)+f(k+1,j)+w(i,j) \}\)</span>（<span class="math inline">\(f(i,i)=w(i,i)=0\)</span>）中，记 <span class="math inline">\(p(i,j)\)</span> 为 <span class="math inline">\(f(i,j)\)</span> 的最优决策。</p>
-<p>如果 <span class="math inline">\(f\)</span> 满足四边形不等式，那么对于任意 <span class="math inline">\(i&lt;j\)</span>，有 <span class="math inline">\(p(i,j-1) \leq p(i,j) \leq p(i+1,j)\)</span>。</p>
-<hr />
-<p>有了定理2，我们就只需要在 <span class="math inline">\(p(l,r-1) \leq k \leq p(l+1,r)\)</span> 的范围内枚举 <span class="math inline">\(k\)</span>，时间复杂度为 <span class="math inline">\(O(n^2)\)</span>。</p>
-<h2 id="练习题-2">练习题</h2>
-<h3 id="luogu-p1880-石子合并">Luogu P1880 石子合并</h3>
-<p><a target="_blank" rel="noopener" href="https://www.luogu.com.cn/problem/P1880" class="uri">https://www.luogu.com.cn/problem/P1880</a> <span class="math inline">\(n\leq 5000\)</span>​</p>
-<h3 id="luogu-p4767-ioi2000-邮局">Luogu P4767 [IOI2000] 邮局</h3>
-<p><a target="_blank" rel="noopener" href="https://www.luogu.com.cn/problem/P4767" class="uri">https://www.luogu.com.cn/problem/P4767</a></p>
+<p>那么 $f$ 也满足四边形不等式。</p>
+<h3 id="定理2（二维决策单调性）"><a href="#定理2（二维决策单调性）" class="headerlink" title="定理2（二维决策单调性）"></a>定理2（二维决策单调性）</h3><p>在转移方程 $f(i,j)&#x3D;\min \limits _{i \leq k &lt; j} { f(i,k)+f(k+1,j)+w(i,j) }$（$f(i,i)&#x3D;w(i,i)&#x3D;0$）中，记 $p(i,j)$ 为 $f(i,j)$ 的最优决策。</p>
+<p>如果 $f$ 满足四边形不等式，那么对于任意 $i&lt;j$，有 $p(i,j-1) \leq p(i,j) \leq p(i+1,j)$。</p>
+<hr>
+<p>有了定理2，我们就只需要在 $p(l,r-1) \leq k \leq p(l+1,r)$ 的范围内枚举 $k$，时间复杂度为 $O(n^2)$。</p>
+<h2 id="练习题-2"><a href="#练习题-2" class="headerlink" title="练习题"></a>练习题</h2><h3 id="Luogu-P1880-石子合并"><a href="#Luogu-P1880-石子合并" class="headerlink" title="Luogu P1880 石子合并"></a>Luogu P1880 石子合并</h3><p><a target="_blank" rel="noopener" href="https://www.luogu.com.cn/problem/P1880">https://www.luogu.com.cn/problem/P1880</a> $n\leq 5000$​</p>
+<h3 id="Luogu-P4767-IOI2000-邮局"><a href="#Luogu-P4767-IOI2000-邮局" class="headerlink" title="Luogu P4767 [IOI2000] 邮局"></a>Luogu P4767 [IOI2000] 邮局</h3><p><a target="_blank" rel="noopener" href="https://www.luogu.com.cn/problem/P4767">https://www.luogu.com.cn/problem/P4767</a></p>
 <p><strong>题解</strong></p>
 <p>转移方程：</p>
-<p><span class="math display">\[
-f[i][j]=\min \limits _{k=0} ^{i-1} \{ f[k][j-1]+w(k+1,i) \}
-\]</span></p>
-<p>其中<span class="math inline">\(f[i][j]\)</span> 表示前 <span class="math inline">\(i\)</span> 个村庄放了 <span class="math inline">\(j\)</span> 个邮局的最小距离和，<span class="math inline">\(w(i,j)\)</span> 表示第 <span class="math inline">\(i\)</span> ~ <span class="math inline">\(j\)</span> 个村庄中放一个邮局的最小距离和。</p>
+<p>$$<br>f[i][j]&#x3D;\min \limits _{k&#x3D;0} ^{i-1} { f[k][j-1]+w(k+1,i) }<br>$$</p>
+<p>其中$f[i][j]$ 表示前 $i$ 个村庄放了 $j$ 个邮局的最小距离和，$w(i,j)$ 表示第 $i$ ~ $j$ 个村庄中放一个邮局的最小距离和。</p>
 <p>显然在一个区间中，邮局要放在最中间的那个村庄那里。</p>
-<p><span class="math inline">\(sumx[i]\)</span> 表示前 <span class="math inline">\(i\)</span> 个村庄的坐标和。</p>
-<p>对于 <span class="math inline">\(w\)</span>：</p>
-<p><span class="math display">\[
-w(i,j)=sumx[j]-sumx[(i+j)/2]-sumx[(i+j-1)/2] + sumx[i-1]\\
-\implies w(l,r+1)+w(l+1,r)-w(l,r) - w(l+1,r+1)=sumx[(l+r+1)/2]-sumx[(l+r-1)/2]\geq 0\\
-\implies w(l,r+1)+w(l+1,r) \geq w(l,r)+w(l+1,r+1)
-\]</span></p>
-<p>所以 <span class="math inline">\(w\)</span>​ 满足四边形不等式。</p>
-<p>又因为显然对于任意的 <span class="math inline">\(a\leq b \leq c \leq d\)</span>，有 <span class="math inline">\(w(a,d) \geq w(b,c)\)</span>，</p>
-<p>所以 <span class="math inline">\(f\)</span> 满足四边形不等式，具有二维决策单调性。</p>
-<p>时间复杂度为 <span class="math inline">\(O(nV)\)</span>。</p>
-<h3 id="spoj-larmy">SPOJ LARMY</h3>
-<p><a target="_blank" rel="noopener" href="https://www.spoj.com/problems/LARMY/" class="uri">https://www.spoj.com/problems/LARMY/</a></p>
-<h1 id="kmp">KMP（？）</h1>
-<p>主要是思想。</p>
+<p>$sumx[i]$ 表示前 $i$ 个村庄的坐标和。</p>
+<p>对于 $w$：</p>
+<p>$$<br>w(i,j)&#x3D;sumx[j]-sumx[(i+j)&#x2F;2]-sumx[(i+j-1)&#x2F;2] + sumx[i-1]\<br>\implies w(l,r+1)+w(l+1,r)-w(l,r) - w(l+1,r+1)&#x3D;sumx[(l+r+1)&#x2F;2]-sumx[(l+r-1)&#x2F;2]\geq 0\<br>\implies w(l,r+1)+w(l+1,r) \geq w(l,r)+w(l+1,r+1)<br>$$</p>
+<p>所以 $w$​ 满足四边形不等式。</p>
+<p>又因为显然对于任意的 $a\leq b \leq c \leq d$，有 $w(a,d) \geq w(b,c)$，</p>
+<p>所以 $f$ 满足四边形不等式，具有二维决策单调性。</p>
+<p>时间复杂度为 $O(nV)$。</p>
+<h3 id="SPOJ-LARMY"><a href="#SPOJ-LARMY" class="headerlink" title="SPOJ LARMY"></a>SPOJ LARMY</h3><p><a target="_blank" rel="noopener" href="https://www.spoj.com/problems/LARMY/">https://www.spoj.com/problems/LARMY/</a></p>
+<h1 id="KMP（？）"><a href="#KMP（？）" class="headerlink" title="KMP（？）"></a>KMP（？）</h1><p>主要是思想。</p>
 <p>KMP算法中，通过<strong>记录失配指针</strong>减少枚举的量，优化了时间复杂度。AC自动机就运用了这种思路。</p>
 <p>扩展KMP算法中，通过<strong>记录最靠右的已经算出的区间</strong>，让待计算的一部分直接使用之前算出的结果，减少了枚举的量，优化了时间复杂度。Manacher也运用了类似的思路。</p>
-<h1 id="数据结构优化">数据结构优化</h1>
-<p>在一些情况下，我们可以用数据结构维护决策的候选集合，从而快速执行插入、查找、删除等操作。</p>
+<h1 id="数据结构优化"><a href="#数据结构优化" class="headerlink" title="数据结构优化"></a>数据结构优化</h1><p>在一些情况下，我们可以用数据结构维护决策的候选集合，从而快速执行插入、查找、删除等操作。</p>
 <p>主要是把转移的一部分过程用数据结构优化。</p>
-<p>upd on 2023/9: 可以看看新写的线段树优化 DP 的博客！</p>
-<h2 id="练习题-3">练习题</h2>
-<p>（注意选用好写、适用的数据结构）</p>
-<h3 id="luogu-p1442-铁球落地">Luogu P1442 铁球落地</h3>
-<p><a target="_blank" rel="noopener" href="https://www.luogu.com.cn/problem/P1442" class="uri">https://www.luogu.com.cn/problem/P1442</a></p>
+<p>upd on 2023&#x2F;9: 可以看看新写的线段树优化 DP 的博客！</p>
+<h2 id="练习题-3"><a href="#练习题-3" class="headerlink" title="练习题"></a>练习题</h2><p>（注意选用好写、适用的数据结构）</p>
+<h3 id="Luogu-P1442-铁球落地"><a href="#Luogu-P1442-铁球落地" class="headerlink" title="Luogu P1442 铁球落地"></a>Luogu P1442 铁球落地</h3><p><a target="_blank" rel="noopener" href="https://www.luogu.com.cn/problem/P1442">https://www.luogu.com.cn/problem/P1442</a></p>
 <p><strong>题解</strong></p>
-<p>线段树优化dp。 先离散化，预处理出每一块木板左边会掉到那块木板，右边会掉到哪里，再从下往上dp。 预处理的时候用线段树优化。</p>
-<h3 id="luogu-p1020-导弹拦截">Luogu P1020 导弹拦截</h3>
-<p><a target="_blank" rel="noopener" href="https://www.luogu.com.cn/problem/P1020" class="uri">https://www.luogu.com.cn/problem/P1020</a></p>
+<p>线段树优化dp。<br>先离散化，预处理出每一块木板左边会掉到那块木板，右边会掉到哪里，再从下往上dp。<br>预处理的时候用线段树优化。</p>
+<h3 id="Luogu-P1020-导弹拦截"><a href="#Luogu-P1020-导弹拦截" class="headerlink" title="Luogu P1020 导弹拦截"></a>Luogu P1020 导弹拦截</h3><p><a target="_blank" rel="noopener" href="https://www.luogu.com.cn/problem/P1020">https://www.luogu.com.cn/problem/P1020</a></p>
 <p><strong>题解</strong></p>
-<p>朴素算法的基础上，用树状数组 / 线段树维护最优决策。</p>
-<h1 id="其他的dp题">其他的dp题</h1>
-<h2 id="cf1627e-not-escaping">CF1627E Not Escaping</h2>
-<p><a target="_blank" rel="noopener" href="https://codeforces.com/problemset/problem/1627/E" class="uri">https://codeforces.com/problemset/problem/1627/E</a></p>
+<p>朴素算法的基础上，用树状数组 &#x2F; 线段树维护最优决策。</p>
+<h1 id="其他的dp题"><a href="#其他的dp题" class="headerlink" title="其他的dp题"></a>其他的dp题</h1><h2 id="CF1627E-Not-Escaping"><a href="#CF1627E-Not-Escaping" class="headerlink" title="CF1627E Not Escaping"></a>CF1627E Not Escaping</h2><p><a target="_blank" rel="noopener" href="https://codeforces.com/problemset/problem/1627/E">https://codeforces.com/problemset/problem/1627/E</a></p>
 
     </div>
 
@@ -569,7 +475,7 @@ w(i,j)=sumx[j]-sumx[(i+j)/2]-sumx[(i+j-1)/2] + sumx[i-1]\\
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8D%95%E8%B0%83%E9%98%9F%E5%88%97%E4%BC%98%E5%8C%96"><span class="nav-number">1.</span> <span class="nav-text">单调队列优化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E7%BD%AE%E7%9F%A5%E8%AF%86"><span class="nav-number">1.1.</span> <span class="nav-text">前置知识</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BB%E8%A6%81%E6%80%9D%E6%83%B3"><span class="nav-number">1.2.</span> <span class="nav-text">主要思想</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%8B%E9%A2%98"><span class="nav-number">1.3.</span> <span class="nav-text">例题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%A3%E6%B3%95"><span class="nav-number">1.3.1.</span> <span class="nav-text">解法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%95%E8%B0%83%E9%98%9F%E5%88%97%E4%BC%98%E5%8C%96%E5%A4%9A%E9%87%8D%E8%83%8C%E5%8C%85"><span class="nav-number">1.4.</span> <span class="nav-text">单调队列优化多重背包</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%83%E4%B9%A0%E9%A2%98"><span class="nav-number">1.5.</span> <span class="nav-text">练习题</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%96%9C%E7%8E%87%E4%BC%98%E5%8C%96"><span class="nav-number">2.</span> <span class="nav-text">斜率优化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BB%E8%A6%81%E6%80%9D%E6%83%B3-1"><span class="nav-number">2.1.</span> <span class="nav-text">主要思想</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%8B%E9%A2%98-1"><span class="nav-number">2.2.</span> <span class="nav-text">例题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%A3%E6%B3%95-1"><span class="nav-number">2.2.1.</span> <span class="nav-text">解法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">2.3.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%83%E4%B9%A0%E9%A2%98-1"><span class="nav-number">2.4.</span> <span class="nav-text">练习题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#sdoi2016-%E5%BE%81%E9%80%94"><span class="nav-number">2.4.1.</span> <span class="nav-text">[SDOI2016] 征途</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E8%BE%B9%E5%BD%A2%E4%B8%8D%E7%AD%89%E5%BC%8F%E4%BC%98%E5%8C%96"><span class="nav-number">3.</span> <span class="nav-text">四边形不等式优化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E8%BE%B9%E5%BD%A2%E4%B8%8D%E7%AD%89%E5%BC%8F"><span class="nav-number">3.1.</span> <span class="nav-text">四边形不等式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9A%E7%90%86%E5%8F%A6%E4%B8%80%E7%A7%8D%E5%AE%9A%E4%B9%89"><span class="nav-number">3.1.1.</span> <span class="nav-text">定理（另一种定义）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9A%E7%90%86%E8%AF%81%E6%98%8E"><span class="nav-number">3.1.2.</span> <span class="nav-text">定理证明</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E7%BB%B4%E7%BA%BF%E6%80%A7-dp-%E7%9A%84%E5%9B%9B%E8%BE%B9%E5%BD%A2%E4%B8%8D%E7%AD%89%E5%BC%8F%E4%BC%98%E5%8C%96"><span class="nav-number">3.2.</span> <span class="nav-text">一维线性 dp 的四边形不等式优化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%B3%E7%AD%96%E5%8D%95%E8%B0%83%E6%80%A7"><span class="nav-number">3.2.1.</span> <span class="nav-text">决策单调性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9A%E7%90%86"><span class="nav-number">3.2.2.</span> <span class="nav-text">定理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9A%E7%90%86%E8%AF%81%E6%98%8E-1"><span class="nav-number">3.2.3.</span> <span class="nav-text">定理证明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BC%98%E5%8C%96%E8%BF%87%E7%A8%8B"><span class="nav-number">3.2.4.</span> <span class="nav-text">优化过程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E7%BB%B4%E5%8C%BA%E9%97%B4dp%E7%9A%84%E5%9B%9B%E8%BE%B9%E5%BD%A2%E4%B8%8D%E7%AD%89%E5%BC%8F%E4%BC%98%E5%8C%96"><span class="nav-number">3.3.</span> <span class="nav-text">二维区间dp的四边形不等式优化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9A%E7%90%861"><span class="nav-number">3.3.1.</span> <span class="nav-text">定理1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9A%E7%90%862%E4%BA%8C%E7%BB%B4%E5%86%B3%E7%AD%96%E5%8D%95%E8%B0%83%E6%80%A7"><span class="nav-number">3.3.2.</span> <span class="nav-text">定理2（二维决策单调性）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%83%E4%B9%A0%E9%A2%98-2"><span class="nav-number">3.4.</span> <span class="nav-text">练习题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#luogu-p1880-%E7%9F%B3%E5%AD%90%E5%90%88%E5%B9%B6"><span class="nav-number">3.4.1.</span> <span class="nav-text">Luogu P1880 石子合并</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#luogu-p4767-ioi2000-%E9%82%AE%E5%B1%80"><span class="nav-number">3.4.2.</span> <span class="nav-text">Luogu P4767 [IOI2000] 邮局</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#spoj-larmy"><span class="nav-number">3.4.3.</span> <span class="nav-text">SPOJ LARMY</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#kmp"><span class="nav-number">4.</span> <span class="nav-text">KMP（？）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%BC%98%E5%8C%96"><span class="nav-number">5.</span> <span class="nav-text">数据结构优化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%83%E4%B9%A0%E9%A2%98-3"><span class="nav-number">5.1.</span> <span class="nav-text">练习题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#luogu-p1442-%E9%93%81%E7%90%83%E8%90%BD%E5%9C%B0"><span class="nav-number">5.1.1.</span> <span class="nav-text">Luogu P1442 铁球落地</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#luogu-p1020-%E5%AF%BC%E5%BC%B9%E6%8B%A6%E6%88%AA"><span class="nav-number">5.1.2.</span> <span class="nav-text">Luogu P1020 导弹拦截</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E7%9A%84dp%E9%A2%98"><span class="nav-number">6.</span> <span class="nav-text">其他的dp题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#cf1627e-not-escaping"><span class="nav-number">6.1.</span> <span class="nav-text">CF1627E Not Escaping</span></a></li></ol></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%8D%95%E8%B0%83%E9%98%9F%E5%88%97%E4%BC%98%E5%8C%96"><span class="nav-number">1.</span> <span class="nav-text">单调队列优化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E7%BD%AE%E7%9F%A5%E8%AF%86"><span class="nav-number">1.1.</span> <span class="nav-text">前置知识</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BB%E8%A6%81%E6%80%9D%E6%83%B3"><span class="nav-number">1.2.</span> <span class="nav-text">主要思想</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%8B%E9%A2%98"><span class="nav-number">1.3.</span> <span class="nav-text">例题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%A3%E6%B3%95"><span class="nav-number">1.3.1.</span> <span class="nav-text">解法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%95%E8%B0%83%E9%98%9F%E5%88%97%E4%BC%98%E5%8C%96%E5%A4%9A%E9%87%8D%E8%83%8C%E5%8C%85"><span class="nav-number">1.4.</span> <span class="nav-text">单调队列优化多重背包</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%83%E4%B9%A0%E9%A2%98"><span class="nav-number">1.5.</span> <span class="nav-text">练习题</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%96%9C%E7%8E%87%E4%BC%98%E5%8C%96"><span class="nav-number">2.</span> <span class="nav-text">斜率优化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%BB%E8%A6%81%E6%80%9D%E6%83%B3-1"><span class="nav-number">2.1.</span> <span class="nav-text">主要思想</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%8B%E9%A2%98-1"><span class="nav-number">2.2.</span> <span class="nav-text">例题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%A7%A3%E6%B3%95-1"><span class="nav-number">2.2.1.</span> <span class="nav-text">解法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">2.3.</span> <span class="nav-text">总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%83%E4%B9%A0%E9%A2%98-1"><span class="nav-number">2.4.</span> <span class="nav-text">练习题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#SDOI2016-%E5%BE%81%E9%80%94"><span class="nav-number">2.4.1.</span> <span class="nav-text">[SDOI2016] 征途</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9B%9B%E8%BE%B9%E5%BD%A2%E4%B8%8D%E7%AD%89%E5%BC%8F%E4%BC%98%E5%8C%96"><span class="nav-number">3.</span> <span class="nav-text">四边形不等式优化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%9B%E8%BE%B9%E5%BD%A2%E4%B8%8D%E7%AD%89%E5%BC%8F"><span class="nav-number">3.1.</span> <span class="nav-text">四边形不等式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9A%E7%90%86%EF%BC%88%E5%8F%A6%E4%B8%80%E7%A7%8D%E5%AE%9A%E4%B9%89%EF%BC%89"><span class="nav-number">3.1.1.</span> <span class="nav-text">定理（另一种定义）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9A%E7%90%86%E8%AF%81%E6%98%8E"><span class="nav-number">3.1.2.</span> <span class="nav-text">定理证明</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E7%BB%B4%E7%BA%BF%E6%80%A7-dp-%E7%9A%84%E5%9B%9B%E8%BE%B9%E5%BD%A2%E4%B8%8D%E7%AD%89%E5%BC%8F%E4%BC%98%E5%8C%96"><span class="nav-number">3.2.</span> <span class="nav-text">一维线性 dp 的四边形不等式优化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%B3%E7%AD%96%E5%8D%95%E8%B0%83%E6%80%A7"><span class="nav-number">3.2.1.</span> <span class="nav-text">决策单调性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9A%E7%90%86"><span class="nav-number">3.2.2.</span> <span class="nav-text">定理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9A%E7%90%86%E8%AF%81%E6%98%8E-1"><span class="nav-number">3.2.3.</span> <span class="nav-text">定理证明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BC%98%E5%8C%96%E8%BF%87%E7%A8%8B"><span class="nav-number">3.2.4.</span> <span class="nav-text">优化过程</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BA%8C%E7%BB%B4%E5%8C%BA%E9%97%B4dp%E7%9A%84%E5%9B%9B%E8%BE%B9%E5%BD%A2%E4%B8%8D%E7%AD%89%E5%BC%8F%E4%BC%98%E5%8C%96"><span class="nav-number">3.3.</span> <span class="nav-text">二维区间dp的四边形不等式优化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9A%E7%90%861"><span class="nav-number">3.3.1.</span> <span class="nav-text">定理1</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9A%E7%90%862%EF%BC%88%E4%BA%8C%E7%BB%B4%E5%86%B3%E7%AD%96%E5%8D%95%E8%B0%83%E6%80%A7%EF%BC%89"><span class="nav-number">3.3.2.</span> <span class="nav-text">定理2（二维决策单调性）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%83%E4%B9%A0%E9%A2%98-2"><span class="nav-number">3.4.</span> <span class="nav-text">练习题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Luogu-P1880-%E7%9F%B3%E5%AD%90%E5%90%88%E5%B9%B6"><span class="nav-number">3.4.1.</span> <span class="nav-text">Luogu P1880 石子合并</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Luogu-P4767-IOI2000-%E9%82%AE%E5%B1%80"><span class="nav-number">3.4.2.</span> <span class="nav-text">Luogu P4767 [IOI2000] 邮局</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SPOJ-LARMY"><span class="nav-number">3.4.3.</span> <span class="nav-text">SPOJ LARMY</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#KMP%EF%BC%88%EF%BC%9F%EF%BC%89"><span class="nav-number">4.</span> <span class="nav-text">KMP（？）</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84%E4%BC%98%E5%8C%96"><span class="nav-number">5.</span> <span class="nav-text">数据结构优化</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%83%E4%B9%A0%E9%A2%98-3"><span class="nav-number">5.1.</span> <span class="nav-text">练习题</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Luogu-P1442-%E9%93%81%E7%90%83%E8%90%BD%E5%9C%B0"><span class="nav-number">5.1.1.</span> <span class="nav-text">Luogu P1442 铁球落地</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Luogu-P1020-%E5%AF%BC%E5%BC%B9%E6%8B%A6%E6%88%AA"><span class="nav-number">5.1.2.</span> <span class="nav-text">Luogu P1020 导弹拦截</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E7%9A%84dp%E9%A2%98"><span class="nav-number">6.</span> <span class="nav-text">其他的dp题</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#CF1627E-Not-Escaping"><span class="nav-number">6.1.</span> <span class="nav-text">CF1627E Not Escaping</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -595,6 +501,7 @@ w(i,j)=sumx[j]-sumx[(i+j)/2]-sumx[(i+j-1)/2] + sumx[i-1]\\
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
+          
         <span class="site-state-item-count">8</span>
         <span class="site-state-item-name">标签</span></a>
       </div>

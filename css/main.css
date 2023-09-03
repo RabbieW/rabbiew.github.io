@@ -1003,7 +1003,7 @@ pre .javascript .function {
 }
 .links-of-author a::before,
 .links-of-author span.exturl::before {
-  background: #63e0fb;
+  background: #db1214;
   border-radius: 50%;
   content: ' ';
   display: inline-block;
@@ -1496,7 +1496,10 @@ pre .javascript .function {
   position: fixed;
   transition-property: bottom;
   z-index: 1300;
-  width: initial;
+  width: 24px;
+}
+.back-to-top span {
+  display: none;
 }
 .back-to-top:hover {
   color: #fc6423;
