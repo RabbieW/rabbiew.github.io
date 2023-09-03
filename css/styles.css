@@ -23,8 +23,6 @@ body {
 }
 .sidebar {
   opacity: 0.7;
-  box-shadow: none;
-  background: none;
 }
 .header-inner {
   background: rgba(255,255,255,0.75);
@@ -34,4 +32,7 @@ body {
 }
 .main-inner {
   opacity: 0.75;
+}
+:root {
+  --body-bg-color: rgba(255,255,255,0);
 }
