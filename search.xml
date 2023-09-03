@@ -286,78 +286,6 @@ g(i,1) &amp;= g(i,2) = 0 &amp; &amp;out(i) = 0
       </tags>
   </entry>
   <entry>
-    <title>点分治 &amp; 点分树</title>
-    <url>/2023/05/01/%E7%82%B9%E5%88%86%E6%B2%BB%E5%92%8C%E7%82%B9%E5%88%86%E6%A0%91/</url>
-    <content><![CDATA[<h1 id="点分治树分治">点分治（树分治）</h1>
-<h2 id="点分治是什么">点分治是什么？</h2>
-<p>字面上理解，点分治就是“点”和“分治”。它的思路是把一个无根树树上问题拆分成若干个规模更小的无根树上问题和一个有根树（？）上问题。</p>
-<h2 id="例题">例题</h2>
-<p><a href="https://www.luogu.com.cn/problem/P3806">【模板】点分治1 - 洛谷</a></p>
-<p>给定一棵有 <span class="math inline">\(n\)</span> 个节点的树，<span class="math inline">\(m\)</span> 次询问树上距离为 <span class="math inline">\(k\)</span> 的点对是否存在。</p>
-<p><span class="math inline">\(1 \le n \le 10^4\)</span>，<span class="math inline">\(1 \leq m \le 100\)</span>，<span class="math inline">\(1 \le k \le 10^7\)</span>，边权 <span class="math inline">\(1 \le w \le 10^4\)</span>。</p>
-<h3 id="暴力做法">暴力做法</h3>
-<p>每次询问，考虑对于每一个点，用树形 dp 求出经过这个点（包括以这个点为端点）的路径中是否有长度为 <span class="math inline">\(k\)</span> 的，这个判断可以处理出深度后用双指针实现。时间复杂度 <span class="math inline">\(O(mn^2\log n)\)</span>，显然过不去。换根 dp 也因为 <span class="math inline">\(k\)</span> 太大，做不了。</p>
-<h3 id="点分治做法">点分治做法</h3>
-<p>考虑优化这个暴力，发现对于每个点都做一次树形 dp 很浪费时间。</p>
-<p>看一下一棵树上的路径有哪些？</p>
-<p>我们可以简单把树上的所有路径分为两类：<strong>经过根节点的</strong> 和 <strong>不经过根节点的</strong>。而暴力做法中，就是把每个点都当成一次根节点，在经过根节点的路径中找长度为 <span class="math inline">\(k\)</span> 的。</p>
-<p>一个显然的发现是，不经过根节点的路径肯定在根节点的一个子树中。把根节点删掉，剩下的几个子树就成为了几个规模更小的同样的问题，可以分治解决。时间复杂度为 <span class="math inline">\(O(mn\log n\times 层数)\)</span>。</p>
-<p>这个“层数“看起来很难受，如果随便取每次分治的根节点（也就是 <strong>分治中心</strong>）的话，层数可以达到 <span class="math inline">\(O(n)\)</span> 级别，那就优化了个寂寞。我们要想办法把层数减少。</p>
-<p>可以想到，每次 <strong>分出来的几个子问题的规模最大的要尽量小</strong>，才能使得时间减少。这让我们想到了<strong>重心</strong>。</p>
-<p>树的重心有一条性质，叫做 <strong>以树的重心为根时，所有子树的大小都不超过整棵树大小的一半</strong>。这条性质使得分治的层数变成了 <span class="math inline">\(O(\log n)\)</span> 级别，总的时间复杂度变成了 <span class="math inline">\(O(mn\log^2 n)\)</span>，足以通过这道题。</p>
-<h3 id="总结">总结</h3>
-<p>至此，我们已经了解了这道题中的点分治做法，可以归纳成下面几步：</p>
-<ol type="1">
-<li><p>找重心，作为根；</p></li>
-<li><p>树形 dp+ 双指针求解每个询问；</p></li>
-<li><p>递归求解每个子树。</p></li>
-</ol>
-<p>而点分治的大多数问题，只是把第 <span class="math inline">\(2\)</span> 步改一改，总体思路都是一样的。</p>
-<h3 id="例题代码点分治主体部分">例题代码（点分治主体部分）</h3>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">fndroot</span><span class="params">(<span class="type">int</span> x,<span class="type">int</span> la)</span><span class="comment">//找根</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    siz[x] = <span class="number">1</span>;</span><br><span class="line">    maxsiz[x] = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = head[x];i;i = nxt[i])</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">int</span> u = to[i];</span><br><span class="line">        <span class="keyword">if</span> (u == la || vis[u]) <span class="keyword">continue</span>;</span><br><span class="line">        <span class="built_in">fndroot</span>(u,x);</span><br><span class="line">        siz[x] += siz[u];</span><br><span class="line">        maxsiz[x] = <span class="built_in">max</span>(maxsiz[x],siz[u]);</span><br><span class="line">    &#125;</span><br><span class="line">    maxsiz[x] = <span class="built_in">max</span>(maxsiz[x],nsiz - siz[x]);</span><br><span class="line">    <span class="keyword">if</span> (maxsiz[x] &lt; maxsiz[root]) root = x;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">caldis</span><span class="params">(<span class="type">int</span> x,<span class="type">int</span> la,<span class="type">int</span> topx)</span><span class="comment">//树形 dp</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = head[x];i;i = nxt[i])</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">int</span> u = to[i];</span><br><span class="line">        <span class="keyword">if</span> (u == la || vis[u]) <span class="keyword">continue</span>;</span><br><span class="line">        dis[u] = dis[x] + val[i];</span><br><span class="line">        v.<span class="built_in">push_back</span>(<span class="built_in">make_pair</span>(dis[u],topx));</span><br><span class="line">        <span class="built_in">caldis</span>(u,x,topx);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">cal</span><span class="params">(<span class="type">int</span> x)</span><span class="comment">//双指针</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    v.<span class="built_in">clear</span>();</span><br><span class="line">    v.<span class="built_in">push_back</span>(<span class="built_in">make_pair</span>(<span class="number">0</span>,x));</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = head[x];i;i = nxt[i])</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">int</span> u = to[i];</span><br><span class="line">        <span class="keyword">if</span> (vis[u]) <span class="keyword">continue</span>;</span><br><span class="line">        dis[u] = val[i];</span><br><span class="line">        v.<span class="built_in">push_back</span>(<span class="built_in">make_pair</span>(dis[u],u));</span><br><span class="line">        <span class="built_in">caldis</span>(u,x,u);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">sort</span>(v.<span class="built_in">begin</span>(),v.<span class="built_in">end</span>());</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>;i &lt;= m;i ++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (ans[i]) <span class="keyword">continue</span>;</span><br><span class="line">        <span class="type">int</span> l = <span class="number">0</span>,r = v.<span class="built_in">size</span>() - <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">while</span> (l &lt; r)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (v[l].first + v[r].first &lt; que[i]) l ++;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (v[l].first + v[r].first &gt; que[i]) r --;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span> (v[l].second == v[r].second)</span><br><span class="line">                &#123;    </span><br><span class="line">                    <span class="keyword">if</span> (v[r].first == v[r - <span class="number">1</span>].first) r --;</span><br><span class="line">                    <span class="keyword">else</span> l ++;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span></span><br><span class="line">                &#123;</span><br><span class="line">                    ans[i] = <span class="number">1</span>;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">dfs</span><span class="params">(<span class="type">int</span> x)</span><span class="comment">//点分治主体</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    vis[x] = <span class="number">1</span>;</span><br><span class="line">    <span class="built_in">cal</span>(x);</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = head[x];i;i = nxt[i])</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">int</span> u = to[i];</span><br><span class="line">        <span class="keyword">if</span> (vis[u]) <span class="keyword">continue</span>;</span><br><span class="line">        nsiz = siz[u];</span><br><span class="line">        root = <span class="number">0</span>;</span><br><span class="line">        <span class="built_in">fndroot</span>(u,x);</span><br><span class="line">        <span class="built_in">dfs</span>(root);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="另关于找重心">另：关于找重心</h3>
-<p><a href="https://liu-cheng-ao.blog.uoj.ac/blog/2969">一种基于错误的寻找重心方法的点分治的复杂度分析 - 博客 - liu_cheng_ao的博客</a></p>
-<h4 id="section"></h4>
-<h2 id="练习题目">练习题目</h2>
-<p><a href="https://www.luogu.com.cn/problem/P4178">Tree - 洛谷</a></p>
-<p><a href="https://www.luogu.com.cn/problem/P2634">[国家集训队]聪聪可可 - 洛谷</a></p>
-<p><a href="https://www.luogu.com.cn/problem/P4149">[IOI2011]Race - 洛谷</a></p>
-<p><a href="https://www.luogu.com.cn/problem/P2664">树上游戏 - 洛谷</a></p>
-<p><a href="https://www.luogu.com.cn/problem/P3714">[BJOI2017]树的难题 - 洛谷</a></p>
-<h1 id="点分树动态点分治">点分树（动态点分治）</h1>
-<p>在点分治中，我们依次作为分治中心的点根据访问顺序可以形成一棵树（就像 dfs 树那样），这棵树成为点分树。</p>
-<p>这颗树的节点与原树的节点相同，且深度为 <span class="math inline">\(O(\log n)\)</span>，所以许多点分树上的暴力做法的时间复杂度都是正确的。</p>
-<p>点分树有一个常用性质：点分树上两点的 LCA 一定在这两点在原树上的路径上。</p>
-<p>还有一个注意点：点分树上两点的关系（父子关系之类的）与原树上这两点的关系 <strong>并没有什么关系</strong>。</p>
-<h2 id="例题-1">例题</h2>
-<p><a href="https://www.luogu.com.cn/problem/P6329">【模板】点分树 | 震波 - 洛谷</a></p>
-<p>题面见链接。</p>
-<h3 id="做法">做法</h3>
-<p>想一想与点 <span class="math inline">\(x\)</span> 距离为 <span class="math inline">\(k\)</span> 的点有哪些。（以下都是在点分树上）</p>
-<p>这些点可能在 <span class="math inline">\(x\)</span> 的子树里，可能在 <span class="math inline">\(x\)</span> 的父亲的子树里但不在 <span class="math inline">\(x\)</span> 的子树里，可能在 <span class="math inline">\(x\)</span> 的父亲的父亲的子树里但不在 <span class="math inline">\(x\)</span> 的父亲的子树里……</p>
-<p>于是我们想到，可以用一个（<span class="math inline">\(n\)</span> 个？）数据结构存下每个点的子树的节点信息，比如距离 <span class="math inline">\(x\)</span> 为 <span class="math inline">\(k\)</span> 的点的价值和，询问的时候一层一层往父亲跳，同时更新答案就可以了。正好层数那么少，数据结构用动态开点线段树或者什么别的就行了。</p>
-<p>但是还有一个问题：跳到 <span class="math inline">\(x\)</span> 的父亲之后，怎么找 <span class="math inline">\(x\)</span> 的子树以外的距离 <span class="math inline">\(x\)</span> 为 <span class="math inline">\(k\)</span> 的点呢？</p>
-<p>显然，直接减掉 <span class="math inline">\(x\)</span> 的子树内的就好了。具体的说，用 <span class="math inline">\(dis(x,y)\)</span> 表示点 <span class="math inline">\(x\)</span> 和 <span class="math inline">\(y\)</span> 的距离，要找的点的权值和就是 <span class="math inline">\(\sum \limits _{u \in fa(x) 的子树 \&amp; dis(x,u)=k} val(u) - \sum \limits _{u \in x 的子树 \&amp; dis(x,u)=k} val(u)\)</span>。</p>
-<p>根据上面提到的性质，这个式子可以变为：<span class="math inline">\(\sum \limits _{u \in fa(x) 的子树 \&amp; dis(fa(x),u)=k-dis(x,fa(x))} val(u)-\sum \limits _{u \in x 的子树 \&amp; dis(fa(x),u)=k-dis(x,fa(x))}val(u)\)</span>。</p>
-<p>左半部分可以继续用数据结构求出，而右半部分则需要多维护一个叫 <span class="math inline">\(dis(fa(x),u)\)</span> 的东西。根据上面的注意点，<span class="math inline">\(dis(fa(x),u) \neq dis(x,u)+dis(x,fa(x))\)</span>，所以我们必须多用一个数据结构维护这个东西。</p>
-<p>至于修改操作，直接一层一层往上跳修改就好了。</p>
-<p>时间复杂度为 <span class="math inline">\(O(n\log^2 n+m\log^2 n)\)</span>。</p>
-<h2 id="练习题">练习题</h2>
-<p><a href="https://www.luogu.com.cn/problem/P3241">[HNOI2015]开店 - 洛谷</a></p>
-<p><a href="https://www.luogu.com.cn/problem/P2056">[ZJOI2007] 捉迷藏 - 洛谷</a></p>
-<p><a href="https://www.luogu.com.cn/problem/SP2666">QTREE4 - Query on a tree IV - 洛谷</a> <a href="https://www.luogu.com.cn/problem/P4115">Qtree4 - 洛谷</a>（卡常题）</p>
-<p><a href="https://www.luogu.com.cn/problem/P3345">[ZJOI2015]幻想乡战略游戏 - 洛谷</a></p>
-<p><a href="https://www.luogu.com.cn/problem/P4565">[CTSC2018]暴力写挂 - 洛谷</a></p>
-]]></content>
-      <categories>
-        <category>OI</category>
-      </categories>
-      <tags>
-        <tag>笔记</tag>
-        <tag>图论</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>DP 优化</title>
     <url>/2022/02/19/DP%E4%BC%98%E5%8C%96/</url>
     <content><![CDATA[<p>upd on 20220405 修了炸了的图和 LaTeX</p>
@@ -603,6 +531,78 @@ w(i,j)=sumx[j]-sumx[(i+j)/2]-sumx[(i+j-1)/2] + sumx[i-1]\\
       <tags>
         <tag>笔记</tag>
         <tag>DP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>点分治 &amp; 点分树</title>
+    <url>/2023/05/01/%E7%82%B9%E5%88%86%E6%B2%BB%E5%92%8C%E7%82%B9%E5%88%86%E6%A0%91/</url>
+    <content><![CDATA[<h1 id="点分治树分治">点分治（树分治）</h1>
+<h2 id="点分治是什么">点分治是什么？</h2>
+<p>字面上理解，点分治就是“点”和“分治”。它的思路是把一个无根树树上问题拆分成若干个规模更小的无根树上问题和一个有根树（？）上问题。</p>
+<h2 id="例题">例题</h2>
+<p><a href="https://www.luogu.com.cn/problem/P3806">【模板】点分治1 - 洛谷</a></p>
+<p>给定一棵有 <span class="math inline">\(n\)</span> 个节点的树，<span class="math inline">\(m\)</span> 次询问树上距离为 <span class="math inline">\(k\)</span> 的点对是否存在。</p>
+<p><span class="math inline">\(1 \le n \le 10^4\)</span>，<span class="math inline">\(1 \leq m \le 100\)</span>，<span class="math inline">\(1 \le k \le 10^7\)</span>，边权 <span class="math inline">\(1 \le w \le 10^4\)</span>。</p>
+<h3 id="暴力做法">暴力做法</h3>
+<p>每次询问，考虑对于每一个点，用树形 dp 求出经过这个点（包括以这个点为端点）的路径中是否有长度为 <span class="math inline">\(k\)</span> 的，这个判断可以处理出深度后用双指针实现。时间复杂度 <span class="math inline">\(O(mn^2\log n)\)</span>，显然过不去。换根 dp 也因为 <span class="math inline">\(k\)</span> 太大，做不了。</p>
+<h3 id="点分治做法">点分治做法</h3>
+<p>考虑优化这个暴力，发现对于每个点都做一次树形 dp 很浪费时间。</p>
+<p>看一下一棵树上的路径有哪些？</p>
+<p>我们可以简单把树上的所有路径分为两类：<strong>经过根节点的</strong> 和 <strong>不经过根节点的</strong>。而暴力做法中，就是把每个点都当成一次根节点，在经过根节点的路径中找长度为 <span class="math inline">\(k\)</span> 的。</p>
+<p>一个显然的发现是，不经过根节点的路径肯定在根节点的一个子树中。把根节点删掉，剩下的几个子树就成为了几个规模更小的同样的问题，可以分治解决。时间复杂度为 <span class="math inline">\(O(mn\log n\times 层数)\)</span>。</p>
+<p>这个“层数“看起来很难受，如果随便取每次分治的根节点（也就是 <strong>分治中心</strong>）的话，层数可以达到 <span class="math inline">\(O(n)\)</span> 级别，那就优化了个寂寞。我们要想办法把层数减少。</p>
+<p>可以想到，每次 <strong>分出来的几个子问题的规模最大的要尽量小</strong>，才能使得时间减少。这让我们想到了<strong>重心</strong>。</p>
+<p>树的重心有一条性质，叫做 <strong>以树的重心为根时，所有子树的大小都不超过整棵树大小的一半</strong>。这条性质使得分治的层数变成了 <span class="math inline">\(O(\log n)\)</span> 级别，总的时间复杂度变成了 <span class="math inline">\(O(mn\log^2 n)\)</span>，足以通过这道题。</p>
+<h3 id="总结">总结</h3>
+<p>至此，我们已经了解了这道题中的点分治做法，可以归纳成下面几步：</p>
+<ol type="1">
+<li><p>找重心，作为根；</p></li>
+<li><p>树形 dp+ 双指针求解每个询问；</p></li>
+<li><p>递归求解每个子树。</p></li>
+</ol>
+<p>而点分治的大多数问题，只是把第 <span class="math inline">\(2\)</span> 步改一改，总体思路都是一样的。</p>
+<h3 id="例题代码点分治主体部分">例题代码（点分治主体部分）</h3>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">fndroot</span><span class="params">(<span class="type">int</span> x,<span class="type">int</span> la)</span><span class="comment">//找根</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    siz[x] = <span class="number">1</span>;</span><br><span class="line">    maxsiz[x] = <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = head[x];i;i = nxt[i])</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">int</span> u = to[i];</span><br><span class="line">        <span class="keyword">if</span> (u == la || vis[u]) <span class="keyword">continue</span>;</span><br><span class="line">        <span class="built_in">fndroot</span>(u,x);</span><br><span class="line">        siz[x] += siz[u];</span><br><span class="line">        maxsiz[x] = <span class="built_in">max</span>(maxsiz[x],siz[u]);</span><br><span class="line">    &#125;</span><br><span class="line">    maxsiz[x] = <span class="built_in">max</span>(maxsiz[x],nsiz - siz[x]);</span><br><span class="line">    <span class="keyword">if</span> (maxsiz[x] &lt; maxsiz[root]) root = x;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">caldis</span><span class="params">(<span class="type">int</span> x,<span class="type">int</span> la,<span class="type">int</span> topx)</span><span class="comment">//树形 dp</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = head[x];i;i = nxt[i])</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">int</span> u = to[i];</span><br><span class="line">        <span class="keyword">if</span> (u == la || vis[u]) <span class="keyword">continue</span>;</span><br><span class="line">        dis[u] = dis[x] + val[i];</span><br><span class="line">        v.<span class="built_in">push_back</span>(<span class="built_in">make_pair</span>(dis[u],topx));</span><br><span class="line">        <span class="built_in">caldis</span>(u,x,topx);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">cal</span><span class="params">(<span class="type">int</span> x)</span><span class="comment">//双指针</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    v.<span class="built_in">clear</span>();</span><br><span class="line">    v.<span class="built_in">push_back</span>(<span class="built_in">make_pair</span>(<span class="number">0</span>,x));</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = head[x];i;i = nxt[i])</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">int</span> u = to[i];</span><br><span class="line">        <span class="keyword">if</span> (vis[u]) <span class="keyword">continue</span>;</span><br><span class="line">        dis[u] = val[i];</span><br><span class="line">        v.<span class="built_in">push_back</span>(<span class="built_in">make_pair</span>(dis[u],u));</span><br><span class="line">        <span class="built_in">caldis</span>(u,x,u);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">sort</span>(v.<span class="built_in">begin</span>(),v.<span class="built_in">end</span>());</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>;i &lt;= m;i ++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (ans[i]) <span class="keyword">continue</span>;</span><br><span class="line">        <span class="type">int</span> l = <span class="number">0</span>,r = v.<span class="built_in">size</span>() - <span class="number">1</span>;</span><br><span class="line">        <span class="keyword">while</span> (l &lt; r)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (v[l].first + v[r].first &lt; que[i]) l ++;</span><br><span class="line">            <span class="keyword">else</span> <span class="keyword">if</span> (v[l].first + v[r].first &gt; que[i]) r --;</span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">            &#123;</span><br><span class="line">                <span class="keyword">if</span> (v[l].second == v[r].second)</span><br><span class="line">                &#123;    </span><br><span class="line">                    <span class="keyword">if</span> (v[r].first == v[r - <span class="number">1</span>].first) r --;</span><br><span class="line">                    <span class="keyword">else</span> l ++;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="keyword">else</span></span><br><span class="line">                &#123;</span><br><span class="line">                    ans[i] = <span class="number">1</span>;</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">dfs</span><span class="params">(<span class="type">int</span> x)</span><span class="comment">//点分治主体</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    vis[x] = <span class="number">1</span>;</span><br><span class="line">    <span class="built_in">cal</span>(x);</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = head[x];i;i = nxt[i])</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">int</span> u = to[i];</span><br><span class="line">        <span class="keyword">if</span> (vis[u]) <span class="keyword">continue</span>;</span><br><span class="line">        nsiz = siz[u];</span><br><span class="line">        root = <span class="number">0</span>;</span><br><span class="line">        <span class="built_in">fndroot</span>(u,x);</span><br><span class="line">        <span class="built_in">dfs</span>(root);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="另关于找重心">另：关于找重心</h3>
+<p><a href="https://liu-cheng-ao.blog.uoj.ac/blog/2969">一种基于错误的寻找重心方法的点分治的复杂度分析 - 博客 - liu_cheng_ao的博客</a></p>
+<h4 id="section"></h4>
+<h2 id="练习题目">练习题目</h2>
+<p><a href="https://www.luogu.com.cn/problem/P4178">Tree - 洛谷</a></p>
+<p><a href="https://www.luogu.com.cn/problem/P2634">[国家集训队]聪聪可可 - 洛谷</a></p>
+<p><a href="https://www.luogu.com.cn/problem/P4149">[IOI2011]Race - 洛谷</a></p>
+<p><a href="https://www.luogu.com.cn/problem/P2664">树上游戏 - 洛谷</a></p>
+<p><a href="https://www.luogu.com.cn/problem/P3714">[BJOI2017]树的难题 - 洛谷</a></p>
+<h1 id="点分树动态点分治">点分树（动态点分治）</h1>
+<p>在点分治中，我们依次作为分治中心的点根据访问顺序可以形成一棵树（就像 dfs 树那样），这棵树成为点分树。</p>
+<p>这颗树的节点与原树的节点相同，且深度为 <span class="math inline">\(O(\log n)\)</span>，所以许多点分树上的暴力做法的时间复杂度都是正确的。</p>
+<p>点分树有一个常用性质：点分树上两点的 LCA 一定在这两点在原树上的路径上。</p>
+<p>还有一个注意点：点分树上两点的关系（父子关系之类的）与原树上这两点的关系 <strong>并没有什么关系</strong>。</p>
+<h2 id="例题-1">例题</h2>
+<p><a href="https://www.luogu.com.cn/problem/P6329">【模板】点分树 | 震波 - 洛谷</a></p>
+<p>题面见链接。</p>
+<h3 id="做法">做法</h3>
+<p>想一想与点 <span class="math inline">\(x\)</span> 距离为 <span class="math inline">\(k\)</span> 的点有哪些。（以下都是在点分树上）</p>
+<p>这些点可能在 <span class="math inline">\(x\)</span> 的子树里，可能在 <span class="math inline">\(x\)</span> 的父亲的子树里但不在 <span class="math inline">\(x\)</span> 的子树里，可能在 <span class="math inline">\(x\)</span> 的父亲的父亲的子树里但不在 <span class="math inline">\(x\)</span> 的父亲的子树里……</p>
+<p>于是我们想到，可以用一个（<span class="math inline">\(n\)</span> 个？）数据结构存下每个点的子树的节点信息，比如距离 <span class="math inline">\(x\)</span> 为 <span class="math inline">\(k\)</span> 的点的价值和，询问的时候一层一层往父亲跳，同时更新答案就可以了。正好层数那么少，数据结构用动态开点线段树或者什么别的就行了。</p>
+<p>但是还有一个问题：跳到 <span class="math inline">\(x\)</span> 的父亲之后，怎么找 <span class="math inline">\(x\)</span> 的子树以外的距离 <span class="math inline">\(x\)</span> 为 <span class="math inline">\(k\)</span> 的点呢？</p>
+<p>显然，直接减掉 <span class="math inline">\(x\)</span> 的子树内的就好了。具体的说，用 <span class="math inline">\(dis(x,y)\)</span> 表示点 <span class="math inline">\(x\)</span> 和 <span class="math inline">\(y\)</span> 的距离，要找的点的权值和就是 <span class="math inline">\(\sum \limits _{u \in fa(x) 的子树 \&amp; dis(x,u)=k} val(u) - \sum \limits _{u \in x 的子树 \&amp; dis(x,u)=k} val(u)\)</span>。</p>
+<p>根据上面提到的性质，这个式子可以变为：<span class="math inline">\(\sum \limits _{u \in fa(x) 的子树 \&amp; dis(fa(x),u)=k-dis(x,fa(x))} val(u)-\sum \limits _{u \in x 的子树 \&amp; dis(fa(x),u)=k-dis(x,fa(x))}val(u)\)</span>。</p>
+<p>左半部分可以继续用数据结构求出，而右半部分则需要多维护一个叫 <span class="math inline">\(dis(fa(x),u)\)</span> 的东西。根据上面的注意点，<span class="math inline">\(dis(fa(x),u) \neq dis(x,u)+dis(x,fa(x))\)</span>，所以我们必须多用一个数据结构维护这个东西。</p>
+<p>至于修改操作，直接一层一层往上跳修改就好了。</p>
+<p>时间复杂度为 <span class="math inline">\(O(n\log^2 n+m\log^2 n)\)</span>。</p>
+<h2 id="练习题">练习题</h2>
+<p><a href="https://www.luogu.com.cn/problem/P3241">[HNOI2015]开店 - 洛谷</a></p>
+<p><a href="https://www.luogu.com.cn/problem/P2056">[ZJOI2007] 捉迷藏 - 洛谷</a></p>
+<p><a href="https://www.luogu.com.cn/problem/SP2666">QTREE4 - Query on a tree IV - 洛谷</a> <a href="https://www.luogu.com.cn/problem/P4115">Qtree4 - 洛谷</a>（卡常题）</p>
+<p><a href="https://www.luogu.com.cn/problem/P3345">[ZJOI2015]幻想乡战略游戏 - 洛谷</a></p>
+<p><a href="https://www.luogu.com.cn/problem/P4565">[CTSC2018]暴力写挂 - 洛谷</a></p>
+]]></content>
+      <categories>
+        <category>OI</category>
+      </categories>
+      <tags>
+        <tag>笔记</tag>
+        <tag>图论</tag>
       </tags>
   </entry>
   <entry>
