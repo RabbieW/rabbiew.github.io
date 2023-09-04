@@ -199,93 +199,6 @@ g(i,1) &amp;= g(i,2) = 0 &amp; &amp;out(i) = 0
       </tags>
   </entry>
   <entry>
-    <title>SA 的 基础 知识</title>
-    <url>/2022/08/06/SA/</url>
-    <content><![CDATA[<h1 id="sa-的-基础-知识">SA 的 基础 知识</h1>
-<p><del>你问我为什么是基础？因为我还没有学会更难的</del></p>
-<h2 id="后缀数组">后缀数组</h2>
-<h3 id="后缀数组sa是什么">后缀数组（SA）是什么？</h3>
-<p>主要指两个数组：<span class="math inline">\(sa\)</span> 和 <span class="math inline">\(rk\)</span>。</p>
-<p><span class="math inline">\(sa\)</span> 存储的是<strong>后缀是什么</strong>，<span class="math inline">\(rk\)</span>​ 存储的是<strong>排名是多少</strong>。</p>
-<p><span class="math inline">\(sa[i]\)</span> 代表将所有后缀排序后，排名为 <span class="math inline">\(i\)</span> 的后缀；<span class="math inline">\(rk[i]\)</span> 表示从第 <span class="math inline">\(i\)</span> 个字符开始的后缀的排名。</p>
-<p>显然，有性质 <span class="math inline">\(sa[rk[i]]=rk[sa[i]]=i\)</span>。​</p>
-<p>知道这两个数组中的一个可以 <span class="math inline">\(O(n)\)</span>​ 求出另一个。</p>
-<p>下面用 <span class="math inline">\(Sa(i)\)</span>​ 表示从第 <span class="math inline">\(i\)</span>​ 个字符开始的后缀，<span class="math inline">\(Str(i,j)\)</span>​ 表示从第 <span class="math inline">\(i\)</span>​ 个字符开始，长度为 <span class="math inline">\(j\)</span>​​ 的字符串。</p>
-<h3 id="维护方法">维护方法</h3>
-<p><strong>算法一</strong>：暴力求出每一个后缀，存进一个数组里，<code>sort</code> 排序。由于比较两个字符串的大小是 <span class="math inline">\(O(n)\)</span>​ 的，所以时间复杂度为 <span class="math inline">\(O(n^2 \log n)\)</span>​​​​。</p>
-<p><strong>算法二</strong>：</p>
-<p>运用倍增的思想，用 <span class="math inline">\(rk_{len}[i]\)</span> 表示的 <span class="math inline">\(Str(i,2 ^{len})\)</span>​排名，</p>
-<p>可以用 <span class="math inline">\(rk _{len-1}\)</span> 推出 <span class="math inline">\(rk _{len}\)</span>。</p>
-<p>显然，<span class="math inline">\(Str(i,2 ^{len})\)</span>​​​​ 是由 <span class="math inline">\(Str(i,2 ^{len-1})\)</span>​​​​ 和 <span class="math inline">\(Str(i + 2 ^{len - 1},2 ^{len - 1})\)</span>​​​​​ 两个字符串组成的。</p>
-<p>根据字符串大小比较的规则，两个长度为 <span class="math inline">\(len\)</span>​ 的字符串的大小为以 <span class="math inline">\(Str(i,2 ^{len - 1})\)</span> 为第一关键字，以 <span class="math inline">\(Str(j,2 ^{len - 1})\)</span> 为第二关键字比较的结果。</p>
-<p>因此，按照上述比较规则，将上一次求出的结果进行排序即可得出这一次的结果。</p>
-<p>注意，排序后要进行去重，因为两个一样的字符串排名是相等的。</p>
-<p>时间复杂度 <span class="math inline">\(O(n \log^2 n)\)</span>。</p>
-<p>倍增排序示意图（from OI-Wiki）：</p>
-<p><img src="https://oi-wiki.org/string/images/sa2.png" /></p>
-<p><strong>算法三</strong>：可以用<a href="https://oi-wiki.org/basic/radix-sort/">基数排序</a>将算法二优化至 <span class="math inline">\(O(n \log n)\)</span>。</p>
-<p>代码：</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;cstdio&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;cstring&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="type">char</span> s[<span class="number">1000010</span>];</span><br><span class="line"><span class="type">int</span> n,m;</span><br><span class="line"><span class="type">int</span> cnt[<span class="number">2000010</span>];</span><br><span class="line"><span class="type">int</span> rk[<span class="number">2000010</span>],sa[<span class="number">1000010</span>],num[<span class="number">1000010</span>],tmp[<span class="number">2000010</span>];</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%s&quot;</span>,s + <span class="number">1</span>);</span><br><span class="line">    n = <span class="built_in">strlen</span>(s + <span class="number">1</span>);</span><br><span class="line">    m = <span class="built_in">max</span>(n,<span class="number">250</span>);</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>;i &lt;= n;i ++) cnt[s[i]] ++,rk[i] = s[i];</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>;i &lt;= m;i ++) cnt[i] += cnt[i - <span class="number">1</span>];</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = n;i &gt;= <span class="number">1</span>;i --) sa[cnt[rk[i]] --] = i;<span class="comment">// 对每个后缀的第一位计数排序</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> len = <span class="number">1</span>;len &lt;= n;len &lt;&lt;= <span class="number">1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">memset</span>(cnt,<span class="number">0</span>,<span class="built_in">sizeof</span>(cnt));</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>;i &lt;= n;i ++) num[i] = sa[i];</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>;i &lt;= n;i ++) cnt[rk[num[i] + len]] ++;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>;i &lt;= m;i ++) cnt[i] += cnt[i - <span class="number">1</span>];</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = n;i &gt;= <span class="number">1</span>;i --) sa[cnt[rk[num[i] + len]] --] = num[i];<span class="comment">// 对第二关键字计数排序</span></span><br><span class="line">        <span class="built_in">memset</span>(cnt,<span class="number">0</span>,<span class="built_in">sizeof</span>(cnt));</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>;i &lt;= n;i ++) num[i] = sa[i];</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>;i &lt;= n;i ++) cnt[rk[num[i]]] ++;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>;i &lt;= m;i ++) cnt[i] += cnt[i - <span class="number">1</span>];</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = n;i &gt;= <span class="number">1</span>;i --) sa[cnt[rk[num[i]]] --] = num[i];<span class="comment">// 对第一关键字计数排序</span></span><br><span class="line">        <span class="type">int</span> no = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>;i &lt;= n;i ++) tmp[i] = rk[i];</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>;i &lt;= n;i ++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (tmp[sa[i]] == tmp[sa[i - <span class="number">1</span>]] &amp;&amp; tmp[sa[i] + len] == tmp[sa[i - <span class="number">1</span>] + len])</span><br><span class="line">                rk[sa[i]] = no;</span><br><span class="line">            <span class="keyword">else</span> no ++,rk[sa[i]] = no;</span><br><span class="line">            <span class="comment">// 计算每个字符串的排名</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>;i &lt;= n;i ++) <span class="built_in">printf</span>(<span class="string">&quot;%d &quot;</span>,sa[i]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p><strong>算法四</strong>：有时间复杂度 <span class="math inline">\(O(n)\)</span>​​ 的算法​，但是一般来说算法三够用<del>但是我不会</del></p>
-<p>模板：<a href="https://loj.ac/p/111">LOJ #111 后缀排序</a> （Luogu P3809）</p>
-<p>代码：</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;cstdio&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;cstring&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="type">char</span> s[<span class="number">1000010</span>];</span><br><span class="line"><span class="type">int</span> n,m;</span><br><span class="line"><span class="type">int</span> cnt[<span class="number">2000010</span>];</span><br><span class="line"><span class="type">int</span> rk[<span class="number">2000010</span>],sa[<span class="number">1000010</span>],num[<span class="number">1000010</span>],tmp[<span class="number">2000010</span>],rn[<span class="number">2000010</span>];</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%s&quot;</span>,s + <span class="number">1</span>);</span><br><span class="line">    n = <span class="built_in">strlen</span>(s + <span class="number">1</span>);</span><br><span class="line">    m = <span class="built_in">max</span>(n,<span class="number">250</span>);</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>;i &lt;= n;i ++) cnt[s[i]] ++,rk[i] = s[i];</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>;i &lt;= m;i ++) cnt[i] += cnt[i - <span class="number">1</span>];</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = n;i &gt;= <span class="number">1</span>;i --) sa[cnt[rk[i]] --] = i;<span class="comment">// 对每个后缀的第一位计数排序</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> len = <span class="number">1</span>;len &lt; n;len &lt;&lt;= <span class="number">1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">int</span> no = <span class="number">0</span>;</span><br><span class="line">        <span class="comment">// num[no] 表示按第二关键字排好序后，第 no 位对应的第一关键字 x 的 sa[x] 是什么</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = n;i &gt;= n - len + <span class="number">1</span>;i --) no ++,num[no] = i;</span><br><span class="line">        <span class="comment">// 后缀长度不满 len，就直接把这个后缀扔到前面去（第二关键字为 0）</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>;i &lt;= n;i ++) <span class="keyword">if</span> (sa[i] &gt; len) no ++,num[no] = sa[i] - len;</span><br><span class="line">        <span class="comment">// 剩下的按第二关键字的顺序把第一关键字排好</span></span><br><span class="line">        <span class="built_in">memset</span>(cnt,<span class="number">0</span>,<span class="built_in">sizeof</span>(cnt));</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>;i &lt;= n;i ++) rn[i] = rk[num[i]],cnt[rn[i]] ++;<span class="comment">// 记录 rk[num[i]]，减少不连续访问</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>;i &lt;= m;i ++) cnt[i] += cnt[i - <span class="number">1</span>];</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = n;i &gt;= <span class="number">1</span>;i --) sa[cnt[rn[i]] --] = num[i];<span class="comment">// 对第一关键字计数排序</span></span><br><span class="line">        no = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>;i &lt;= n;i ++) tmp[i] = rk[i];</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>;i &lt;= n;i ++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (tmp[sa[i]] == tmp[sa[i - <span class="number">1</span>]] &amp;&amp; tmp[sa[i] + len] == tmp[sa[i - <span class="number">1</span>] + len])</span><br><span class="line">                rk[sa[i]] = no;</span><br><span class="line">            <span class="keyword">else</span> no ++,rk[sa[i]] = no;</span><br><span class="line">            <span class="comment">// 处理 rk</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (no == n) <span class="keyword">break</span>;<span class="comment">// 如果每个后缀的排名都不一样了，意味着排好了（这之后每个后缀的排名都不会变）</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>;i &lt;= n;i ++) <span class="built_in">printf</span>(<span class="string">&quot;%d &quot;</span>,sa[i]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h3 id="例题">例题</h3>
-<h4 id="字符串匹配">字符串匹配</h4>
-<p>即在主串 <span class="math inline">\(T\)</span> 中寻找模式串 <span class="math inline">\(S\)</span>​。</p>
-<p><strong>解法</strong>：</p>
-<p>若 <span class="math inline">\(S\)</span> 在 <span class="math inline">\(T\)</span> 中出现，那么它一定是一些后缀的前缀。</p>
-<p>由于已经将后缀通过后缀数组有序化，那么前缀为 <span class="math inline">\(S\)</span> 的后缀一定是连续的，直接二分查找即可。时间复杂度 <span class="math inline">\(O(n \log n + \log n)\)</span>，可以求出 <span class="math inline">\(S\)</span> 的每个出现位置。</p>
-<hr />
-<h4 id="luogu-p4051-jsoi字符加密"><a href="https://www.luogu.com.cn/problem/P4051">Luogu P4051 [JSOI]字符加密</a></h4>
-<p>喜欢钻研问题的JS 同学，最近又迷上了对加密方法的思考。一天，他突然想出了一种他认为是终极的加密办法：把需要加密的信息排成一圈，显然，它们有很多种不同的读法。</p>
-<p>例如‘JSOI07’，可以读作： JSOI07 SOI07J OI07JS I07JSO 07JSOI 7JSOI0 把它们按照字符串的大小排序： 07JSOI 7JSOI0 I07JSO JSOI07 OI07JS SOI07J 读出最后一列字符：I0O7SJ，就是加密后的字符串。给定一个字符串 <span class="math inline">\(S\)</span>，求加密后的字符串。</p>
-<p>对于 <span class="math inline">\(40 \%\)</span> 的数据，<span class="math inline">\(\left| s \right| \leq 10000\)</span>；</p>
-<p>对于所有数据，<span class="math inline">\(\left| s \right| \leq 10^5\)</span>。</p>
-<p><strong>解法</strong>：</p>
-<p>将字符串复制一遍到后面，就变成了普通的后缀排序问题。</p>
-<hr />
-<h4 id="luogu-p2870-usaco07decbest-cow-line-g"><a href="https://www.luogu.com.cn/problem/P2870">Luogu P2870 [USACO07DEC]Best Cow Line G</a></h4>
-<p>给你一个字符串，每次从首或尾取一个字符组成字符串，问所有能够组成的字符串中字典序最小的一个。</p>
-<p><span class="math inline">\(1 \leq N \leq 5\times 10^5\)</span>。</p>
-<p><strong>解法</strong>：</p>
-<p>考虑暴力做法，每次从头选还是从尾选只需要判断原串小还是反串小，选小的那个更优，<span class="math inline">\(O(n)\)</span> 判断，总时间复杂度 <span class="math inline">\(O(n^2)\)</span>。</p>
-<p>考虑优化判断过程。</p>
-<h3 id="height-数组"><span class="math inline">\(height\)</span> 数组</h3>
-<h4 id="lcp"><span class="math inline">\(lcp\)</span></h4>
-<p><span class="math inline">\(lcp(i,j)\)</span> 表示字符串 <span class="math inline">\(i\)</span> 和 <span class="math inline">\(j\)</span>​ 的最长公共前缀。</p>
-<p>下文中用 <span class="math inline">\(lcp(i,j)\)</span> 表示它们的最长公共前缀长度。</p>
-<h4 id="定义">定义</h4>
-<p><span class="math inline">\(height_i\)</span> 表示 <span class="math inline">\(lcp(sa[i - 1],sa[i])\)</span>。</p>
-<h4 id="求-height-数组">求 <span class="math inline">\(height\)</span> 数组</h4>
-<p>有一个定理：<span class="math inline">\(height_{rk[i]} \geq height_{rk[i - 1]} - 1\)</span>。</p>
-<p>证明：</p>
-<p>定义 <span class="math inline">\(Suffix(x)\)</span> 为排名为 <span class="math inline">\(x\)</span> 的后缀，<span class="math inline">\(S(x)\)</span> 表示以第 <span class="math inline">\(x\)</span> 个字符开头的后缀。</p>
-<p>设已知 <span class="math inline">\(height_{rk[i - 1]}\)</span>。</p>
-<p>若 <span class="math inline">\(height_{rk[i - 1]} \leq 1\)</span>，上式成立；</p>
-<p>若 <span class="math inline">\(height_{rk[i - 1]} &gt; 1\)</span>：</p>
-<p>设 <span class="math inline">\(Suffix(rk[i - 1])\)</span> 为 <code>aAC</code>，<span class="math inline">\(Suffix(rk[i - 1] - 1)\)</span> 为 <code>aAB</code>，且 <span class="math inline">\(lcp(B,C) = 0\)</span>，<span class="math inline">\(B &lt; C\)</span>，则 <span class="math inline">\(height_{rk[i - 1]} = 1+|A|\)</span>。</p>
-<p>而 <span class="math inline">\(S(i)\)</span> 为 <code>AC</code>，<span class="math inline">\(S(sa[rk[i - 1] - 1] + 1)\)</span> 即 <span class="math inline">\(Suffix(rk[i - 1] - 1)\)</span> 在原串中的后一个后缀为 <code>AB</code>，</p>
-<p>所以 <span class="math inline">\(S(sa[rk[i - 1] - 1] + 1)\)</span> 肯定在 <span class="math inline">\(S(i)\)</span> 前面。</p>
-<p>所以 <span class="math inline">\(lcp(s(i),s(sa[rk[i] - 1])) \geq |A| = height_{rk[i - 1]} - 1\)</span>，即它们的最大公共前缀有一个前缀为 <code>A</code>。</p>
-<h4 id="height-数组求-lcp"><span class="math inline">\(height\)</span> 数组求 <span class="math inline">\(lcp\)</span></h4>
-<p>有一个定理：<span class="math inline">\(lcp(sa_i,sa_j) = \min \limits _{k=i + 1} ^j \{ height_k \}\)</span>。</p>
-<p>证明：感性理解一下，由于后缀已经排好了序，两个后缀的排名差越大，<span class="math inline">\(lcp\)</span> 就越小，</p>
-<p><span class="math inline">\(lcp(sa_{i},sa_{i+2}) = \min \{ height_{i + 1},height_{i + 2} \}\)</span>。</p>
-<hr />
-<p>有了这个定理，两个<strong>子串</strong>求 <span class="math inline">\(lcp\)</span> 就变成了区间求最小值（RMQ）问题。通常用 ST 表解决，或者观察题目性质，或者其他数据结构。</p>
-<p><span class="math inline">\(lcp(Str(l_1,r_1),Str(l_2,r_2)) = \min \{ lcp(S(l_1),S(l_2)), (r_1 - l_1 + 1),(r_2 - l_2 + 1) \}\)</span>。</p>
-<p>https://oi-wiki.org/string/sa/</p>
-]]></content>
-      <categories>
-        <category>OI</category>
-      </categories>
-      <tags>
-        <tag>字符串</tag>
-        <tag>笔记</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>DP 优化</title>
     <url>/2022/02/19/DP%E4%BC%98%E5%8C%96/</url>
     <content><![CDATA[<p>upd on 20220405 修了炸了的图和 LaTeX</p>
@@ -531,6 +444,93 @@ w(i,j)=sumx[j]-sumx[(i+j)/2]-sumx[(i+j-1)/2] + sumx[i-1]\\
       <tags>
         <tag>笔记</tag>
         <tag>DP</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>SA 的 基础 知识</title>
+    <url>/2022/08/06/SA/</url>
+    <content><![CDATA[<h1 id="sa-的-基础-知识">SA 的 基础 知识</h1>
+<p><del>你问我为什么是基础？因为我还没有学会更难的</del></p>
+<h2 id="后缀数组">后缀数组</h2>
+<h3 id="后缀数组sa是什么">后缀数组（SA）是什么？</h3>
+<p>主要指两个数组：<span class="math inline">\(sa\)</span> 和 <span class="math inline">\(rk\)</span>。</p>
+<p><span class="math inline">\(sa\)</span> 存储的是<strong>后缀是什么</strong>，<span class="math inline">\(rk\)</span>​ 存储的是<strong>排名是多少</strong>。</p>
+<p><span class="math inline">\(sa[i]\)</span> 代表将所有后缀排序后，排名为 <span class="math inline">\(i\)</span> 的后缀；<span class="math inline">\(rk[i]\)</span> 表示从第 <span class="math inline">\(i\)</span> 个字符开始的后缀的排名。</p>
+<p>显然，有性质 <span class="math inline">\(sa[rk[i]]=rk[sa[i]]=i\)</span>。​</p>
+<p>知道这两个数组中的一个可以 <span class="math inline">\(O(n)\)</span>​ 求出另一个。</p>
+<p>下面用 <span class="math inline">\(Sa(i)\)</span>​ 表示从第 <span class="math inline">\(i\)</span>​ 个字符开始的后缀，<span class="math inline">\(Str(i,j)\)</span>​ 表示从第 <span class="math inline">\(i\)</span>​ 个字符开始，长度为 <span class="math inline">\(j\)</span>​​ 的字符串。</p>
+<h3 id="维护方法">维护方法</h3>
+<p><strong>算法一</strong>：暴力求出每一个后缀，存进一个数组里，<code>sort</code> 排序。由于比较两个字符串的大小是 <span class="math inline">\(O(n)\)</span>​ 的，所以时间复杂度为 <span class="math inline">\(O(n^2 \log n)\)</span>​​​​。</p>
+<p><strong>算法二</strong>：</p>
+<p>运用倍增的思想，用 <span class="math inline">\(rk_{len}[i]\)</span> 表示的 <span class="math inline">\(Str(i,2 ^{len})\)</span>​排名，</p>
+<p>可以用 <span class="math inline">\(rk _{len-1}\)</span> 推出 <span class="math inline">\(rk _{len}\)</span>。</p>
+<p>显然，<span class="math inline">\(Str(i,2 ^{len})\)</span>​​​​ 是由 <span class="math inline">\(Str(i,2 ^{len-1})\)</span>​​​​ 和 <span class="math inline">\(Str(i + 2 ^{len - 1},2 ^{len - 1})\)</span>​​​​​ 两个字符串组成的。</p>
+<p>根据字符串大小比较的规则，两个长度为 <span class="math inline">\(len\)</span>​ 的字符串的大小为以 <span class="math inline">\(Str(i,2 ^{len - 1})\)</span> 为第一关键字，以 <span class="math inline">\(Str(j,2 ^{len - 1})\)</span> 为第二关键字比较的结果。</p>
+<p>因此，按照上述比较规则，将上一次求出的结果进行排序即可得出这一次的结果。</p>
+<p>注意，排序后要进行去重，因为两个一样的字符串排名是相等的。</p>
+<p>时间复杂度 <span class="math inline">\(O(n \log^2 n)\)</span>。</p>
+<p>倍增排序示意图（from OI-Wiki）：</p>
+<p><img src="https://oi-wiki.org/string/images/sa2.png" /></p>
+<p><strong>算法三</strong>：可以用<a href="https://oi-wiki.org/basic/radix-sort/">基数排序</a>将算法二优化至 <span class="math inline">\(O(n \log n)\)</span>。</p>
+<p>代码：</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;cstdio&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;cstring&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="type">char</span> s[<span class="number">1000010</span>];</span><br><span class="line"><span class="type">int</span> n,m;</span><br><span class="line"><span class="type">int</span> cnt[<span class="number">2000010</span>];</span><br><span class="line"><span class="type">int</span> rk[<span class="number">2000010</span>],sa[<span class="number">1000010</span>],num[<span class="number">1000010</span>],tmp[<span class="number">2000010</span>];</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%s&quot;</span>,s + <span class="number">1</span>);</span><br><span class="line">    n = <span class="built_in">strlen</span>(s + <span class="number">1</span>);</span><br><span class="line">    m = <span class="built_in">max</span>(n,<span class="number">250</span>);</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>;i &lt;= n;i ++) cnt[s[i]] ++,rk[i] = s[i];</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>;i &lt;= m;i ++) cnt[i] += cnt[i - <span class="number">1</span>];</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = n;i &gt;= <span class="number">1</span>;i --) sa[cnt[rk[i]] --] = i;<span class="comment">// 对每个后缀的第一位计数排序</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> len = <span class="number">1</span>;len &lt;= n;len &lt;&lt;= <span class="number">1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">memset</span>(cnt,<span class="number">0</span>,<span class="built_in">sizeof</span>(cnt));</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>;i &lt;= n;i ++) num[i] = sa[i];</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>;i &lt;= n;i ++) cnt[rk[num[i] + len]] ++;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>;i &lt;= m;i ++) cnt[i] += cnt[i - <span class="number">1</span>];</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = n;i &gt;= <span class="number">1</span>;i --) sa[cnt[rk[num[i] + len]] --] = num[i];<span class="comment">// 对第二关键字计数排序</span></span><br><span class="line">        <span class="built_in">memset</span>(cnt,<span class="number">0</span>,<span class="built_in">sizeof</span>(cnt));</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>;i &lt;= n;i ++) num[i] = sa[i];</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>;i &lt;= n;i ++) cnt[rk[num[i]]] ++;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>;i &lt;= m;i ++) cnt[i] += cnt[i - <span class="number">1</span>];</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = n;i &gt;= <span class="number">1</span>;i --) sa[cnt[rk[num[i]]] --] = num[i];<span class="comment">// 对第一关键字计数排序</span></span><br><span class="line">        <span class="type">int</span> no = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>;i &lt;= n;i ++) tmp[i] = rk[i];</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>;i &lt;= n;i ++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (tmp[sa[i]] == tmp[sa[i - <span class="number">1</span>]] &amp;&amp; tmp[sa[i] + len] == tmp[sa[i - <span class="number">1</span>] + len])</span><br><span class="line">                rk[sa[i]] = no;</span><br><span class="line">            <span class="keyword">else</span> no ++,rk[sa[i]] = no;</span><br><span class="line">            <span class="comment">// 计算每个字符串的排名</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>;i &lt;= n;i ++) <span class="built_in">printf</span>(<span class="string">&quot;%d &quot;</span>,sa[i]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>算法四</strong>：有时间复杂度 <span class="math inline">\(O(n)\)</span>​​ 的算法​，但是一般来说算法三够用<del>但是我不会</del></p>
+<p>模板：<a href="https://loj.ac/p/111">LOJ #111 后缀排序</a> （Luogu P3809）</p>
+<p>代码：</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;cstdio&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;cstring&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="type">char</span> s[<span class="number">1000010</span>];</span><br><span class="line"><span class="type">int</span> n,m;</span><br><span class="line"><span class="type">int</span> cnt[<span class="number">2000010</span>];</span><br><span class="line"><span class="type">int</span> rk[<span class="number">2000010</span>],sa[<span class="number">1000010</span>],num[<span class="number">1000010</span>],tmp[<span class="number">2000010</span>],rn[<span class="number">2000010</span>];</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%s&quot;</span>,s + <span class="number">1</span>);</span><br><span class="line">    n = <span class="built_in">strlen</span>(s + <span class="number">1</span>);</span><br><span class="line">    m = <span class="built_in">max</span>(n,<span class="number">250</span>);</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>;i &lt;= n;i ++) cnt[s[i]] ++,rk[i] = s[i];</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>;i &lt;= m;i ++) cnt[i] += cnt[i - <span class="number">1</span>];</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = n;i &gt;= <span class="number">1</span>;i --) sa[cnt[rk[i]] --] = i;<span class="comment">// 对每个后缀的第一位计数排序</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> len = <span class="number">1</span>;len &lt; n;len &lt;&lt;= <span class="number">1</span>)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">int</span> no = <span class="number">0</span>;</span><br><span class="line">        <span class="comment">// num[no] 表示按第二关键字排好序后，第 no 位对应的第一关键字 x 的 sa[x] 是什么</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = n;i &gt;= n - len + <span class="number">1</span>;i --) no ++,num[no] = i;</span><br><span class="line">        <span class="comment">// 后缀长度不满 len，就直接把这个后缀扔到前面去（第二关键字为 0）</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>;i &lt;= n;i ++) <span class="keyword">if</span> (sa[i] &gt; len) no ++,num[no] = sa[i] - len;</span><br><span class="line">        <span class="comment">// 剩下的按第二关键字的顺序把第一关键字排好</span></span><br><span class="line">        <span class="built_in">memset</span>(cnt,<span class="number">0</span>,<span class="built_in">sizeof</span>(cnt));</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>;i &lt;= n;i ++) rn[i] = rk[num[i]],cnt[rn[i]] ++;<span class="comment">// 记录 rk[num[i]]，减少不连续访问</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>;i &lt;= m;i ++) cnt[i] += cnt[i - <span class="number">1</span>];</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = n;i &gt;= <span class="number">1</span>;i --) sa[cnt[rn[i]] --] = num[i];<span class="comment">// 对第一关键字计数排序</span></span><br><span class="line">        no = <span class="number">0</span>;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>;i &lt;= n;i ++) tmp[i] = rk[i];</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>;i &lt;= n;i ++)</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">if</span> (tmp[sa[i]] == tmp[sa[i - <span class="number">1</span>]] &amp;&amp; tmp[sa[i] + len] == tmp[sa[i - <span class="number">1</span>] + len])</span><br><span class="line">                rk[sa[i]] = no;</span><br><span class="line">            <span class="keyword">else</span> no ++,rk[sa[i]] = no;</span><br><span class="line">            <span class="comment">// 处理 rk</span></span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (no == n) <span class="keyword">break</span>;<span class="comment">// 如果每个后缀的排名都不一样了，意味着排好了（这之后每个后缀的排名都不会变）</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>;i &lt;= n;i ++) <span class="built_in">printf</span>(<span class="string">&quot;%d &quot;</span>,sa[i]);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="例题">例题</h3>
+<h4 id="字符串匹配">字符串匹配</h4>
+<p>即在主串 <span class="math inline">\(T\)</span> 中寻找模式串 <span class="math inline">\(S\)</span>​。</p>
+<p><strong>解法</strong>：</p>
+<p>若 <span class="math inline">\(S\)</span> 在 <span class="math inline">\(T\)</span> 中出现，那么它一定是一些后缀的前缀。</p>
+<p>由于已经将后缀通过后缀数组有序化，那么前缀为 <span class="math inline">\(S\)</span> 的后缀一定是连续的，直接二分查找即可。时间复杂度 <span class="math inline">\(O(n \log n + \log n)\)</span>，可以求出 <span class="math inline">\(S\)</span> 的每个出现位置。</p>
+<hr />
+<h4 id="luogu-p4051-jsoi字符加密"><a href="https://www.luogu.com.cn/problem/P4051">Luogu P4051 [JSOI]字符加密</a></h4>
+<p>喜欢钻研问题的JS 同学，最近又迷上了对加密方法的思考。一天，他突然想出了一种他认为是终极的加密办法：把需要加密的信息排成一圈，显然，它们有很多种不同的读法。</p>
+<p>例如‘JSOI07’，可以读作： JSOI07 SOI07J OI07JS I07JSO 07JSOI 7JSOI0 把它们按照字符串的大小排序： 07JSOI 7JSOI0 I07JSO JSOI07 OI07JS SOI07J 读出最后一列字符：I0O7SJ，就是加密后的字符串。给定一个字符串 <span class="math inline">\(S\)</span>，求加密后的字符串。</p>
+<p>对于 <span class="math inline">\(40 \%\)</span> 的数据，<span class="math inline">\(\left| s \right| \leq 10000\)</span>；</p>
+<p>对于所有数据，<span class="math inline">\(\left| s \right| \leq 10^5\)</span>。</p>
+<p><strong>解法</strong>：</p>
+<p>将字符串复制一遍到后面，就变成了普通的后缀排序问题。</p>
+<hr />
+<h4 id="luogu-p2870-usaco07decbest-cow-line-g"><a href="https://www.luogu.com.cn/problem/P2870">Luogu P2870 [USACO07DEC]Best Cow Line G</a></h4>
+<p>给你一个字符串，每次从首或尾取一个字符组成字符串，问所有能够组成的字符串中字典序最小的一个。</p>
+<p><span class="math inline">\(1 \leq N \leq 5\times 10^5\)</span>。</p>
+<p><strong>解法</strong>：</p>
+<p>考虑暴力做法，每次从头选还是从尾选只需要判断原串小还是反串小，选小的那个更优，<span class="math inline">\(O(n)\)</span> 判断，总时间复杂度 <span class="math inline">\(O(n^2)\)</span>。</p>
+<p>考虑优化判断过程。</p>
+<h3 id="height-数组"><span class="math inline">\(height\)</span> 数组</h3>
+<h4 id="lcp"><span class="math inline">\(lcp\)</span></h4>
+<p><span class="math inline">\(lcp(i,j)\)</span> 表示字符串 <span class="math inline">\(i\)</span> 和 <span class="math inline">\(j\)</span>​ 的最长公共前缀。</p>
+<p>下文中用 <span class="math inline">\(lcp(i,j)\)</span> 表示它们的最长公共前缀长度。</p>
+<h4 id="定义">定义</h4>
+<p><span class="math inline">\(height_i\)</span> 表示 <span class="math inline">\(lcp(sa[i - 1],sa[i])\)</span>。</p>
+<h4 id="求-height-数组">求 <span class="math inline">\(height\)</span> 数组</h4>
+<p>有一个定理：<span class="math inline">\(height_{rk[i]} \geq height_{rk[i - 1]} - 1\)</span>。</p>
+<p>证明：</p>
+<p>定义 <span class="math inline">\(Suffix(x)\)</span> 为排名为 <span class="math inline">\(x\)</span> 的后缀，<span class="math inline">\(S(x)\)</span> 表示以第 <span class="math inline">\(x\)</span> 个字符开头的后缀。</p>
+<p>设已知 <span class="math inline">\(height_{rk[i - 1]}\)</span>。</p>
+<p>若 <span class="math inline">\(height_{rk[i - 1]} \leq 1\)</span>，上式成立；</p>
+<p>若 <span class="math inline">\(height_{rk[i - 1]} &gt; 1\)</span>：</p>
+<p>设 <span class="math inline">\(Suffix(rk[i - 1])\)</span> 为 <code>aAC</code>，<span class="math inline">\(Suffix(rk[i - 1] - 1)\)</span> 为 <code>aAB</code>，且 <span class="math inline">\(lcp(B,C) = 0\)</span>，<span class="math inline">\(B &lt; C\)</span>，则 <span class="math inline">\(height_{rk[i - 1]} = 1+|A|\)</span>。</p>
+<p>而 <span class="math inline">\(S(i)\)</span> 为 <code>AC</code>，<span class="math inline">\(S(sa[rk[i - 1] - 1] + 1)\)</span> 即 <span class="math inline">\(Suffix(rk[i - 1] - 1)\)</span> 在原串中的后一个后缀为 <code>AB</code>，</p>
+<p>所以 <span class="math inline">\(S(sa[rk[i - 1] - 1] + 1)\)</span> 肯定在 <span class="math inline">\(S(i)\)</span> 前面。</p>
+<p>所以 <span class="math inline">\(lcp(s(i),s(sa[rk[i] - 1])) \geq |A| = height_{rk[i - 1]} - 1\)</span>，即它们的最大公共前缀有一个前缀为 <code>A</code>。</p>
+<h4 id="height-数组求-lcp"><span class="math inline">\(height\)</span> 数组求 <span class="math inline">\(lcp\)</span></h4>
+<p>有一个定理：<span class="math inline">\(lcp(sa_i,sa_j) = \min \limits _{k=i + 1} ^j \{ height_k \}\)</span>。</p>
+<p>证明：感性理解一下，由于后缀已经排好了序，两个后缀的排名差越大，<span class="math inline">\(lcp\)</span> 就越小，</p>
+<p><span class="math inline">\(lcp(sa_{i},sa_{i+2}) = \min \{ height_{i + 1},height_{i + 2} \}\)</span>。</p>
+<hr />
+<p>有了这个定理，两个<strong>子串</strong>求 <span class="math inline">\(lcp\)</span> 就变成了区间求最小值（RMQ）问题。通常用 ST 表解决，或者观察题目性质，或者其他数据结构。</p>
+<p><span class="math inline">\(lcp(Str(l_1,r_1),Str(l_2,r_2)) = \min \{ lcp(S(l_1),S(l_2)), (r_1 - l_1 + 1),(r_2 - l_2 + 1) \}\)</span>。</p>
+<p>https://oi-wiki.org/string/sa/</p>
+]]></content>
+      <categories>
+        <category>OI</category>
+      </categories>
+      <tags>
+        <tag>字符串</tag>
+        <tag>笔记</tag>
       </tags>
   </entry>
   <entry>
