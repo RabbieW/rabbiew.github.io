@@ -106,7 +106,7 @@ deploy:
   repo:
     github:
 	  url: https://github.com/RabbieW/rabbiew.github.io.git
-	  branch: master
+	  branch: ph-pages
 	  token: ''
   name: RabbieW
   email: rabbiewjy@outlook.com
@@ -124,6 +124,7 @@ markdown_it_plus:
   typographer: false
   quotes:
   plugins:
+    - '@renbaoshuo/markdown-it-katex'
     - plugin:
         name: markdown-it-mark
         enable: false
