@@ -106,7 +106,7 @@ deploy:
   repo:
     github:
 	  url: https://github.com/RabbieW/rabbiew.github.io.git
-	  branch: ph-pages
+	  branch: main
 	  token: ''
   name: RabbieW
   email: rabbiewjy@outlook.com
