@@ -34,3 +34,7 @@ description: 树上启发式合并的自学&上课笔记
 # 题目
 
 [这篇文章](https://codeforces.com/blog/entry/44351)的最后有一堆题目。
+
+[CF1923E](https://codeforces.com/contest/1923/problem/E)
+
+[CF778C](https://codeforces.com/problemset/problem/778/C)，甚至不用传信息
