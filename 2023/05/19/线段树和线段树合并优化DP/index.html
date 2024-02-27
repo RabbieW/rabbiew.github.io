@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.3.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"rabbiew.github.io","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":-1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="线段树和线段树合并优化 DP 的学习笔记">
+<meta property="og:type" content="article">
+<meta property="og:title" content="线段树 &amp; 线段树合并优化 DP">
+<meta property="og:url" content="http://rabbiew.github.io/2023/05/19/%E7%BA%BF%E6%AE%B5%E6%A0%91%E5%92%8C%E7%BA%BF%E6%AE%B5%E6%A0%91%E5%90%88%E5%B9%B6%E4%BC%98%E5%8C%96DP/index.html">
+<meta property="og:site_name" content="RabbieWjy&#39;s blog">
+<meta property="og:description" content="线段树和线段树合并优化 DP 的学习笔记">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2023-05-19T03:54:33.000Z">
+<meta property="article:modified_time" content="2023-09-03T06:07:51.019Z">
+<meta property="article:author" content="RabbieWjy">
+<meta property="article:tag" content="笔记">
+<meta property="article:tag" content="DP">
+<meta property="article:tag" content="数据结构">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://rabbiew.github.io/2023/05/19/%E7%BA%BF%E6%AE%B5%E6%A0%91%E5%92%8C%E7%BA%BF%E6%AE%B5%E6%A0%91%E5%90%88%E5%B9%B6%E4%BC%98%E5%8C%96DP/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>线段树 & 线段树合并优化 DP | RabbieWjy's blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">RabbieWjy's blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">9</span></a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">1</span></a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">9</span></a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://rabbiew.github.io/2023/05/19/%E7%BA%BF%E6%AE%B5%E6%A0%91%E5%92%8C%E7%BA%BF%E6%AE%B5%E6%A0%91%E5%90%88%E5%B9%B6%E4%BC%98%E5%8C%96DP/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="RabbieWjy">
+      <meta itemprop="description" content="wtcl">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="RabbieWjy's blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          线段树 & 线段树合并优化 DP
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2023-05-19 11:54:33" itemprop="dateCreated datePublished" datetime="2023-05-19T11:54:33+08:00">2023-05-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-09-03 14:07:51" itemprop="dateModified" datetime="2023-09-03T14:07:51+08:00">2023-09-03</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/OI/" itemprop="url" rel="index"><span itemprop="name">OI</span></a>
+                </span>
+            </span>
+
+          
+            <div class="post-description">线段树和线段树合并优化 DP 的学习笔记</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="线段树优化-dp">线段树优化 DP</h1>
+<p>有一些 DP 的初始化和转移操作可以转化为序列上 / 值域上的区间操作 / 区间查询问题，可以用线段树加速这些操作。</p>
+<h2 id="例题-1.-noip1999-普及组-导弹拦截---洛谷">例题 1. <a target="_blank" rel="noopener" href="https://www.luogu.com.cn/problem/P1020">[NOIP1999 普及组] 导弹拦截 - 洛谷</a></h2>
+<p>求序列的最长不上升 / 最长上升子序列，<span class="math inline">\(1 \le n \le 10^5\)</span>，<span class="math inline">\(1 \le a_i \le 5\times10^4\)</span>。</p>
+<hr />
+<p>以最长不上升子序列为例。</p>
+<p>朴素转移方程：<span class="math inline">\(f_i = \max \limits _{j=0} ^{i - 1} (f_j+1)[a_j \ge a_i \lor j=0 ]\)</span>，<span class="math inline">\(f_i\)</span> 表示以 <span class="math inline">\(a_i\)</span> 结尾的最长子序列，从 <span class="math inline">\(f_0\)</span> 转移表示作为开头。这个 DP 时间复杂度为 <span class="math inline">\(\mathcal{O} (n^2)\)</span>。</p>
+<p>考虑优化。枚举到 <span class="math inline">\(k\)</span> 时，如果有 <span class="math inline">\(i,j \le k\)</span>，<span class="math inline">\(a_i = a_j\)</span> 且 <span class="math inline">\(f_i &lt; f_j\)</span>，那么 <span class="math inline">\(f_i\)</span> 显然没用。由于值域很小，可以用 <span class="math inline">\(g_i\)</span> 记录 <span class="math inline">\(\max \limits _{a_j=i} f_j\)</span>，转移方程变为 <span class="math inline">\(f_i = \max \limits _{j=a_i} ^{V} g_j\)</span>，在计算 <span class="math inline">\(f_i\)</span> 的同时更新 <span class="math inline">\(g_{a_i}\)</span> 即可，时间复杂度 <span class="math inline">\(\mathcal{O}(nV)\)</span>。</p>
+<p>发现转移时，相当于在 <span class="math inline">\([0,V]\)</span> 中求了一次后缀最大值，可以用数据结构维护区间最大值，更新 <span class="math inline">\(g_{a_i}\)</span> 的操作转化为单点修改，可以用线段树或其他数据结构维护，时间复杂度 <span class="math inline">\(\mathcal{O}(n\log V)\)</span>，可以通过。</p>
+<h2 id="例题-2.-problem---1334f---codeforces">例题 2. <a target="_blank" rel="noopener" href="https://codeforces.com/problemset/problem/1334/F">Problem - 1334F - Codeforces</a></h2>
+<p>翻译：<a target="_blank" rel="noopener" href="https://www.luogu.com.cn/problem/CF1334F">Strange Function - 洛谷</a></p>
+<p>定义函数 <span class="math inline">\(f\)</span>：<span class="math inline">\(f(x)\)</span> 为所有满足 <span class="math inline">\(x_i&gt;x_{1,2,\cdots,i-1}\)</span> 的 <span class="math inline">\(x_i\)</span> 组成的序列，例如 <span class="math inline">\(f[3,1,2,7,7,3,6,7,8]=[3,7,8]\)</span>。</p>
+<p>给出两个序列 <span class="math inline">\(a,b\)</span>，你可以删掉 <span class="math inline">\(a\)</span> 中的一些元素。删掉 <span class="math inline">\(a_i\)</span> 的代价为 <span class="math inline">\(p_i\)</span>。你需要求出最小代价使得 <span class="math inline">\(f(a)=b\)</span> 或给出无解。</p>
+<p><span class="math inline">\(1 \le |a| \le 5\times 10^5\)</span>，<span class="math inline">\(b_{i-1} &lt; b_i\)</span>。</p>
+<hr />
+<p>设计状态 <span class="math inline">\(f_{i,j}\)</span> 表示现在考虑到第 <span class="math inline">\(i\)</span> 个序列 <span class="math inline">\(a\)</span> 中的元素，考虑完元素 <span class="math inline">\(i\)</span> 后新序列的目前最大值（有可能不在目前的新序列中）为 <span class="math inline">\(b_j\)</span>，目前代价最小为 <span class="math inline">\(f_{i,j}\)</span>。</p>
+<p>设 <span class="math inline">\(b_{k} \le a_i &lt; b_{k+1}\)</span>。</p>
+<p>先假设 <span class="math inline">\(b_j\)</span> 已经 / 将来一定会取到。</p>
+<p><span class="math inline">\(p_i&gt;0\)</span> 时，若 <span class="math inline">\(b_{j} \le a_i\)</span> 即 <span class="math inline">\(j \le k\)</span>，为了不改变目前最大值，<span class="math inline">\(a_i\)</span> 必须删除，<span class="math inline">\(f_{i,j} \leftarrow f_{i-1,j}+p_i\)</span>；否则，<span class="math inline">\(a_i\)</span> 删不删都可以，<span class="math inline">\(f_{i,j} \leftarrow f_{i-1,j}\)</span>。</p>
+<p><span class="math inline">\(p_i &lt; 0\)</span> 时，<span class="math inline">\(a_i\)</span> 删除更优，<span class="math inline">\(f_{i,j} \leftarrow f_{i-1,j}+p_i\)</span>。</p>
+<p>为了保证最后 <span class="math inline">\(b_j\)</span> 可以取到，当 <span class="math inline">\(a_i=b_j\)</span> 时，<span class="math inline">\(a_i\)</span> 不能删除，<span class="math inline">\(f_{i,j} = \min \limits _{v=0} ^j f_{i-1,v} = \min \limits _{v=0} ^{j} f_{i,v} - p_i\)</span>（减 <span class="math inline">\(p_i\)</span> 是因为 <span class="math inline">\(v \le j\)</span>，在上面加上了 <span class="math inline">\(p_i\)</span>，要把 <span class="math inline">\(p_i\)</span> 减回来）。</p>
+<p>最终答案即为 <span class="math inline">\(f_{|a|,|b|}\)</span>。</p>
+<p>发现上面的几个式子可以转化为区间加、区间查询和单点修改，可以用线段树维护。时间复杂度 <span class="math inline">\(\mathcal{O}(|a|\log |b|)\)</span>。</p>
+<p>DP 的主要代码：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">signed</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%lld&quot;</span>,&amp;n);</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>;i &lt;= n;i ++) <span class="built_in">scanf</span>(<span class="string">&quot;%lld&quot;</span>,a + i);</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>;i &lt;= n;i ++) <span class="built_in">scanf</span>(<span class="string">&quot;%lld&quot;</span>,p + i);</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%lld&quot;</span>,&amp;m);</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>;i &lt;= m;i ++) <span class="built_in">scanf</span>(<span class="string">&quot;%lld&quot;</span>,b + i),pl[b[i]] = i;</span><br><span class="line">    <span class="built_in">build</span>(<span class="number">1</span>,<span class="number">0</span>,m);</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>;i &lt;= n;i ++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">int</span> x = <span class="built_in">lower_bound</span>(b + <span class="number">1</span>,b + m + <span class="number">1</span>,a[i]) - b;</span><br><span class="line">        <span class="keyword">if</span> (p[i] &gt; <span class="number">0</span>) <span class="built_in">add</span>(<span class="number">1</span>,<span class="number">0</span>,x - <span class="number">1</span>,p[i]);</span><br><span class="line">        <span class="keyword">else</span> <span class="built_in">add</span>(<span class="number">1</span>,<span class="number">0</span>,m,p[i]);</span><br><span class="line">        <span class="keyword">if</span> (pl[a[i]]) <span class="built_in">upd</span>(<span class="number">1</span>,pl[a[i]],<span class="built_in">query</span>(<span class="number">1</span>,pl[a[i]] - <span class="number">1</span>) - p[i]);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// add 为区间加，query 为区间查询，upd 为单点修改</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">query</span>(<span class="number">1</span>,m) &lt; <span class="number">1e15</span>) <span class="built_in">printf</span>(<span class="string">&quot;YES\n%lld\n&quot;</span>,<span class="built_in">query</span>(<span class="number">1</span>,m));</span><br><span class="line">    <span class="keyword">else</span> <span class="built_in">printf</span>(<span class="string">&quot;NO\n&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="例题-3.-某位歌姬的故事---洛谷-ex---max-limited-sequence">例题 3. <a target="_blank" rel="noopener" href="https://www.luogu.com.cn/problem/P4229">某位歌姬的故事 - 洛谷</a> / <a target="_blank" rel="noopener" href="https://atcoder.jp/contests/abc262/tasks/abc262_h">Ex - Max Limited Sequence</a></h2>
+<p><del>其中前一道题实际上可以不用线段树优化 DP。</del></p>
+<p>构造一个长度为 <span class="math inline">\(n\)</span> 的整数序列 <span class="math inline">\(a\)</span>，要求 <span class="math inline">\(1\le a_i \le A\)</span>，还有 <span class="math inline">\(Q\)</span> 条形如 <span class="math inline">\(\max \{a_{l_i},a_{l_i+1},\cdots,a_{r_i}\}=m_i\)</span> 的限制，问有多少种构造方法。</p>
+<p>要求时间复杂度为 <span class="math inline">\(\mathcal{O}(Q\log Q)\)</span>，空间线性。</p>
+<hr />
+<p>先求出每个位置上的数最大可以填多少，设为 <span class="math inline">\(b\)</span>，顺便判断是否有解：限制 <span class="math inline">\(i\)</span> 可能被满足当且仅当 <span class="math inline">\(\max \limits _{j=l_i} ^{r_i} b_j = m_i\)</span>。</p>
+<p>类似<a target="_blank" rel="noopener" href="https://www.luogu.com.cn/problem/P3813">[FJOI2017]矩阵填数 - 洛谷</a>这道题，<span class="math inline">\(b_i\)</span> 不同的两个位置的填法互不相关，可以依次求 <span class="math inline">\(b_i=x\)</span> 的所有位置的填法，再乘起来。</p>
+<p>把位置、限制按 <span class="math inline">\(b\)</span> 分类，分别存起来，所有 <span class="math inline">\(b_i=x\)</span> 的位置把整个序列分成若干个左闭右开的区间。现在求 <span class="math inline">\(b_i=x\)</span> 的位置的填法数。注意 DP 时一个点不仅代表这一个点填什么，还代表了一个左闭右开的区间，设 <span class="math inline">\(i\)</span> 代表的区间长度为 <span class="math inline">\(len_i\)</span>。</p>
+<p>设计状态 <span class="math inline">\(f_{i,j}\)</span> 表示现在填到第 <span class="math inline">\(i\)</span> 个位置，上一个填 <span class="math inline">\(x\)</span> 的位置为 <span class="math inline">\(j\)</span>，填法有 <span class="math inline">\(f_{i,j}\)</span> 种。</p>
+<p><strong>一个观察：右端点在 <span class="math inline">\(i\)</span> 代表的区间中的所有限制，只要满足了左端点最靠右的一个，剩下的所有都满足了</strong>。因此只需要考虑左端点最靠右的一个询问，设这个左端点为 <span class="math inline">\(y\)</span>。则 <span class="math inline">\(y\)</span> 到 <span class="math inline">\(i\)</span> 中至少要有一个填 <span class="math inline">\(x\)</span>。</p>
+<p>如果 <span class="math inline">\(i\)</span> 不填 <span class="math inline">\(x\)</span>，则 <span class="math inline">\(y\)</span> 到 <span class="math inline">\(i-1\)</span> 中至少有一个 <span class="math inline">\(x\)</span>，所以 <span class="math inline">\(\forall j: 0 \le j &lt; y,\ f_{i,j}\leftarrow 0\)</span>，<span class="math inline">\(\forall j : y \le j &lt; i, \ f_{i,j} \leftarrow f_{i-1,j} \times (x-1)^{len_i}\)</span>。</p>
+<p>如果填了 <span class="math inline">\(x\)</span>，则 <span class="math inline">\(f_{i,i}\leftarrow \sum \limits _{j=0} ^{i-1} f_{i-1,j} \times [x^{len_i} - (x-1)^{len_i}]\)</span>。</p>
+<p>这里，位置编号是从 <span class="math inline">\(1\)</span> 开始的，<span class="math inline">\(f_{i,0}\)</span> 表示一个 <span class="math inline">\(x\)</span> 都没有。</p>
+<p>答案即为 <span class="math inline">\(\sum \limits _{i=0} ^{last} f_{last,i}\)</span>。</p>
+<p>考虑优化，发现上面的转移可以转化为区间推平、区间乘、区间查询和单点修改，可以用线段树维护。</p>
+<p>在实现时，区间查询的结果也可以用另外一个数组记录，看起来好看一点。</p>
+<p>我的代码写得非常丑，好看的正解代码可以在洛谷 / AT 上找 qwq</p>
+<p>AT 那道题和这题是一样的，只是没有多测。</p>
+<h2 id="其他题目">其他题目</h2>
+<p><a target="_blank" rel="noopener" href="https://www.luogu.com.cn/problem/P2605" class="uri">https://www.luogu.com.cn/problem/P2605</a></p>
+<p>待补充</p>
+<h1 id="线段树合并优化-dp">线段树合并优化 DP</h1>
+<p>在一些树上 DP 的题目中，需要把父亲和儿子的 DP 信息合并起来，而合并的过程可以转化为线段树合并操作。</p>
+<h2 id="例题-1.-pkuwc2018-minimax---洛谷">例题 1. <a target="_blank" rel="noopener" href="https://www.luogu.com.cn/problem/P5298">[PKUWC2018] Minimax - 洛谷</a></h2>
+<p>小 <span class="math inline">\(C\)</span> 有一棵 <span class="math inline">\(n\)</span> 个结点的有根树，根是 <span class="math inline">\(1\)</span> 号结点，且每个结点最多有两个子结点。</p>
+<p>定义结点 <span class="math inline">\(x\)</span> 的权值为：</p>
+<p>1.若 <span class="math inline">\(x\)</span> 没有子结点，那么它的权值会在输入里给出，<strong>保证这类点中每个结点的权值互不相同</strong>。</p>
+<p>2.若 <span class="math inline">\(x\)</span> 有子结点，那么它的权值有 <span class="math inline">\(p_x\)</span> 的概率是它的子结点的权值的最大值，有 <span class="math inline">\(1-p_x\)</span> 的概率是它的子结点的权值的最小值。</p>
+<p>现在小 <span class="math inline">\(C\)</span> 想知道，假设 <span class="math inline">\(1\)</span> 号结点的权值有 <span class="math inline">\(m\)</span> 种可能性，<strong>权值第 <span class="math inline">\(i\)</span> 小</strong>的可能性的权值是 <span class="math inline">\(V_i\)</span>，它的概率为 <span class="math inline">\(D_i(D_i&gt;0)\)</span>，求：</p>
+<p><span class="math display">\[
+\sum_{i=1}^{m}i\cdot V_i\cdot D_i^2
+\]</span></p>
+<p>你需要输出答案对 <span class="math inline">\(998244353\)</span> 取模的值。</p>
+<hr />
+<p>一眼树形 DP。设计状态 <span class="math inline">\(f_{x,i}\)</span> 表示节点 <span class="math inline">\(x\)</span> 取到权值 <span class="math inline">\(i\)</span> 的概率。</p>
+<p>若 <span class="math inline">\(x\)</span> 为叶子节点，则 <span class="math inline">\(f_{x,i} \leftarrow [val_x = i] val_x\)</span>；</p>
+<p>若 <span class="math inline">\(x\)</span> 只有一个儿子，则 <span class="math inline">\(f_{x,i} \leftarrow f_{son_x,i}\)</span>；</p>
+<p>否则，设 <span class="math inline">\(x\)</span> 的两个儿子为 <span class="math inline">\(lson\)</span> 和 <span class="math inline">\(rson\)</span>。</p>
+<p><span class="math display">\[
+f_{x,i} \leftarrow p_x\sum \limits _{j=1} ^{i-1} f_{lson,j} f_{rson,i} + (1-p_x)\sum \limits _{j=i+1} ^{V} f_{lson,j}f_{rson,i} +p_x\sum \limits _{j=1}^{i-1} f_{lson,i}f_{rson,j}+(1-p_x)\sum\limits_{j=i+1}^V f_{lson,i}f_{rson,j}+f_{lson,i}f_{rson,i}
+\]</span></p>
+<p>要怎么把线段树合并和这个东西结合起来呢？</p>
+<p><span class="math inline">\(x\)</span> 为叶子节点就是单点修改，只有一个儿子就是 <code>rt[x] = rt[sonx]</code>，主要问题是两个儿子的情况。</p>
+<p>想一下线段树合并的过程：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">merge</span><span class="params">(<span class="type">int</span> x,<span class="type">int</span> y,<span class="type">int</span> l,<span class="type">int</span> r)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!x || !y) <span class="keyword">return</span> x + y; <span class="comment">// 其中一个为空就直接返回</span></span><br><span class="line">    <span class="comment">// tree[x] &lt;- tree[y]</span></span><br><span class="line">    <span class="keyword">if</span> (l == r) <span class="keyword">return</span> x; <span class="comment">// 没法往下分就返回</span></span><br><span class="line">    tree[x].ls = <span class="built_in">merge</span>(tree[x].ls,tree[y].ls,l,mid);</span><br><span class="line">    tree[x].rs = <span class="built_in">merge</span>(tree[x].rs,tree[y].rs,mid + <span class="number">1</span>,r); <span class="comment">// 递归</span></span><br><span class="line">    <span class="keyword">return</span> x;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>假设现在 <span class="math inline">\(f\)</span> 数组已经成功地存在了两棵线段树里，要把 <span class="math inline">\(f_{rson}\)</span> 合并到 <span class="math inline">\(f_{lson}\)</span> 上作为 <span class="math inline">\(f_x\)</span>。</p>
+<p>现在合并到了区间 <span class="math inline">\([l,r]\)</span>。如果 <span class="math inline">\(f_{rson}\)</span> 在 <span class="math inline">\([l,r]\)</span> 没有值，即 <span class="math inline">\(y\)</span> 为空，那么对于所有 <span class="math inline">\(i \in [l,r]\)</span>，和它的值有关的 <span class="math inline">\(f_{rson}\)</span> 中的值都在这个区间外面，与 <span class="math inline">\(i\)</span> 本身无关，只与 <span class="math inline">\([l,r]\)</span> 有关。具体来说，上面转移方程中，第一项、第二项和最后一项都是 <span class="math inline">\(0\)</span>，第三项变为 <span class="math inline">\(p_x\sum \limits _{j=1} ^{l-1} f_{lson,i}f_{rson,j}\)</span>，第四项变为 <span class="math inline">\((1-p_x)\sum \limits _{j=r+1}^V f_{lson,i}f_{rson,j}\)</span>。发现实际上就是给 <span class="math inline">\([l,r]\)</span> 中的每个位置乘上 <span class="math inline">\(p_x \sum \limits _{j=1}^{l-1}f_{rson,j}+(1-p_x)\sum \limits _{j=r+1}^Vf_{rson,j}\)</span>，变成了区间乘。<span class="math inline">\(x\)</span> 为空时同理，因为 <span class="math inline">\(x\)</span> 和 <span class="math inline">\(y\)</span> 的关系是对等的。发现要维护一些前缀和和后缀和，在下分时顺便更新之后传下去就行了。</p>
+<p>如果 <span class="math inline">\(l=r\)</span>，直接根据转移方程暴力合并就行了。在这道题中，由于点的权值互不相同，所以不会有这种情况。</p>
+<p>否则往下继续分就行了。注意下分前先下传 tag，合并完儿子之后再 pushup。</p>
+<p>合并的代码：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">merge</span><span class="params">(<span class="type">int</span> x,<span class="type">int</span> y,<span class="type">int</span> l,<span class="type">int</span> r,<span class="type">int</span> xsum,<span class="type">int</span> ysum,<span class="type">int</span> P)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!x &amp;&amp; !y) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (!x || !y)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (!x) <span class="built_in">swap</span>(x,y),<span class="built_in">swap</span>(xsum,ysum);</span><br><span class="line">        tree[x].sum = <span class="number">1ll</span> * tree[x].sum * xsum % mod;</span><br><span class="line">        tree[x].tg = <span class="number">1ll</span> * tree[x].tg * xsum % mod;</span><br><span class="line">        <span class="keyword">return</span> x;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">pushdown</span>(x),<span class="built_in">pushdown</span>(y);</span><br><span class="line">    <span class="type">int</span> tmpx = tree[tree[x].ls].sum,tmpy = tree[tree[y].ls].sum;</span><br><span class="line">    tree[x].ls = <span class="built_in">merge</span>(tree[x].ls,tree[y].ls,l,mid,(xsum + <span class="number">1ll</span> * tree[tree[y].rs].sum * (<span class="number">1</span> - P + mod) % mod) % mod,(ysum + <span class="number">1ll</span> * tree[tree[x].rs].sum * (<span class="number">1</span> - P + mod) % mod) % mod,P);</span><br><span class="line">    tree[x].rs = <span class="built_in">merge</span>(tree[x].rs,tree[y].rs,mid + <span class="number">1</span>,r,(xsum + <span class="number">1ll</span> * tmpy * P % mod) % mod,(ysum + <span class="number">1ll</span> * tmpx * P % mod) % mod,P);</span><br><span class="line">    <span class="built_in">pushup</span>(x);</span><br><span class="line">    <span class="keyword">return</span> x;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>剩下的都是动态开点线段树板子。</p>
+<p>最后查询的时候，就是在根节点的线段树上单点查找。</p>
+<h2 id="例题-2.-noi2020-命运---洛谷">例题 2. <a target="_blank" rel="noopener" href="https://www.luogu.com.cn/problem/P6773">[NOI2020] 命运 - 洛谷</a></h2>
+<p>给定一棵树 <span class="math inline">\(T = (V, E)\)</span> 和点对集合 <span class="math inline">\(\mathcal Q \subseteq V \times V\)</span> ，满足对于所有 <span class="math inline">\((u, v) \in \mathcal Q\)</span>，都有 <span class="math inline">\(u \neq v\)</span>，并且 <span class="math inline">\(u\)</span> 是 <span class="math inline">\(v\)</span> 在树 <span class="math inline">\(T\)</span> 上的祖先。其中 <span class="math inline">\(V\)</span> 和 <span class="math inline">\(E\)</span> 分别代表树 <span class="math inline">\(T\)</span> 的结点集和边集。求有多少个不同的函数 <span class="math inline">\(f\)</span> : <span class="math inline">\(E \to \{0, 1\}\)</span>（将每条边 <span class="math inline">\(e \in E\)</span> 的 <span class="math inline">\(f(e)\)</span> 值置为 <span class="math inline">\(0\)</span> 或 <span class="math inline">\(1\)</span>），满足对于任何 <span class="math inline">\((u, v) \in \mathcal Q\)</span>，都存在 <span class="math inline">\(u\)</span> 到 <span class="math inline">\(v\)</span> 路径上的一条边 <span class="math inline">\(e\)</span> 使得 <span class="math inline">\(f(e) = 1\)</span>。由于答案可能非常大，你只需要输出结果对 <span class="math inline">\(998,244,353\)</span>（一个素数）取模的结果。</p>
+<p><span class="math inline">\(1 \le n \le 5 \times 10 ^5\)</span>，<span class="math inline">\(1 \le m \le 5 \times 10^5\)</span>。</p>
+<hr />
+<p>这道题和前面讲的 某位歌姬的故事 这道题很像，这道题就是把那道题的部分分做法搬到了树上。</p>
+<p>这道题也有<strong>一个观察：对于下端点相同的限制，上端点最深的满足，则这些限制都满足</strong>。</p>
+<p>设计状态 <span class="math inline">\(f_{i,j}\)</span> 表示在节点 <span class="math inline">\(i\)</span> 的子树中，还未被满足的限制中上端点最深的深度为 <span class="math inline">\(j\)</span>，方案数为 <span class="math inline">\(f_{i,j}\)</span>。根节点深度为 <span class="math inline">\(1\)</span>。</p>
+<p>转移方程：</p>
+<p><span class="math display">\[
+f_{x,i} \leftarrow \sum \limits _{j=0} ^{i - 1} f_{x,i}f_{son,j}+\sum\limits _{j=0} ^{i-1} f_{x,j}f_{son,i}+f_{x,i}f_{xon,i}+f_{x,i}\sum \limits _{j=0}^{dep_x}f_{son,j}
+\]</span></p>
+<p>前面三项是 <span class="math inline">\(edge(x,son)=0\)</span>，最后一项是填 <span class="math inline">\(1\)</span>。</p>
+<p>类似上一道题，这题也可以用线段树合并优化转移。但要注意，这道题里 <span class="math inline">\(x\)</span> 和 <span class="math inline">\(son\)</span> 的关系并不对等，要分别讨论左边为空和右边为空的情况。</p>
+<p>合并代码：</p>
+<figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">merge</span><span class="params">(<span class="type">int</span> x,<span class="type">int</span> y,<span class="type">int</span> l,<span class="type">int</span> r,<span class="type">int</span> pre,<span class="type">int</span> sonpre,<span class="type">int</span> sondep)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"><span class="comment">//    printf(&quot;%d %d %d %d %d %d %d\n&quot;,x,y,l,r,pre,sonpre,sondep);</span></span><br><span class="line">    <span class="keyword">if</span> (!x &amp;&amp; !y) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (!x)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">swap</span>(x,y);</span><br><span class="line">        tree[x].sum = <span class="number">1ll</span> * tree[x].sum * pre % mod;</span><br><span class="line"><span class="comment">//        printf(&quot;sum %d\n&quot;,tree[x].sum);</span></span><br><span class="line">        tree[x].tg = <span class="number">1ll</span> * tree[x].tg * pre % mod;</span><br><span class="line">        <span class="keyword">return</span> x;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (!y)</span><br><span class="line">    &#123;</span><br><span class="line">        tree[x].sum = <span class="number">1ll</span> * tree[x].sum * (sondep + sonpre) % mod;</span><br><span class="line">        tree[x].tg = <span class="number">1ll</span> * tree[x].tg * (sondep + sonpre) % mod;</span><br><span class="line">        <span class="keyword">return</span> x;</span><br><span class="line">     &#125;</span><br><span class="line">     <span class="keyword">if</span> (l == r)</span><br><span class="line">     &#123;</span><br><span class="line">        tree[x].sum = (<span class="number">1ll</span> * tree[x].sum * ((sondep + sonpre) % mod + tree[y].sum) % mod + <span class="number">1ll</span> * tree[y].sum * pre % mod) % mod;</span><br><span class="line"><span class="comment">//        printf(&quot;sum %d\n&quot;,tree[x].sum);</span></span><br><span class="line">        <span class="keyword">return</span> x;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">pushdown</span>(x),<span class="built_in">pushdown</span>(y);</span><br><span class="line">    <span class="type">int</span> newpre = (pre + tree[tree[x].ls].sum) % mod;</span><br><span class="line">    <span class="type">int</span> newsonpre = (sonpre + tree[tree[y].ls].sum) % mod;</span><br><span class="line">    tree[x].ls = <span class="built_in">merge</span>(tree[x].ls,tree[y].ls,l,mid,pre,sonpre,sondep);</span><br><span class="line">    tree[x].rs = <span class="built_in">merge</span>(tree[x].rs,tree[y].rs,mid + <span class="number">1</span>,r,newpre,newsonpre,sondep);</span><br><span class="line">    <span class="built_in">pushup</span>(x);</span><br><span class="line">    <span class="keyword">return</span> x;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="总结">总结</h1>
+<p>遇到整个区间转移的问题，可以往线段树优化上考虑。（？）</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E7%AC%94%E8%AE%B0/" rel="tag"># 笔记</a>
+              <a href="/tags/DP/" rel="tag"># DP</a>
+              <a href="/tags/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84/" rel="tag"># 数据结构</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/05/01/%E7%82%B9%E5%88%86%E6%B2%BB%E5%92%8C%E7%82%B9%E5%88%86%E6%A0%91/" rel="prev" title="点分治 & 点分树">
+      <i class="fa fa-chevron-left"></i> 点分治 & 点分树
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/10/25/round-square-tree/" rel="next" title="圆方树 学习笔记">
+      圆方树 学习笔记 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BA%BF%E6%AE%B5%E6%A0%91%E4%BC%98%E5%8C%96-dp"><span class="nav-number">1.</span> <span class="nav-text">线段树优化 DP</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%8B%E9%A2%98-1.-noip1999-%E6%99%AE%E5%8F%8A%E7%BB%84-%E5%AF%BC%E5%BC%B9%E6%8B%A6%E6%88%AA---%E6%B4%9B%E8%B0%B7"><span class="nav-number">1.1.</span> <span class="nav-text">例题 1. [NOIP1999 普及组] 导弹拦截 - 洛谷</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%8B%E9%A2%98-2.-problem---1334f---codeforces"><span class="nav-number">1.2.</span> <span class="nav-text">例题 2. Problem - 1334F - Codeforces</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%8B%E9%A2%98-3.-%E6%9F%90%E4%BD%8D%E6%AD%8C%E5%A7%AC%E7%9A%84%E6%95%85%E4%BA%8B---%E6%B4%9B%E8%B0%B7-ex---max-limited-sequence"><span class="nav-number">1.3.</span> <span class="nav-text">例题 3. 某位歌姬的故事 - 洛谷 &#x2F; Ex - Max Limited Sequence</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E9%A2%98%E7%9B%AE"><span class="nav-number">1.4.</span> <span class="nav-text">其他题目</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BA%BF%E6%AE%B5%E6%A0%91%E5%90%88%E5%B9%B6%E4%BC%98%E5%8C%96-dp"><span class="nav-number">2.</span> <span class="nav-text">线段树合并优化 DP</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%8B%E9%A2%98-1.-pkuwc2018-minimax---%E6%B4%9B%E8%B0%B7"><span class="nav-number">2.1.</span> <span class="nav-text">例题 1. [PKUWC2018] Minimax - 洛谷</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%8B%E9%A2%98-2.-noi2020-%E5%91%BD%E8%BF%90---%E6%B4%9B%E8%B0%B7"><span class="nav-number">2.2.</span> <span class="nav-text">例题 2. [NOI2020] 命运 - 洛谷</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">RabbieWjy</p>
+  <div class="site-description" itemprop="description">wtcl</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">1</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/RabbieW" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;RabbieW" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:rabbiewjy@outlook.com" title="E-Mail → mailto:rabbiewjy@outlook.com" rel="noopener" target="_blank"><i class="fa fa-envelope fa-fw"></i>E-Mail</a>
+      </span>
+  </div>
+
+
+  <div class="links-of-blogroll motion-element">
+    <div class="links-of-blogroll-title"><i class="fa fa-link fa-fw"></i>
+      Links
+    </div>
+    <ul class="links-of-blogroll-list">
+        <li class="links-of-blogroll-item">
+          <a href="https://www.luogu.com.cn/blog/RabbieWjy-ac/" title="https:&#x2F;&#x2F;www.luogu.com.cn&#x2F;blog&#x2F;RabbieWjy-ac&#x2F;" rel="noopener" target="_blank">Luogu blog</a>
+        </li>
+        <li class="links-of-blogroll-item">
+          <a href="https://blog.csdn.net/RabbieWjy" title="https:&#x2F;&#x2F;blog.csdn.net&#x2F;RabbieWjy" rel="noopener" target="_blank">CSDN blog</a>
+        </li>
+    </ul>
+  </div>
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">RabbieWjy</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+  
+     <canvas class="fireworks" style="position: fixed;left: 0;top: 0;z-index: 200000; pointer-events: none;" ></canvas> 
+     <script type="text/javascript" src="//cdn.bootcss.com/animejs/2.2.0/anime.min.js"></script> 
+     <script type="text/javascript" src="/js/src/fireworks.js"></script>
+  
+</body>
+</html>
