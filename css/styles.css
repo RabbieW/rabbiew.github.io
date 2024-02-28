@@ -14,6 +14,8 @@ body {
 }
 body {
   color: #000;
+  line-height: 2em;
+  margin-top: 10px;
 }
 .posts-expand .post-title-link {
   color: #51346e;
