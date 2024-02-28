@@ -13,6 +13,8 @@ upd on 20220405 修了炸了的图和 LaTeX
 
 upd on 20230903 关于数据结构优化 DP，可以看看新写的博客~
 
+upd on 20240228 加了一道题 qwq
+
 题单：<https://www.luogu.com.cn/training/144843>
 
 
@@ -398,6 +400,14 @@ upd on 2023/9: 可以看看新写的线段树优化 DP 的博客！
 **题解**
 
 朴素算法的基础上，用树状数组 / 线段树维护最优决策。
+
+### HBTSC PRE 2024 花神诞日 / sabzeruz
+
+<https://www.luogu.com.cn/problem/P10200>
+
+**题解**
+
+一个性质：$a < b < c$ 时，$a \oplus b > \min(a \oplus c,c\oplus b)$。于是排序后可以 dp，记录当前两组的最后分别是什么。发现两组的最后肯定有一个是上一个数，状态数可以压掉一维。用 01-Trie 优化转移，可以做到 $O(n\log V)$。
 
 # 其他的dp题
 

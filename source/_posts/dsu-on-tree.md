@@ -21,6 +21,30 @@ description: 树上启发式合并的自学&上课笔记
 
 这样做可以保证每次传上来的只有重儿子的信息，且算完当前子树的答案后，目前保留的信息只有这棵子树的。
 
+代码：
+
+```cpp
+void dfss(int x)
+{
+    for (int i = head[x];i;i = nxt[i])
+    {
+        int u = to[i];
+        if (u == son[x]) continue;
+        dfss(u);//递归处理轻儿子
+        clr(u);//清空
+    }
+    if (son[x]) dfss(son[x]);
+    ...//加入当前节点信息
+    for (int i = head[x];i;i = nxt[i])
+    {
+        int u = to[i];
+        if (u == son[x]) continue;
+        upd(u,x);//更新答案
+        add(u);//更新信息
+    }
+}
+```
+
 # 时间复杂度
 
 对每一个节点，如果它是父亲的轻儿子，它所在子树就会在 dfs 父亲时被暴力更新一次。也就是说，一个点被暴力更新的次数即为它到根经过的轻边数，是 $O(\log n)$ 的。所以总的更新次数是 $O(n \log n)$ 的。
