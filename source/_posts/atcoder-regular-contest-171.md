@@ -4,6 +4,7 @@ date: 2024-04-05 15:26:16
 categories: OI
 tags:
 	- 题解
+	- AtCoder
 description: AT ARC171 的翻译和题解 qwq
 ---
 
