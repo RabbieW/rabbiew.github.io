@@ -134,7 +134,7 @@ $$
 
 ## 题意
 
-给定非负整数 $P$ 和 $B$，对于一个序列 $X$，定义 $\operatorname{hash}(X) = (\sum \limits _{i=1} ^{ |X| 	} X_i B^{ |X| - i}) \mod p$。给出 $M$ 个区间 $[L_i,R_i]$，问是否可能构造序列 $A=(A_1,A_2,\cdots,A_N)$，使得对于所有 $1 \le i \le M$，$\operatorname{hash}(A_{L_i},A_{L_i + 1},\cdots,A_{R_i}) \ne 0$。
+给定非负整数 $P$ 和 $B$，对于一个序列 $X$，定义 $\operatorname{hash}(X) = ( \sum \limits_{ i = 1 } ^{ |X| } {X_i B^{ |X| - i } } ) \mod p$。给出 $M$ 个区间 $[L_i,R_i]$，问是否可能构造序列 $A=(A_1,A_2,\cdots,A_N)$，使得对于所有 $1 \le i \le M$，$\operatorname{hash}(A_{L_i},A_{L_i + 1},\cdots,A_{R_i}) \ne 0$。
 
 $2 \le P \le 10^9$，$1 \le B < P$，$1 \le N \le 16$，$1 \le M \le \frac{N(N + 1)}{2}$，区间互不相同。
 
