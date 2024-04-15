@@ -1,9 +1,11 @@
 ---
-title: AT ABC349G Palindrome Construction 题解
+title: AtCoder Beginner Contest 349 G. Palindrome Construction 题解
 date: 2024-04-15 11:09:24
 tags:
   - 题解
   - AtCoder
+categories: OI
+description: AtCoder Beginner Contest 349 G. Palindrome Construction 的题解~
 ---
 
 努力更新！
