@@ -10,6 +10,6 @@ type: "about"
 
 测试 B 站视频播放：
 
-<iframe src="//player.bilibili.com/player.html?aid=962992919&bvid=BV1wH4y167Xm&p=1&autoplay=0&hasMuteButton=1&highQuality=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+<iframe src="//player.bilibili.com/player.html?aid=1601073466&bvid=BV1u1421f7YH&p=1&autoplay=0&hasMuteButton=1&highQuality=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
 
 （html 好玄学 qwq）
