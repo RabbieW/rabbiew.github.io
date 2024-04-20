@@ -71,10 +71,10 @@ $1 \leq n \leq 1e6$，$1 \leq |t| \leq 1e6$，$1 \leq \sum \limits_{i=1} ^n |s_i
 
 设当前正在考虑的节点为 $i$，它代表的字符串为 $tree[i]$，其父亲为 $fa[i]$，$x$ 的失配指针指向的节点为 $fail[x]$，连接 $x$ 和 $y$ 的边代表的字符为 $c(x,y)$。
 
-根据失配指针的定义，$tree[fa[i]](x_0,x_0+k-1)=tree[fail[fa[i]]](1,k)$。
+根据失配指针的定义，$tree[fa[i]] (x_0,x_0+k-1)=tree[fail[fa[i]]] (1,k)$。
 
 若 $i$ 存在：
-若 $fail[fa[i]]$ 的一个儿子 $r$ 满足 $c(fa[i],i)=c(fail[fa[i]],r)$，则 $tree[i](x_0,x_0+k)=tree[r](1,k+1)$，即 $i$ 的失配指针应指向 $r$。否则 $i$ 的失配指针指向根节点。同时将 $i$ 入队。
+若 $fail[fa[i]]$ 的一个儿子 $r$ 满足 $c(fa[i],i)=c(fail[fa[i]],r)$，则 $tree[i] (x_0,x_0+k)=tree[r] (1,k+1)$，即 $i$ 的失配指针应指向 $r$。否则 $i$ 的失配指针指向根节点。同时将 $i$ 入队。
 
 若 $i$ 这个节点不存在，则给 $fa[i]$ 和 $fail[fa[i]]$ 的满足 $c(fa[i],i)=c(fail[fa[i]],r)$ 的儿子 $r$ 连一条边。
 
@@ -157,5 +157,7 @@ int main()
 
 # 例题
 
-<https://www.luogu.com.cn/problem/P3808>（模板）<https://www.luogu.com.cn/problem/P3796>（加强版）
+<https://www.luogu.com.cn/problem/P3808>（模板）
+
+<https://www.luogu.com.cn/problem/P3796>（加强版）
 （待补充）

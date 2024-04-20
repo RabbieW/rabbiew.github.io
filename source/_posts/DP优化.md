@@ -46,13 +46,13 @@ CF372C Watching Fireworks is Fun <https://codeforces.com/problemset/problem/372/
 
 
 $$
-f_{i,j} = \max \limits _{k=1} ^{n} \{f_{i-1,k}+b_i-|a_i-j|\}
+f_{i,j} = \max \limits_{k=1} ^{n} ( {f_{i-1,k} } +b_i-|{a_i}-j| )
 $$
 
 由于我们枚举了 $i$ 和 $j$，所以可以把确定的量提出来：
 
 $$
-f_{i,j} = \max \limits _{k=1} ^n \{f_{i-1,k}\}+b_i-|a_i-j|\}
+f_{i,j} = \max \limits_{k=1} ^n ( {f_{i-1,k} } )+b_i-|{a_i} -j|
 $$
 
 时间复杂度降为了 $O(mn)$，可以过。
@@ -62,7 +62,7 @@ $$
 观察一下朴素多重背包算法的式子：
 
 $$
-f[i][j]=\max \limits _{k=0} ^{m[i]} \{ f[i-1][j-k\dot \space w[i]]+k\dot \space v[i] \}
+f[i][j]=\max \limits_{k=0} ^{m[i]} ( f[i-1][j-k\cdot w[i]]+k\cdot v[i] )
 $$
 
 其中 $i$ 表示现在枚举到第 $i$ 中物品，$j$ 表示已经用了的背包容量，$k$ 表示第 $i$ 种物品放几个，$w[i]$ 表示体积，$v[i]$​ 表示价值，$m[i]$ 表示物品个数。
@@ -72,16 +72,13 @@ $$
 我们把这个式子改一下：
 
 $$
-\begin{aligned}
-f[i][j+y\dot \space w[i]] &=\max \limits _{k=1} ^{m[i]} \{ f[i-1][j+(y-k)w[i]]+k\dot \space v[i] \}\\
-&= \max \limits _{k=1} ^{m[i]} \{ f[i-1][j+(y-k) \dot \space w[i]] -(y-k)v[i] \}+y\dot \space v[i]
-\end{aligned}
+\begin{aligned} f[i][j+y \cdot  w[i]] &=\max \limits_{k=1} ^{m[i]} ( f[i-1][j+(y-k)w[i]]+k\cdot v[i] ) \newline &= \max \limits_{k=1} ^{m[i]} ( f[i-1][j+(y-k) \cdot w[i]] -(y-k)v[i] )+y\cdot v[i] \end{aligned}
 $$
 
 令 $t=y-k$​​，则
 
 $$
-f[i][j+y\dot \ w[i]]=\max \limits _{t=y-m[i]} ^{y-1} \{ f[i-1][j+t\dot \ w[i]] - t\dot \ v[i] \}+y\dot \ v[i]
+f[i][j+y\cdot w[i]]=\max \limits_{t=y-m[i]} ^{y-1}( f[i-1][j+t\cdot w[i]] - t\cdot v[i] )+y\cdot v[i]
 $$
 
 花括号内的东西可以用单调队列维护。
@@ -111,22 +108,22 @@ Loj 玩具装箱 <https://loj.ac/p/10188>
 状态转移方程：$f_i$​​​ 表示以 $i$​ 为右端点分一段的最小代价，$sum_i$​ 表示 $c$​​ 数组的前缀和。
 
 $$
-f_{i}=\min \limits _{j=0} ^{i-1} \{ f_j + (i-(j+1) + sum_i-sum_j - L) ^2 \}
+f_{i}=\min \limits_{j=0} ^{i-1} ( f_j + (i-(j+1) + sum_i-sum_j - L) ^2 )
 $$
 
 枚举 $i$，把确定的提出来：
 
 $$
 \begin{aligned}
-f_i &= \min \limits _{j=0} ^{i-1} \{ f_j + (i+sum_i - 1-L) ^2 + (j + sum_j) ^2 - 2 (i+sum_i-1-L)(j+sum_j) \}\\
-&= \min \limits _{j=0} ^{i-1} \{ f_j+(j+sum_j) ^2 - 2(i + sum_i-1-L)(j + sum_j) \} + (i+sum_i - 1 - L) ^2
+f_i &= \min \limits_{j=0} ^{i-1}( f_j + (i+sum_i - 1-L) ^2 + (j + sum_j) ^2 - 2 (i+sum_i-1-L)(j+sum_j) )\newline
+&= \min \limits_{j=0} ^{i-1} ( f_j+(j+sum_j) ^2 - 2(i + sum_i-1-L)(j + sum_j) ) + (i+sum_i - 1 - L) ^2
 \end{aligned}
 $$
 
 令 $g_i=sum_i+i$，$L'=L+1$，则
 
 $$
-f_i-(g_i-L')^2 = \min \{ f_j+g_j\ ^2 - 2(g_i-L')g_j \}
+f_i-(g_i-L')^2 = \min ( f_j+g_j\ ^2 - 2(g_i-L')g_j )
 $$
 
 我们把直线的方程 $y=kx+b$​ 变一下，就可以得到 $b=y-kx$​。
@@ -134,16 +131,16 @@ $$
 令
 
 $$
-b_i=f_i-(g_i-L') ^2\\
-y_j = f_j+g_j\ ^2\\
-k_i = 2(g_i-L')\\
+b_i=f_i-(g_i-L') ^2\newline
+y_j = f_j+g_j\ ^2\newline
+k_i = 2(g_i-L')\newline
 x_j = g_j
 $$
 
 我们就成功地把转移方程变成了直线方程：
 
 $$
-b_i=\min \limits _{j=0} ^{i-1} \{ y_j - k_i x_j \}
+b_i=\min \limits_{j=0} ^{i-1} ( y_j - k_i x_j )
 $$
 
 $k_i$ 表示一条经过点 $(x_j,y_j)$​ 的直线的斜率。
@@ -152,13 +149,16 @@ $k_i$ 表示一条经过点 $(x_j,y_j)$​ 的直线的斜率。
 
 - 怎么求这个点呢？
 
-我们画一下图。![qOAi8I.png](https://img-blog.csdnimg.cn/img_convert/1a4c5acab541717529a52b690ea8b9f7.png)
+我们画一下图。
+
+![pkSrIjP.png](https://s21.ax1x.com/2024/04/20/pkSrIjP.png)
 
 红色直线的斜率为 $k_i$。
 
 我们把这条直线向上移，直到碰到一个点：
 
-![qOAl2q.png](https://img-blog.csdnimg.cn/img_convert/4b56c25dd85f3cce0c38a0cdc0bbd337.png)
+![pkSr7B8.png](https://s21.ax1x.com/2024/04/20/pkSr7B8.png)
+
 碰到的第一个点就是要求的点。
 
 证明：反证法，若继续向上移，$b_i$ 会继续变大，所以后面的都不会比这个点更优。
@@ -193,10 +193,10 @@ $k_i$ 表示一条经过点 $(x_j,y_j)$​ 的直线的斜率。
 
 $$
 \begin {aligned}
-ans &= m ^2 \frac {\sum (dis[i]-average)^2}{m}\\
-&= m\sum(dis[i]-average)^2\\
-&= m\sum(dis[i] ^2 + average ^2 - 2dis[i]\dot \ average)\\
-&= m\sum(dis[i]^2)-2\dot \ sumdis ^2 + m^2 \dot \ \frac {sumdis^2}{m^2}\\
+ans &= m ^2 \frac {\sum (dis[i]-average)^2}{m}\newline
+&= m\sum(dis[i]-average)^2\newline
+&= m\sum(dis[i] ^2 + average ^2 - 2dis[i]\cdot average)\newline
+&= m\sum(dis[i]^2)-2\cdot sumdis ^2 + m^2 \cdot \frac {sumdis^2}{m^2}\newline
 &= m\sum(dis[i] ^2) - sumdis^2
 \end {aligned}
 $$
@@ -206,18 +206,18 @@ $$
 状态转移：
 
 $$
-f[i]=\min \limits _{j=0} ^{i-1} \{ f[j]+(s[i]-s[j])^2 \}\\
-\implies f[i] = \min \{ f[j]+s[i] ^2 + s[j] ^2 - 2 s[i]s[j] \}\\
-\implies f[i]-s[i] ^2 = \min \{ f[j]+s[j] ^2 - 2s[i]s[j] \}\\
-\implies b = \min \{ y-kx \}
+\begin{aligned} &f[i]=\min \limits_{j=0} ^{i-1} ( f[j]+(s[i]-s[j])^2 )\newline
+\Rightarrow &f[i] = \min ( f[j]+s[i] ^2 + s[j] ^2 - 2 s[i]s[j] ) \newline
+\Rightarrow &f[i]-s[i] ^2 = \min ( f[j]+s[j] ^2 - 2s[i]s[j] )\newline
+\Rightarrow &b = \min ( y-kx ) \end{aligned}
 $$
 
 也就是：
 
 $$
-b[i]=f[i]-s[i] ^2\\
-y[j]=f[j]+s[j] ^2\\
-k[i]=2s[i]\\
+b[i]=f[i]-s[i] ^2\newline
+y[j]=f[j]+s[j] ^2\newline
+k[i]=2s[i]\newline
 x[j]=s[j]
 $$
 
@@ -253,21 +253,16 @@ $$
 
 ### 决策单调性
 
-对于形如 $f[i]=\min \limits _{j=0} ^{i-1} \{ f[j] + val(j,i) \}$ 的转移方程，记 $p[i]$ 为令 $f[i]$ 取到最小值的值，即 $f[i]$ 的最优决策。若 $p$ 单调不减，则称 $f$​ 具有决策单调性。
+对于形如 $f[i]=\min \limits_{j=0} ^{i-1} ( f[j] + val(j,i) )$ 的转移方程，记 $p[i]$ 为令 $f[i]$ 取到最小值的值，即 $f[i]$ 的最优决策。若 $p$ 单调不减，则称 $f$​ 具有决策单调性。
 
 ### 定理
 
-在状态转移方程 $f[i]=\min \limits _{j=0} ^{i-1} \{ f[j] + val(j,i) \}$ 中，若函数 $val$ 满足四边形不等式，则 $f$​ 具有决策单调性。
+在状态转移方程 $f[i]=\min \limits_{j=0} ^{i-1} ( f[j] + val(j,i) )$ 中，若函数 $val$ 满足四边形不等式，则 $f$​ 具有决策单调性。
 
 ### 定理证明
 
 $$
-f[i]=\min {f[j]+w(j,i)}\\
-\implies f[p[i]]+w(p[i],i) \leq f[j]+w(j,i) \space\space\space\space\space (1)\\
-j\leq p[i] \leq i \leq i' \\
-\implies w(j,i')+w(p[i],i)\geq w(j,i)+w(p[i],i')\\
-\implies w(j,i')-w(j,i) \geq w(p[i],i') - w(p[i],i)\space\space\space\space\space (2)\\
-(1)+(2) \implies f[j]+w(j,i') \geq f[p[i]]+w(p[i],i')
+\begin {aligned} &f[i]=\min {f[j]+w(j,i)}\newline \Rightarrow &f[p[i]]+w(p[i],i) \leq f[j]+w(j,i) \space\space\space\space\space (1)\newline &j\leq p[i] \leq i \leq i' \newline \Rightarrow &w(j,i')+w(p[i],i)\geq w(j,i)+w(p[i],i')\newline \Rightarrow &w(j,i')-w(j,i) \geq w(p[i],i') - w(p[i],i)\space\space\space\space\space (2)\newline &(1)+(2) \Rightarrow f[j]+w(j,i') \geq f[p[i]]+w(p[i],i') \end{aligned}
 $$
 
 也就是对于 $i'$ 来说，$p[i]$ 比 $j$ 更优，即 $p[i'] \geq p[i]$。
@@ -276,7 +271,7 @@ $$
 
 当 $f$ 具有决策单调性时，$p$ 会被分成若干段，使每一段中所有元素的值相同，如下图：
 
-![qOkLgx.png](https://img-blog.csdnimg.cn/img_convert/edb2e1339326ae02e80406e57aa745ba.png)
+![pkSrqAg.png](https://s21.ax1x.com/2024/04/20/pkSrqAg.png)
 
 当我们求出了一个新的 $f[i]$，就可以通过一些操作计算出有哪些 $i'$ 的最优决策是 $p[i]$。
 
@@ -298,11 +293,11 @@ $$
 
 ## 二维区间dp的四边形不等式优化
 
-朴素的转移方程：$f(i,j)=\min \limits _{i \leq k < j} \{ f(i,k)+f(k+1,j)+w(i,j) \}$
+朴素的转移方程：$f(i,j)=\min \limits_{i \leq k < j} ( f(i,k)+f(k+1,j)+w(i,j) )$
 
 ### 定理1
 
-在转移方程 $f(i,j)=\min \limits _{i \leq k < j} \{ f(i,k)+f(k+1,j)+w(i,j) \}$（$f(i,i)=w(i,i)=0$）中，如果下面两个条件成立：
+在转移方程 $f(i,j)=\min \limits_{i \leq k < j} ( f(i,k)+f(k+1,j)+w(i,j) )$（$f(i,i)=w(i,i)=0$）中，如果下面两个条件成立：
 
 1. $w$ 满足四边形不等式；
 2. 对于任意的 $a\leq b \leq c \leq d$，有 $w(a,d) \geq w(b,c)$​。
@@ -311,7 +306,7 @@ $$
 
 ### 定理2（二维决策单调性）
 
-在转移方程 $f(i,j)=\min \limits _{i \leq k < j} \{ f(i,k)+f(k+1,j)+w(i,j) \}$（$f(i,i)=w(i,i)=0$）中，记 $p(i,j)$ 为 $f(i,j)$ 的最优决策。
+在转移方程 $f(i,j)=\min \limits_{i \leq k < j} ( f(i,k)+f(k+1,j)+w(i,j) )$（$f(i,i)=w(i,i)=0$）中，记 $p(i,j)$ 为 $f(i,j)$ 的最优决策。
 
 如果 $f$ 满足四边形不等式，那么对于任意 $i<j$，有 $p(i,j-1) \leq p(i,j) \leq p(i+1,j)$。
 
@@ -334,7 +329,7 @@ $$
 转移方程：
 
 $$
-f[i][j]=\min \limits _{k=0} ^{i-1} \{ f[k][j-1]+w(k+1,i) \}
+f[i][j]=\min \limits_{k=0} ^{i-1} ( f[k][j-1]+w(k+1,i) )
 $$
 
 其中$f[i][j]$ 表示前 $i$ 个村庄放了 $j$ 个邮局的最小距离和，$w(i,j)$ 表示第 $i$ ~ $j$ 个村庄中放一个邮局的最小距离和。
@@ -346,9 +341,7 @@ $sumx[i]$ 表示前 $i$ 个村庄的坐标和。
 对于 $w$：
 
 $$
-w(i,j)=sumx[j]-sumx[(i+j)/2]-sumx[(i+j-1)/2] + sumx[i-1]\\
-\implies w(l,r+1)+w(l+1,r)-w(l,r) - w(l+1,r+1)=sumx[(l+r+1)/2]-sumx[(l+r-1)/2]\geq 0\\
-\implies w(l,r+1)+w(l+1,r) \geq w(l,r)+w(l+1,r+1)
+\begin{aligned} &w(i,j)=sumx[j]-sumx[(i+j)/2]-sumx[(i+j-1)/2] + sumx[i-1]\newline \Rightarrow &w(l,r+1)+w(l+1,r)-w(l,r) - w(l+1,r+1)=sumx[(l+r+1)/2]-sumx[(l+r-1)/2]\geq 0\newline \Rightarrow &w(l,r+1)+w(l+1,r) \geq w(l,r)+w(l+1,r+1) \end{aligned}
 $$
 
 所以 $w$​ 满足四边形不等式。

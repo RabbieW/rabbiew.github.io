@@ -22,9 +22,9 @@ categories: OI
 
 以最长不上升子序列为例。
 
-朴素转移方程：$f_i = \max \limits _{j=0} ^{i - 1} (f_j+1)[a_j \ge a_i \lor j=0 ]$，$f_i$ 表示以 $a_i$ 结尾的最长子序列，从 $f_0$ 转移表示作为开头。这个 DP 时间复杂度为 $\mathcal{O} (n^2)$。
+朴素转移方程：$f_i = \max \limits_{j=0} ^{i - 1} (f_j+1)[a_j \ge a_i \lor j=0 ]$，$f_i$ 表示以 $a_i$ 结尾的最长子序列，从 $f_0$ 转移表示作为开头。这个 DP 时间复杂度为 $\mathcal{O} (n^2)$。
 
-考虑优化。枚举到 $k$ 时，如果有 $i,j \le k$，$a_i = a_j$ 且 $f_i < f_j$，那么 $f_i$ 显然没用。由于值域很小，可以用 $g_i$ 记录 $\max \limits _{a_j=i} f_j$，转移方程变为 $f_i = \max \limits _{j=a_i} ^{V} g_j$，在计算 $f_i$ 的同时更新 $g_{a_i}$ 即可，时间复杂度 $\mathcal{O}(nV)$。
+考虑优化。枚举到 $k$ 时，如果有 $i,j \le k$，$a_i = a_j$ 且 $f_i < f_j$，那么 $f_i$ 显然没用。由于值域很小，可以用 $g_i$ 记录 $\max \limits_{a_j=i} f_j$，转移方程变为 $f_i = \max \limits_{j=a_i}^{V} {g_j}$，在计算 $f_i$ 的同时更新 $g_{a_i}$ 即可，时间复杂度 $\mathcal{O}(nV)$。
 
 发现转移时，相当于在 $[0,V]$ 中求了一次后缀最大值，可以用数据结构维护区间最大值，更新 $g_{a_i}$ 的操作转化为单点修改，可以用线段树或其他数据结构维护，时间复杂度 $\mathcal{O}(n\log V)$，可以通过。
 
@@ -50,7 +50,7 @@ $p_i>0$ 时，若 $b_{j} \le a_i$ 即 $j \le k$，为了不改变目前最大值
 
 $p_i < 0$ 时，$a_i$ 删除更优，$f_{i,j} \leftarrow f_{i-1,j}+p_i$。
 
-为了保证最后 $b_j$ 可以取到，当 $a_i=b_j$ 时，$a_i$ 不能删除，$f_{i,j} = \min \limits _{v=0} ^j f_{i-1,v} = \min \limits _{v=0} ^{j} f_{i,v} - p_i$（减 $p_i$ 是因为 $v \le j$，在上面加上了 $p_i$，要把 $p_i$ 减回来）。
+为了保证最后 $b_j$ 可以取到，当 $a_i=b_j$ 时，$a_i$ 不能删除，$f_{i,j} = \min \limits_{v=0} ^j f_{i-1,v} = \min \limits_{v=0} ^{j} {f_{i,v} - p_i}$（减 $p_i$ 是因为 $v \le j$，在上面加上了 $p_i$，要把 $p_i$ 减回来）。
 
 最终答案即为 $f_{|a|,|b|}$。
 
@@ -90,7 +90,7 @@ signed main()
 
 ----
 
-先求出每个位置上的数最大可以填多少，设为 $b$，顺便判断是否有解：限制 $i$ 可能被满足当且仅当 $\max \limits _{j=l_i} ^{r_i} b_j = m_i$。
+先求出每个位置上的数最大可以填多少，设为 $b$，顺便判断是否有解：限制 $i$ 可能被满足当且仅当 $\max \limits_{j=l_i} ^{r_i} b_j = m_i$。
 
 类似[[FJOI2017]矩阵填数 - 洛谷](https://www.luogu.com.cn/problem/P3813)这道题，$b_i$ 不同的两个位置的填法互不相关，可以依次求 $b_i=x$ 的所有位置的填法，再乘起来。
 
@@ -102,11 +102,11 @@ signed main()
 
 如果 $i$ 不填 $x$，则 $y$ 到 $i-1$ 中至少有一个 $x$，所以 $\forall j: 0 \le j < y,\ f_{i,j}\leftarrow 0$，$\forall j : y \le j < i, \ f_{i,j} \leftarrow f_{i-1,j} \times (x-1)^{len_i}$。
 
-如果填了 $x$，则 $f_{i,i}\leftarrow \sum \limits _{j=0} ^{i-1} f_{i-1,j} \times [x^{len_i} - (x-1)^{len_i}]$。
+如果填了 $x$，则 $f_{i,i}\leftarrow \sum \limits_{j=0} ^{i-1} f_{i-1,j} \times [x^{len_i} - (x-1)^{len_i}]$。
 
 这里，位置编号是从 $1$ 开始的，$f_{i,0}$ 表示一个 $x$ 都没有。
 
-答案即为 $\sum \limits _{i=0} ^{last} f_{last,i}$。
+答案即为 $\sum \limits_{i=0} ^{last} {f_{last,i} }$。
 
 考虑优化，发现上面的转移可以转化为区间推平、区间乘、区间查询和单点修改，可以用线段树维护。
 
@@ -155,7 +155,7 @@ $$
 否则，设 $x$ 的两个儿子为 $lson$ 和 $rson$。
 
 $$
-f_{x,i} \leftarrow p_x\sum \limits _{j=1} ^{i-1} f_{lson,j} f_{rson,i} + (1-p_x)\sum \limits _{j=i+1} ^{V} f_{lson,j}f_{rson,i} +p_x\sum \limits _{j=1}^{i-1} f_{lson,i}f_{rson,j}+(1-p_x)\sum\limits_{j=i+1}^V f_{lson,i}f_{rson,j}+f_{lson,i}f_{rson,i}
+f_{x,i} \leftarrow p_x\sum \limits_{j=1} ^{i-1} { f_{lson,j} f_{rson,i} } + (1-p_x)\sum \limits_{j=i+1} ^{V} f_{lson,j}f_{rson,i} +p_x\sum \limits_{j=1}^{i-1} {f_{lson,i}f_{rson,j} }+(1-p_x)\sum\limits_{j=i+1}^V { {f_{lson,i}f_{rson,j} }+{f_{lson,i}f_{rson,i} } }
 $$
 
 要怎么把线段树合并和这个东西结合起来呢？
@@ -178,7 +178,7 @@ int merge(int x,int y,int l,int r)
 
 假设现在 $f$ 数组已经成功地存在了两棵线段树里，要把 $f_{rson}$ 合并到 $f_{lson}$ 上作为 $f_x$。
 
-现在合并到了区间 $[l,r]$。如果 $f_{rson}$ 在 $[l,r]$ 没有值，即 $y$ 为空，那么对于所有 $i \in [l,r]$，和它的值有关的 $f_{rson}$ 中的值都在这个区间外面，与 $i$ 本身无关，只与 $[l,r]$ 有关。具体来说，上面转移方程中，第一项、第二项和最后一项都是 $0$，第三项变为 $p_x\sum \limits _{j=1} ^{l-1} f_{lson,i}f_{rson,j}$，第四项变为 $(1-p_x)\sum \limits _{j=r+1}^V f_{lson,i}f_{rson,j}$。发现实际上就是给 $[l,r]$ 中的每个位置乘上 $p_x \sum \limits _{j=1}^{l-1}f_{rson,j}+(1-p_x)\sum \limits _{j=r+1}^Vf_{rson,j}$，变成了区间乘。$x$ 为空时同理，因为 $x$ 和 $y$ 的关系是对等的。发现要维护一些前缀和和后缀和，在下分时顺便更新之后传下去就行了。
+现在合并到了区间 $[l,r]$。如果 $f_{rson}$ 在 $[l,r]$ 没有值，即 $y$ 为空，那么对于所有 $i \in [l,r]$，和它的值有关的 $f_{rson}$ 中的值都在这个区间外面，与 $i$ 本身无关，只与 $[l,r]$ 有关。具体来说，上面转移方程中，第一项、第二项和最后一项都是 $0$，第三项变为 $p_x\sum \limits_{j=1} ^{l-1} { f_{lson,i}f_{rson,j} }$，第四项变为 $(1-p_x)\sum \limits_{j=r+1}^V { f_{lson,i}f_{rson,j} }$。发现实际上就是给 $[l,r]$ 中的每个位置乘上 $p_x \sum \limits_{j=1}^{l-1} {f_{rson,j} }+(1-p_x)\sum \limits_{j=r+1}^V f_{rson,j}$，变成了区间乘。$x$ 为空时同理，因为 $x$ 和 $y$ 的关系是对等的。发现要维护一些前缀和和后缀和，在下分时顺便更新之后传下去就行了。
 
 如果 $l=r$，直接根据转移方程暴力合并就行了。在这道题中，由于点的权值互不相同，所以不会有这种情况。
 
@@ -227,7 +227,7 @@ $1 \le n \le 5 \times 10 ^5$，$1 \le m \le 5 \times 10^5$。
 转移方程：
 
 $$
-f_{x,i} \leftarrow \sum \limits _{j=0} ^{i - 1} f_{x,i}f_{son,j}+\sum\limits _{j=0} ^{i-1} f_{x,j}f_{son,i}+f_{x,i}f_{xon,i}+f_{x,i}\sum \limits _{j=0}^{dep_x}f_{son,j}
+f_{x,i} \leftarrow \sum \limits_{j=0} ^{i - 1} { f_{x,i}f_{son,j} }+\sum\limits_{j=0} ^{i-1} { f_{x,j}f_{son,i} }+{ f_{x,i}f_{xon,i} }+f_{x,i}\sum \limits_{j=0}^{dep_x} {f_{son,j} }
 $$
 
 前面三项是 $edge(x,son)=0$，最后一项是填 $1$。

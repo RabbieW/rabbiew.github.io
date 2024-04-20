@@ -39,13 +39,7 @@ f(0,0) = 0
 $$
 
 $$
-f(i,j) =
-\left \{
-\begin{aligned}
-& f(i-1,j - 1) + X_i + D(j) & &j > 0 \\
-& \max \limits_{k=0} ^{i-1} f(i-1,k) & &j=0
-\end{aligned} 
-\right.
+f(i,j) = \begin{cases} {\begin{aligned} & f(i-1,j - 1) + X_i + D(j) & &j > 0 \newline & \max \limits_{k=0} ^{i-1} f(i-1,k) & &j=0 \end{aligned} } \end{cases}
 $$
 
 最后答案为 $\max \limits _{i=0} ^n \{f(n,i)\}$。
@@ -190,7 +184,7 @@ signed main()
 
 对于长度为 $1$ 的区间，有 $f(i,j,T_i) = 0$。
 
-在求 $g(i,j,k,l)$ 时，把 $[i,j]$ 划分成 $[i,p]$ 和 $[p + 1,j]$ 两个区间，则 $S(i,p)$ 应变为 $A_k(1,l - 1)$，$S(p + 1,j)$ 应变为 $A_k(l,l)$。转移方程为：$g(i,j,k,l) = \min \limits _{p=i} ^{j-1} \{ g(i,p,k,l - 1) + f(p + 1,j,A_{k,l}) \}$。
+在求 $g(i,j,k,l)$ 时，把 $[i,j]$ 划分成 $[i,p]$ 和 $[p + 1,j]$ 两个区间，则 $S(i,p)$ 应变为 $A_k(1,l - 1)$，$S(p + 1,j)$ 应变为 $A_k(l,l)$。转移方程为：$g(i,j,k,l) = \min \limits _{p=i} ^{j-1} { ( g(i,p,k,l - 1) + f(p + 1,j, A_{k,l } ) ) } $。
 
 而 $g(i,j,k,len(S))$ 表示把 $T(i,j)$ 变为 $A_k$ 的最小操作数。于是可以更新 $C_k$ 的答案：$f(i,j,C_k) = \min\{ f(i,j,C_k),g(i,j,k,len(k)) + 1 \}$。
 
@@ -313,13 +307,7 @@ int main()
 则有
 
 $$
-\left\{
-\begin{aligned}
-f(i,1) &= \max \limits _{j = son(i)} f(j,2) & &out(i) > 0\\
-f(i,2) &= \max \limits _{j=son(i)} f(j,1) & &out(i) > 0 \\
-f(i,1) &= f(i,2) = 0 & &out(i)=0
-\end {aligned}
-\right.
+\begin{cases} \begin{aligned} f(i,1) &= \max \limits _{j = son(i)} f(j,2) & &out(i) > 0\newline f(i,2) &= \max \limits _{j=son(i)} f(j,1) & &out(i) > 0 \newline f(i,1) &= f(i,2) = 0 & &out(i)=0 \end {aligned} \end{cases}
 $$
 
 时间复杂度 $O(M)$ 即可求出解。
@@ -333,13 +321,7 @@ $$
 则有
 
 $$
-\left\{
-\begin{aligned}
-g(i,1) &= \min \limits _{j=son(i)} \{ g(j,2) + dis(i,j) \} & &out(i) > 0 \\
-g(i,2) &= \max \limits _{j=son(i)} \{ g(j,1) + dis(i,j) \} & &out(i) > 0 \\
-g(i,1) &= g(i,2) = 0 & &out(i) = 0
-\end{aligned}
-\right.
+\begin{cases} \begin{aligned} g(i,1) &= \min \limits _{j=son(i)} \{ g(j,2) + dis(i,j) \} & &out(i) > 0 \newline g(i,2) &= \max \limits _{j=son(i)} \{ g(j,1) + dis(i,j) \} & &out(i) > 0 \newline g(i,1) &= g(i,2) = 0 & &out(i) = 0 \end{aligned} \end{cases}
 $$
 
 $g(i,1/2)$ 初始值为 $inf$，时间复杂度 $O(m)$ 即可求出解。

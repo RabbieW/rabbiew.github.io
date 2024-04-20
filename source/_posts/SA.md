@@ -3,6 +3,7 @@ title: SA 的 基础 知识
 date: 2022-08-06 16:28:38
 tags:
     - 字符串
+    - 后缀数组（SA）
     - 笔记
 categories: OI
 mathjax: true
