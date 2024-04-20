@@ -10,8 +10,8 @@ type: "about"
 
 推歌板块（不定期更新）：
 
-<iframe src="//player.bilibili.com/player.html?aid=1601073466&bvid=BV18Z421e7Kd&p=1&autoplay=0&hasMuteButton=1&highQuality=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+<iframe src="//player.bilibili.com/player.html?aid=1153411893&bvid=BV18Z421e7Kd&p=1&autoplay=0&hasMuteButton=1&highQuality=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
 
-<iframe src="//player.bilibili.com/player.html?aid=1601073466&bvid=BV1EE421M7zP&p=1&autoplay=0&hasMuteButton=1&highQuality=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+<iframe src="//player.bilibili.com/player.html?aid=1653279987&bvid=BV1EE421M7zP&p=1&autoplay=0&hasMuteButton=1&highQuality=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
 
 （html 好玄学 qwq）
