@@ -244,14 +244,14 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>7.1k</span>
+              <span>7.4k</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
                 <i class="far fa-clock"></i>
               </span>
                 <span class="post-meta-item-text">阅读时长 &asymp;</span>
-              <span>6 分钟</span>
+              <span>7 分钟</span>
             </span>
             <div class="post-description">线段树和线段树合并优化 DP 的学习笔记</div>
 
@@ -264,101 +264,90 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1>线段树优化 DP</h1>
-<p>有一些 DP 的初始化和转移操作可以转化为序列上 / 值域上的区间操作 / 区间查询问题，可以用线段树加速这些操作。</p>
-<h2 id="例题-1-NOIP1999-普及组-导弹拦截-洛谷">例题 1. <a target="_blank" rel="noopener" href="https://www.luogu.com.cn/problem/P1020">[NOIP1999 普及组] 导弹拦截 - 洛谷</a></h2>
-<p>求序列的最长不上升 / 最长上升子序列，$1 \le n \le 10^5$，$1 \le a_i \le 5\times10^4$。</p>
+        <h1 id="线段树优化-DP"><a href="#线段树优化-DP" class="headerlink" title="线段树优化 DP"></a>线段树优化 DP</h1><p>有一些 DP 的初始化和转移操作可以转化为序列上 &#x2F; 值域上的区间操作 &#x2F; 区间查询问题，可以用线段树加速这些操作。</p>
+<h2 id="例题-1-NOIP1999-普及组-导弹拦截-洛谷"><a href="#例题-1-NOIP1999-普及组-导弹拦截-洛谷" class="headerlink" title="例题 1. [NOIP1999 普及组] 导弹拦截 - 洛谷"></a>例题 1. <a target="_blank" rel="noopener" href="https://www.luogu.com.cn/problem/P1020">[NOIP1999 普及组] 导弹拦截 - 洛谷</a></h2><p>求序列的最长不上升 &#x2F; 最长上升子序列，$1 \le n \le 10^5$，$1 \le a_i \le 5\times10^4$。</p>
 <hr>
 <p>以最长不上升子序列为例。</p>
-<p>朴素转移方程：$f_i = \max \limits_{j=0} ^{i - 1} (f_j+1)[a_j \ge a_i \lor j=0 ]$，$f_i$ 表示以 $a_i$ 结尾的最长子序列，从 $f_0$ 转移表示作为开头。这个 DP 时间复杂度为 $\mathcal{O} (n^2)$。</p>
-<p>考虑优化。枚举到 $k$ 时，如果有 $i,j \le k$，$a_i = a_j$ 且 $f_i &lt; f_j$，那么 $f_i$ 显然没用。由于值域很小，可以用 $g_i$ 记录 $\max \limits_{a_j=i} f_j$，转移方程变为 $f_i = \max \limits_{j=a_i}^{V} {g_j}$，在计算 $f_i$ 的同时更新 $g_{a_i}$ 即可，时间复杂度 $\mathcal{O}(nV)$。</p>
+<p>朴素转移方程：$f_i &#x3D; \max \limits_{j&#x3D;0} ^{i - 1} (f_j+1)[a_j \ge a_i \lor j&#x3D;0 ]$，$f_i$ 表示以 $a_i$ 结尾的最长子序列，从 $f_0$ 转移表示作为开头。这个 DP 时间复杂度为 $\mathcal{O} (n^2)$。</p>
+<p>考虑优化。枚举到 $k$ 时，如果有 $i,j \le k$，$a_i &#x3D; a_j$ 且 $f_i &lt; f_j$，那么 $f_i$ 显然没用。由于值域很小，可以用 $g_i$ 记录 $\max \limits_{a_j&#x3D;i} f_j$，转移方程变为 $f_i &#x3D; \max \limits_{j&#x3D;a_i}^{V} {g_j}$，在计算 $f_i$ 的同时更新 $g_{a_i}$ 即可，时间复杂度 $\mathcal{O}(nV)$。</p>
 <p>发现转移时，相当于在 $[0,V]$ 中求了一次后缀最大值，可以用数据结构维护区间最大值，更新 $g_{a_i}$ 的操作转化为单点修改，可以用线段树或其他数据结构维护，时间复杂度 $\mathcal{O}(n\log V)$，可以通过。</p>
-<h2 id="例题-2-Problem-1334F-Codeforces">例题 2. <a target="_blank" rel="noopener" href="https://codeforces.com/problemset/problem/1334/F">Problem - 1334F - Codeforces</a></h2>
-<p>翻译：<a target="_blank" rel="noopener" href="https://www.luogu.com.cn/problem/CF1334F">Strange Function - 洛谷</a></p>
-<p>定义函数 $f$：$f(x)$ 为所有满足 $x_i&gt;x_{1,2,\cdots,i-1}$ 的 $x_i$ 组成的序列，例如 $f[3,1,2,7,7,3,6,7,8]=[3,7,8]$。</p>
-<p>给出两个序列 $a,b$，你可以删掉 $a$ 中的一些元素。删掉 $a_i$ 的代价为 $p_i$。你需要求出最小代价使得 $f(a)=b$ 或给出无解。</p>
+<h2 id="例题-2-Problem-1334F-Codeforces"><a href="#例题-2-Problem-1334F-Codeforces" class="headerlink" title="例题 2. Problem - 1334F - Codeforces"></a>例题 2. <a target="_blank" rel="noopener" href="https://codeforces.com/problemset/problem/1334/F">Problem - 1334F - Codeforces</a></h2><p>翻译：<a target="_blank" rel="noopener" href="https://www.luogu.com.cn/problem/CF1334F">Strange Function - 洛谷</a></p>
+<p>定义函数 $f$：$f(x)$ 为所有满足 $x_i&gt;x_{1,2,\cdots,i-1}$ 的 $x_i$ 组成的序列，例如 $f[3,1,2,7,7,3,6,7,8]&#x3D;[3,7,8]$。</p>
+<p>给出两个序列 $a,b$，你可以删掉 $a$ 中的一些元素。删掉 $a_i$ 的代价为 $p_i$。你需要求出最小代价使得 $f(a)&#x3D;b$ 或给出无解。</p>
 <p>$1 \le |a| \le 5\times 10^5$，$b_{i-1} &lt; b_i$。</p>
 <hr>
 <p>设计状态 $f_{i,j}$ 表示现在考虑到第 $i$ 个序列 $a$ 中的元素，考虑完元素 $i$ 后新序列的目前最大值（有可能不在目前的新序列中）为 $b_j$，目前代价最小为 $f_{i,j}$。</p>
 <p>设 $b_{k} \le a_i &lt; b_{k+1}$。</p>
-<p>先假设 $b_j$ 已经 / 将来一定会取到。</p>
+<p>先假设 $b_j$ 已经 &#x2F; 将来一定会取到。</p>
 <p>$p_i&gt;0$ 时，若 $b_{j} \le a_i$ 即 $j \le k$，为了不改变目前最大值，$a_i$ 必须删除，$f_{i,j} \leftarrow f_{i-1,j}+p_i$；否则，$a_i$ 删不删都可以，$f_{i,j} \leftarrow f_{i-1,j}$。</p>
 <p>$p_i &lt; 0$ 时，$a_i$ 删除更优，$f_{i,j} \leftarrow f_{i-1,j}+p_i$。</p>
-<p>为了保证最后 $b_j$ 可以取到，当 $a_i=b_j$ 时，$a_i$ 不能删除，$f_{i,j} = \min \limits_{v=0} ^j f_{i-1,v} = \min \limits_{v=0} ^{j} {f_{i,v} - p_i}$（减 $p_i$ 是因为 $v \le j$，在上面加上了 $p_i$，要把 $p_i$ 减回来）。</p>
+<p>为了保证最后 $b_j$ 可以取到，当 $a_i&#x3D;b_j$ 时，$a_i$ 不能删除，$f_{i,j} &#x3D; \min \limits_{v&#x3D;0} ^j f_{i-1,v} &#x3D; \min \limits_{v&#x3D;0} ^{j} {f_{i,v} - p_i}$（减 $p_i$ 是因为 $v \le j$，在上面加上了 $p_i$，要把 $p_i$ 减回来）。</p>
 <p>最终答案即为 $f_{|a|,|b|}$。</p>
 <p>发现上面的几个式子可以转化为区间加、区间查询和单点修改，可以用线段树维护。时间复杂度 $\mathcal{O}(|a|\log |b|)$。</p>
 <p>DP 的主要代码：</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">signed</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%lld&quot;</span>,&amp;n);</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>;i &lt;= n;i ++) <span class="built_in">scanf</span>(<span class="string">&quot;%lld&quot;</span>,a + i);</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>;i &lt;= n;i ++) <span class="built_in">scanf</span>(<span class="string">&quot;%lld&quot;</span>,p + i);</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%lld&quot;</span>,&amp;m);</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>;i &lt;= m;i ++) <span class="built_in">scanf</span>(<span class="string">&quot;%lld&quot;</span>,b + i),pl[b[i]] = i;</span><br><span class="line">    <span class="built_in">build</span>(<span class="number">1</span>,<span class="number">0</span>,m);</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>;i &lt;= n;i ++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">int</span> x = <span class="built_in">lower_bound</span>(b + <span class="number">1</span>,b + m + <span class="number">1</span>,a[i]) - b;</span><br><span class="line">        <span class="keyword">if</span> (p[i] &gt; <span class="number">0</span>) <span class="built_in">add</span>(<span class="number">1</span>,<span class="number">0</span>,x - <span class="number">1</span>,p[i]);</span><br><span class="line">        <span class="keyword">else</span> <span class="built_in">add</span>(<span class="number">1</span>,<span class="number">0</span>,m,p[i]);</span><br><span class="line">        <span class="keyword">if</span> (pl[a[i]]) <span class="built_in">upd</span>(<span class="number">1</span>,pl[a[i]],<span class="built_in">query</span>(<span class="number">1</span>,pl[a[i]] - <span class="number">1</span>) - p[i]);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// add 为区间加，query 为区间查询，upd 为单点修改</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">query</span>(<span class="number">1</span>,m) &lt; <span class="number">1e15</span>) <span class="built_in">printf</span>(<span class="string">&quot;YES\n%lld\n&quot;</span>,<span class="built_in">query</span>(<span class="number">1</span>,m));</span><br><span class="line">    <span class="keyword">else</span> <span class="built_in">printf</span>(<span class="string">&quot;NO\n&quot;</span>);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h2 id="例题-3-某位歌姬的故事-洛谷-Ex-Max-Limited-Sequence">例题 3. <a target="_blank" rel="noopener" href="https://www.luogu.com.cn/problem/P4229">某位歌姬的故事 - 洛谷</a> / <a target="_blank" rel="noopener" href="https://atcoder.jp/contests/abc262/tasks/abc262_h">Ex - Max Limited Sequence</a></h2>
-<p><s>其中前一道题实际上可以不用线段树优化 DP。</s></p>
-<p>构造一个长度为 $n$ 的整数序列 $a$，要求 $1\le a_i \le A$，还有 $Q$ 条形如 $\max {a_{l_i},a_{l_i+1},\cdots,a_{r_i}}=m_i$ 的限制，问有多少种构造方法。</p>
+
+<h2 id="例题-3-某位歌姬的故事-洛谷-Ex-Max-Limited-Sequence"><a href="#例题-3-某位歌姬的故事-洛谷-Ex-Max-Limited-Sequence" class="headerlink" title="例题 3. 某位歌姬的故事 - 洛谷 &#x2F; Ex - Max Limited Sequence"></a>例题 3. <a target="_blank" rel="noopener" href="https://www.luogu.com.cn/problem/P4229">某位歌姬的故事 - 洛谷</a> &#x2F; <a target="_blank" rel="noopener" href="https://atcoder.jp/contests/abc262/tasks/abc262_h">Ex - Max Limited Sequence</a></h2><p><del>其中前一道题实际上可以不用线段树优化 DP。</del></p>
+<p>构造一个长度为 $n$ 的整数序列 $a$，要求 $1\le a_i \le A$，还有 $Q$ 条形如 $\max {a_{l_i},a_{l_i+1},\cdots,a_{r_i}}&#x3D;m_i$ 的限制，问有多少种构造方法。</p>
 <p>要求时间复杂度为 $\mathcal{O}(Q\log Q)$，空间线性。</p>
 <hr>
-<p>先求出每个位置上的数最大可以填多少，设为 $b$，顺便判断是否有解：限制 $i$ 可能被满足当且仅当 $\max \limits_{j=l_i} ^{r_i} b_j = m_i$。</p>
-<p>类似<a target="_blank" rel="noopener" href="https://www.luogu.com.cn/problem/P3813">[FJOI2017]矩阵填数 - 洛谷</a>这道题，$b_i$ 不同的两个位置的填法互不相关，可以依次求 $b_i=x$ 的所有位置的填法，再乘起来。</p>
-<p>把位置、限制按 $b$ 分类，分别存起来，所有 $b_i=x$ 的位置把整个序列分成若干个左闭右开的区间。现在求 $b_i=x$ 的位置的填法数。注意 DP 时一个点不仅代表这一个点填什么，还代表了一个左闭右开的区间，设 $i$ 代表的区间长度为 $len_i$。</p>
+<p>先求出每个位置上的数最大可以填多少，设为 $b$，顺便判断是否有解：限制 $i$ 可能被满足当且仅当 $\max \limits_{j&#x3D;l_i} ^{r_i} b_j &#x3D; m_i$。</p>
+<p>类似<a target="_blank" rel="noopener" href="https://www.luogu.com.cn/problem/P3813">[FJOI2017]矩阵填数 - 洛谷</a>这道题，$b_i$ 不同的两个位置的填法互不相关，可以依次求 $b_i&#x3D;x$ 的所有位置的填法，再乘起来。</p>
+<p>把位置、限制按 $b$ 分类，分别存起来，所有 $b_i&#x3D;x$ 的位置把整个序列分成若干个左闭右开的区间。现在求 $b_i&#x3D;x$ 的位置的填法数。注意 DP 时一个点不仅代表这一个点填什么，还代表了一个左闭右开的区间，设 $i$ 代表的区间长度为 $len_i$。</p>
 <p>设计状态 $f_{i,j}$ 表示现在填到第 $i$ 个位置，上一个填 $x$ 的位置为 $j$，填法有 $f_{i,j}$ 种。</p>
 <p><strong>一个观察：右端点在 $i$ 代表的区间中的所有限制，只要满足了左端点最靠右的一个，剩下的所有都满足了</strong>。因此只需要考虑左端点最靠右的一个询问，设这个左端点为 $y$。则 $y$ 到 $i$ 中至少要有一个填 $x$。</p>
 <p>如果 $i$ 不填 $x$，则 $y$ 到 $i-1$ 中至少有一个 $x$，所以 $\forall j: 0 \le j &lt; y,\ f_{i,j}\leftarrow 0$，$\forall j : y \le j &lt; i, \ f_{i,j} \leftarrow f_{i-1,j} \times (x-1)^{len_i}$。</p>
-<p>如果填了 $x$，则 $f_{i,i}\leftarrow \sum \limits_{j=0} ^{i-1} f_{i-1,j} \times [x^{len_i} - (x-1)^{len_i}]$。</p>
+<p>如果填了 $x$，则 $f_{i,i}\leftarrow \sum \limits_{j&#x3D;0} ^{i-1} f_{i-1,j} \times [x^{len_i} - (x-1)^{len_i}]$。</p>
 <p>这里，位置编号是从 $1$ 开始的，$f_{i,0}$ 表示一个 $x$ 都没有。</p>
-<p>答案即为 $\sum \limits_{i=0} ^{last} {f_{last,i} }$。</p>
+<p>答案即为 $\sum \limits_{i&#x3D;0} ^{last} {f_{last,i} }$。</p>
 <p>考虑优化，发现上面的转移可以转化为区间推平、区间乘、区间查询和单点修改，可以用线段树维护。</p>
 <p>在实现时，区间查询的结果也可以用另外一个数组记录，看起来好看一点。</p>
-<p>我的代码写得非常丑，好看的正解代码可以在洛谷 / AT 上找 qwq</p>
+<p>我的代码写得非常丑，好看的正解代码可以在洛谷 &#x2F; AT 上找 qwq</p>
 <p>AT 那道题和这题是一样的，只是没有多测。</p>
-<h2 id="其他题目">其他题目</h2>
-<p><a target="_blank" rel="noopener" href="https://www.luogu.com.cn/problem/P2605">https://www.luogu.com.cn/problem/P2605</a></p>
+<h2 id="其他题目"><a href="#其他题目" class="headerlink" title="其他题目"></a>其他题目</h2><p><a target="_blank" rel="noopener" href="https://www.luogu.com.cn/problem/P2605">https://www.luogu.com.cn/problem/P2605</a></p>
 <p>待补充</p>
-<h1>线段树合并优化 DP</h1>
-<p>在一些树上 DP 的题目中，需要把父亲和儿子的 DP 信息合并起来，而合并的过程可以转化为线段树合并操作。</p>
-<h2 id="例题-1-PKUWC2018-Minimax-洛谷">例题 1. <a target="_blank" rel="noopener" href="https://www.luogu.com.cn/problem/P5298">[PKUWC2018] Minimax - 洛谷</a></h2>
-<p>小 $C$ 有一棵 $n$ 个结点的有根树，根是 $1$ 号结点，且每个结点最多有两个子结点。</p>
+<h1 id="线段树合并优化-DP"><a href="#线段树合并优化-DP" class="headerlink" title="线段树合并优化 DP"></a>线段树合并优化 DP</h1><p>在一些树上 DP 的题目中，需要把父亲和儿子的 DP 信息合并起来，而合并的过程可以转化为线段树合并操作。</p>
+<h2 id="例题-1-PKUWC2018-Minimax-洛谷"><a href="#例题-1-PKUWC2018-Minimax-洛谷" class="headerlink" title="例题 1. [PKUWC2018] Minimax - 洛谷"></a>例题 1. <a target="_blank" rel="noopener" href="https://www.luogu.com.cn/problem/P5298">[PKUWC2018] Minimax - 洛谷</a></h2><p>小 $C$ 有一棵 $n$ 个结点的有根树，根是 $1$ 号结点，且每个结点最多有两个子结点。</p>
 <p>定义结点 $x$ 的权值为：</p>
 <p>1.若 $x$ 没有子结点，那么它的权值会在输入里给出，<strong>保证这类点中每个结点的权值互不相同</strong>。</p>
 <p>2.若 $x$ 有子结点，那么它的权值有 $p_x$ 的概率是它的子结点的权值的最大值，有 $1-p_x$ 的概率是它的子结点的权值的最小值。</p>
 <p>现在小 $C$ 想知道，假设 $1$ 号结点的权值有 $m$ 种可能性，<strong>权值第 $i$ 小</strong>的可能性的权值是 $V_i$，它的概率为 $D_i(D_i&gt;0)$，求：</p>
-<p>$$<br>
-\sum_{i=1}^{m}i\cdot V_i\cdot D_i^2<br>
-$$</p>
+<p>$$<br>\sum_{i&#x3D;1}^{m}i\cdot V_i\cdot D_i^2<br>$$</p>
 <p>你需要输出答案对 $998244353$ 取模的值。</p>
 <hr>
 <p>一眼树形 DP。设计状态 $f_{x,i}$ 表示节点 $x$ 取到权值 $i$ 的概率。</p>
-<p>若 $x$ 为叶子节点，则 $f_{x,i} \leftarrow [val_x = i] val_x$；</p>
+<p>若 $x$ 为叶子节点，则 $f_{x,i} \leftarrow [val_x &#x3D; i] val_x$；</p>
 <p>若 $x$ 只有一个儿子，则 $f_{x,i} \leftarrow f_{son_x,i}$；</p>
 <p>否则，设 $x$ 的两个儿子为 $lson$ 和 $rson$。</p>
-<p>$$<br>
-f_{x,i} \leftarrow p_x\sum \limits_{j=1} ^{i-1} { f_{lson,j} f_{rson,i} } + (1-p_x)\sum \limits_{j=i+1} ^{V} f_{lson,j}f_{rson,i} +p_x\sum \limits_{j=1}^{i-1} {f_{lson,i}f_{rson,j} }+(1-p_x)\sum\limits_{j=i+1}^V { {f_{lson,i}f_{rson,j} }+{f_{lson,i}f_{rson,i} } }<br>
-$$</p>
+<p>$$<br>f_{x,i} \leftarrow p_x\sum \limits_{j&#x3D;1} ^{i-1} { f_{lson,j} f_{rson,i} } + (1-p_x)\sum \limits_{j&#x3D;i+1} ^{V} f_{lson,j}f_{rson,i} +p_x\sum \limits_{j&#x3D;1}^{i-1} {f_{lson,i}f_{rson,j} }+(1-p_x)\sum\limits_{j&#x3D;i+1}^V { {f_{lson,i}f_{rson,j} }+{f_{lson,i}f_{rson,i} } }<br>$$</p>
 <p>要怎么把线段树合并和这个东西结合起来呢？</p>
 <p>$x$ 为叶子节点就是单点修改，只有一个儿子就是 <code>rt[x] = rt[sonx]</code>，主要问题是两个儿子的情况。</p>
 <p>想一下线段树合并的过程：</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">merge</span><span class="params">(<span class="type">int</span> x,<span class="type">int</span> y,<span class="type">int</span> l,<span class="type">int</span> r)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!x || !y) <span class="keyword">return</span> x + y; <span class="comment">// 其中一个为空就直接返回</span></span><br><span class="line">    <span class="comment">// tree[x] &lt;- tree[y]</span></span><br><span class="line">    <span class="keyword">if</span> (l == r) <span class="keyword">return</span> x; <span class="comment">// 没法往下分就返回</span></span><br><span class="line">    tree[x].ls = <span class="built_in">merge</span>(tree[x].ls,tree[y].ls,l,mid);</span><br><span class="line">    tree[x].rs = <span class="built_in">merge</span>(tree[x].rs,tree[y].rs,mid + <span class="number">1</span>,r); <span class="comment">// 递归</span></span><br><span class="line">    <span class="keyword">return</span> x;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>假设现在 $f$ 数组已经成功地存在了两棵线段树里，要把 $f_{rson}$ 合并到 $f_{lson}$ 上作为 $f_x$。</p>
-<p>现在合并到了区间 $[l,r]$。如果 $f_{rson}$ 在 $[l,r]$ 没有值，即 $y$ 为空，那么对于所有 $i \in [l,r]$，和它的值有关的 $f_{rson}$ 中的值都在这个区间外面，与 $i$ 本身无关，只与 $[l,r]$ 有关。具体来说，上面转移方程中，第一项、第二项和最后一项都是 $0$，第三项变为 $p_x\sum \limits_{j=1} ^{l-1} { f_{lson,i}f_{rson,j} }$，第四项变为 $(1-p_x)\sum \limits_{j=r+1}^V { f_{lson,i}f_{rson,j} }$。发现实际上就是给 $[l,r]$ 中的每个位置乘上 $p_x \sum \limits_{j=1}^{l-1} {f_{rson,j} }+(1-p_x)\sum \limits_{j=r+1}^V f_{rson,j}$，变成了区间乘。$x$ 为空时同理，因为 $x$ 和 $y$ 的关系是对等的。发现要维护一些前缀和和后缀和，在下分时顺便更新之后传下去就行了。</p>
-<p>如果 $l=r$，直接根据转移方程暴力合并就行了。在这道题中，由于点的权值互不相同，所以不会有这种情况。</p>
+<p>现在合并到了区间 $[l,r]$。如果 $f_{rson}$ 在 $[l,r]$ 没有值，即 $y$ 为空，那么对于所有 $i \in [l,r]$，和它的值有关的 $f_{rson}$ 中的值都在这个区间外面，与 $i$ 本身无关，只与 $[l,r]$ 有关。具体来说，上面转移方程中，第一项、第二项和最后一项都是 $0$，第三项变为 $p_x\sum \limits_{j&#x3D;1} ^{l-1} { f_{lson,i}f_{rson,j} }$，第四项变为 $(1-p_x)\sum \limits_{j&#x3D;r+1}^V { f_{lson,i}f_{rson,j} }$。发现实际上就是给 $[l,r]$ 中的每个位置乘上 $p_x \sum \limits_{j&#x3D;1}^{l-1} {f_{rson,j} }+(1-p_x)\sum \limits_{j&#x3D;r+1}^V f_{rson,j}$，变成了区间乘。$x$ 为空时同理，因为 $x$ 和 $y$ 的关系是对等的。发现要维护一些前缀和和后缀和，在下分时顺便更新之后传下去就行了。</p>
+<p>如果 $l&#x3D;r$，直接根据转移方程暴力合并就行了。在这道题中，由于点的权值互不相同，所以不会有这种情况。</p>
 <p>否则往下继续分就行了。注意下分前先下传 tag，合并完儿子之后再 pushup。</p>
 <p>合并的代码：</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">merge</span><span class="params">(<span class="type">int</span> x,<span class="type">int</span> y,<span class="type">int</span> l,<span class="type">int</span> r,<span class="type">int</span> xsum,<span class="type">int</span> ysum,<span class="type">int</span> P)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (!x &amp;&amp; !y) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (!x || !y)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (!x) <span class="built_in">swap</span>(x,y),<span class="built_in">swap</span>(xsum,ysum);</span><br><span class="line">        tree[x].sum = <span class="number">1ll</span> * tree[x].sum * xsum % mod;</span><br><span class="line">        tree[x].tg = <span class="number">1ll</span> * tree[x].tg * xsum % mod;</span><br><span class="line">        <span class="keyword">return</span> x;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">pushdown</span>(x),<span class="built_in">pushdown</span>(y);</span><br><span class="line">    <span class="type">int</span> tmpx = tree[tree[x].ls].sum,tmpy = tree[tree[y].ls].sum;</span><br><span class="line">    tree[x].ls = <span class="built_in">merge</span>(tree[x].ls,tree[y].ls,l,mid,(xsum + <span class="number">1ll</span> * tree[tree[y].rs].sum * (<span class="number">1</span> - P + mod) % mod) % mod,(ysum + <span class="number">1ll</span> * tree[tree[x].rs].sum * (<span class="number">1</span> - P + mod) % mod) % mod,P);</span><br><span class="line">    tree[x].rs = <span class="built_in">merge</span>(tree[x].rs,tree[y].rs,mid + <span class="number">1</span>,r,(xsum + <span class="number">1ll</span> * tmpy * P % mod) % mod,(ysum + <span class="number">1ll</span> * tmpx * P % mod) % mod,P);</span><br><span class="line">    <span class="built_in">pushup</span>(x);</span><br><span class="line">    <span class="keyword">return</span> x;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
 <p>剩下的都是动态开点线段树板子。</p>
 <p>最后查询的时候，就是在根节点的线段树上单点查找。</p>
-<h2 id="例题-2-NOI2020-命运-洛谷">例题 2. <a target="_blank" rel="noopener" href="https://www.luogu.com.cn/problem/P6773">[NOI2020] 命运 - 洛谷</a></h2>
-<p>给定一棵树 $T = (V, E)$ 和点对集合 $\mathcal Q \subseteq V \times V$ ，满足对于所有 $(u, v) \in \mathcal Q$，都有 $u \neq v$，并且 $u$ 是 $v$ 在树 $T$ 上的祖先。其中 $V$ 和 $E$ 分别代表树 $T$ 的结点集和边集。求有多少个不同的函数 $f$ : $E \to {0, 1}$（将每条边 $e \in E$ 的 $f(e)$ 值置为 $0$ 或 $1$），满足对于任何 $(u, v) \in \mathcal Q$，都存在 $u$ 到 $v$ 路径上的一条边 $e$ 使得 $f(e) = 1$。由于答案可能非常大，你只需要输出结果对 $998,244,353$（一个素数）取模的结果。</p>
+<h2 id="例题-2-NOI2020-命运-洛谷"><a href="#例题-2-NOI2020-命运-洛谷" class="headerlink" title="例题 2. [NOI2020] 命运 - 洛谷"></a>例题 2. <a target="_blank" rel="noopener" href="https://www.luogu.com.cn/problem/P6773">[NOI2020] 命运 - 洛谷</a></h2><p>给定一棵树 $T &#x3D; (V, E)$ 和点对集合 $\mathcal Q \subseteq V \times V$ ，满足对于所有 $(u, v) \in \mathcal Q$，都有 $u \neq v$，并且 $u$ 是 $v$ 在树 $T$ 上的祖先。其中 $V$ 和 $E$ 分别代表树 $T$ 的结点集和边集。求有多少个不同的函数 $f$ : $E \to {0, 1}$（将每条边 $e \in E$ 的 $f(e)$ 值置为 $0$ 或 $1$），满足对于任何 $(u, v) \in \mathcal Q$，都存在 $u$ 到 $v$ 路径上的一条边 $e$ 使得 $f(e) &#x3D; 1$。由于答案可能非常大，你只需要输出结果对 $998,244,353$（一个素数）取模的结果。</p>
 <p>$1 \le n \le 5 \times 10 ^5$，$1 \le m \le 5 \times 10^5$。</p>
 <hr>
 <p>这道题和前面讲的 某位歌姬的故事 这道题很像，这道题就是把那道题的部分分做法搬到了树上。</p>
 <p>这道题也有<strong>一个观察：对于下端点相同的限制，上端点最深的满足，则这些限制都满足</strong>。</p>
 <p>设计状态 $f_{i,j}$ 表示在节点 $i$ 的子树中，还未被满足的限制中上端点最深的深度为 $j$，方案数为 $f_{i,j}$。根节点深度为 $1$。</p>
 <p>转移方程：</p>
-<p>$$<br>
-f_{x,i} \leftarrow \sum \limits_{j=0} ^{i - 1} { f_{x,i}f_{son,j} }+\sum\limits_{j=0} ^{i-1} { f_{x,j}f_{son,i} }+{ f_{x,i}f_{xon,i} }+f_{x,i}\sum \limits_{j=0}^{dep_x} {f_{son,j} }<br>
-$$</p>
-<p>前面三项是 $edge(x,son)=0$，最后一项是填 $1$。</p>
+<p>$$<br>f_{x,i} \leftarrow \sum \limits_{j&#x3D;0} ^{i - 1} { f_{x,i}f_{son,j} }+\sum\limits_{j&#x3D;0} ^{i-1} { f_{x,j}f_{son,i} }+{ f_{x,i}f_{xon,i} }+f_{x,i}\sum \limits_{j&#x3D;0}^{dep_x} {f_{son,j} }<br>$$</p>
+<p>前面三项是 $edge(x,son)&#x3D;0$，最后一项是填 $1$。</p>
 <p>类似上一道题，这题也可以用线段树合并优化转移。但要注意，这道题里 $x$ 和 $son$ 的关系并不对等，要分别讨论左边为空和右边为空的情况。</p>
 <p>合并代码：</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">merge</span><span class="params">(<span class="type">int</span> x,<span class="type">int</span> y,<span class="type">int</span> l,<span class="type">int</span> r,<span class="type">int</span> pre,<span class="type">int</span> sonpre,<span class="type">int</span> sondep)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"><span class="comment">//    printf(&quot;%d %d %d %d %d %d %d\n&quot;,x,y,l,r,pre,sonpre,sondep);</span></span><br><span class="line">    <span class="keyword">if</span> (!x &amp;&amp; !y) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">if</span> (!x)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">swap</span>(x,y);</span><br><span class="line">        tree[x].sum = <span class="number">1ll</span> * tree[x].sum * pre % mod;</span><br><span class="line"><span class="comment">//        printf(&quot;sum %d\n&quot;,tree[x].sum);</span></span><br><span class="line">        tree[x].tg = <span class="number">1ll</span> * tree[x].tg * pre % mod;</span><br><span class="line">        <span class="keyword">return</span> x;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (!y)</span><br><span class="line">    &#123;</span><br><span class="line">        tree[x].sum = <span class="number">1ll</span> * tree[x].sum * (sondep + sonpre) % mod;</span><br><span class="line">        tree[x].tg = <span class="number">1ll</span> * tree[x].tg * (sondep + sonpre) % mod;</span><br><span class="line">        <span class="keyword">return</span> x;</span><br><span class="line">     &#125;</span><br><span class="line">     <span class="keyword">if</span> (l == r)</span><br><span class="line">     &#123;</span><br><span class="line">        tree[x].sum = (<span class="number">1ll</span> * tree[x].sum * ((sondep + sonpre) % mod + tree[y].sum) % mod + <span class="number">1ll</span> * tree[y].sum * pre % mod) % mod;</span><br><span class="line"><span class="comment">//        printf(&quot;sum %d\n&quot;,tree[x].sum);</span></span><br><span class="line">        <span class="keyword">return</span> x;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">pushdown</span>(x),<span class="built_in">pushdown</span>(y);</span><br><span class="line">    <span class="type">int</span> newpre = (pre + tree[tree[x].ls].sum) % mod;</span><br><span class="line">    <span class="type">int</span> newsonpre = (sonpre + tree[tree[y].ls].sum) % mod;</span><br><span class="line">    tree[x].ls = <span class="built_in">merge</span>(tree[x].ls,tree[y].ls,l,mid,pre,sonpre,sondep);</span><br><span class="line">    tree[x].rs = <span class="built_in">merge</span>(tree[x].rs,tree[y].rs,mid + <span class="number">1</span>,r,newpre,newsonpre,sondep);</span><br><span class="line">    <span class="built_in">pushup</span>(x);</span><br><span class="line">    <span class="keyword">return</span> x;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h1>总结</h1>
-<p>遇到整个区间转移的问题，可以往线段树优化上考虑。（？）</p>
+
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>遇到整个区间转移的问题，可以往线段树优化上考虑。（？）</p>
 
     </div>
 
@@ -449,7 +438,7 @@ $$</p>
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">线段树优化 DP</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%8B%E9%A2%98-1-NOIP1999-%E6%99%AE%E5%8F%8A%E7%BB%84-%E5%AF%BC%E5%BC%B9%E6%8B%A6%E6%88%AA-%E6%B4%9B%E8%B0%B7"><span class="nav-number">1.1.</span> <span class="nav-text">例题 1. [NOIP1999 普及组] 导弹拦截 - 洛谷</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%8B%E9%A2%98-2-Problem-1334F-Codeforces"><span class="nav-number">1.2.</span> <span class="nav-text">例题 2. Problem - 1334F - Codeforces</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%8B%E9%A2%98-3-%E6%9F%90%E4%BD%8D%E6%AD%8C%E5%A7%AC%E7%9A%84%E6%95%85%E4%BA%8B-%E6%B4%9B%E8%B0%B7-Ex-Max-Limited-Sequence"><span class="nav-number">1.3.</span> <span class="nav-text">例题 3. 某位歌姬的故事 - 洛谷 &#x2F; Ex - Max Limited Sequence</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E9%A2%98%E7%9B%AE"><span class="nav-number">1.4.</span> <span class="nav-text">其他题目</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">2.</span> <span class="nav-text">线段树合并优化 DP</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%8B%E9%A2%98-1-PKUWC2018-Minimax-%E6%B4%9B%E8%B0%B7"><span class="nav-number">2.1.</span> <span class="nav-text">例题 1. [PKUWC2018] Minimax - 洛谷</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%8B%E9%A2%98-2-NOI2020-%E5%91%BD%E8%BF%90-%E6%B4%9B%E8%B0%B7"><span class="nav-number">2.2.</span> <span class="nav-text">例题 2. [NOI2020] 命运 - 洛谷</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BA%BF%E6%AE%B5%E6%A0%91%E4%BC%98%E5%8C%96-DP"><span class="nav-number">1.</span> <span class="nav-text">线段树优化 DP</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%8B%E9%A2%98-1-NOIP1999-%E6%99%AE%E5%8F%8A%E7%BB%84-%E5%AF%BC%E5%BC%B9%E6%8B%A6%E6%88%AA-%E6%B4%9B%E8%B0%B7"><span class="nav-number">1.1.</span> <span class="nav-text">例题 1. [NOIP1999 普及组] 导弹拦截 - 洛谷</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%8B%E9%A2%98-2-Problem-1334F-Codeforces"><span class="nav-number">1.2.</span> <span class="nav-text">例题 2. Problem - 1334F - Codeforces</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%8B%E9%A2%98-3-%E6%9F%90%E4%BD%8D%E6%AD%8C%E5%A7%AC%E7%9A%84%E6%95%85%E4%BA%8B-%E6%B4%9B%E8%B0%B7-Ex-Max-Limited-Sequence"><span class="nav-number">1.3.</span> <span class="nav-text">例题 3. 某位歌姬的故事 - 洛谷 &#x2F; Ex - Max Limited Sequence</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B6%E4%BB%96%E9%A2%98%E7%9B%AE"><span class="nav-number">1.4.</span> <span class="nav-text">其他题目</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%BA%BF%E6%AE%B5%E6%A0%91%E5%90%88%E5%B9%B6%E4%BC%98%E5%8C%96-DP"><span class="nav-number">2.</span> <span class="nav-text">线段树合并优化 DP</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%8B%E9%A2%98-1-PKUWC2018-Minimax-%E6%B4%9B%E8%B0%B7"><span class="nav-number">2.1.</span> <span class="nav-text">例题 1. [PKUWC2018] Minimax - 洛谷</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BE%8B%E9%A2%98-2-NOI2020-%E5%91%BD%E8%BF%90-%E6%B4%9B%E8%B0%B7"><span class="nav-number">2.2.</span> <span class="nav-text">例题 2. [NOI2020] 命运 - 洛谷</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%BB%E7%BB%93"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -533,12 +522,12 @@ $$</p>
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">64k</span>
+    <span title="站点总字数">65k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">58 分钟</span>
+    <span title="站点阅读时长">1:01</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
