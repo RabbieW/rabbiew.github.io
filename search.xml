@@ -81,6 +81,54 @@
       </tags>
   </entry>
   <entry>
+    <title>AC 自动机 学习笔记</title>
+    <url>/2021/12/07/AC-Automaton/</url>
+    <content><![CDATA[<h1 id="前置知识"><a href="#前置知识" class="headerlink" title="前置知识"></a>前置知识</h1><ul>
+<li>Trie 树</li>
+<li>KMP 的思想（也许不用？）</li>
+</ul>
+<h1 id="AC自动机是什么？"><a href="#AC自动机是什么？" class="headerlink" title="AC自动机是什么？"></a>AC自动机是什么？</h1><p><del>可以帮你自动A题的作弊玩意</del></p>
+<blockquote>
+<p>AC 自动机是 以 Trie 的结构为基础，结合 KMP 的思想 建立的。<br>简单来说，建立一个 AC 自动机有两个步骤：<br>1.基础的 Trie 结构：将所有的模式串构成一棵 Trie。<br>2.KMP 的思想：对 Trie 树上所有的结点构造失配指针。<br>然后就可以利用它进行多模式匹配了。<br>——OI-Wiki</p>
+</blockquote>
+<h1 id="模板题"><a href="#模板题" class="headerlink" title="模板题"></a>模板题</h1><p><a href="https://www.luogu.com.cn/problem/P3808">https://www.luogu.com.cn/problem/P3808</a><br>给定 $n$ 个模式串 $s_{1,\dots ,n}$ 和一个文本串 $t$，求有多少个不同的模式串在文本串里出现过。<br>两个模式串不同当且仅当他们<strong>编号</strong>不同。</p>
+<p>$1 \leq n \leq 1e6$，$1 \leq |t| \leq 1e6$，$1 \leq \sum \limits_{i&#x3D;1} ^n |s_i| \leq 1e6$。</p>
+<h1 id="算法流程"><a href="#算法流程" class="headerlink" title="算法流程"></a>算法流程</h1><p>对于上面这道题，显然我们可以对于每个模式串都判断一次是否在文本串里，时间复杂度 $O(n · |t|)$。很明显过不了。</p>
+<p>这时，我们想到：KMP 算法中，我们利用了<strong>失配指针</strong>减少了不必要的比较，提高了算法效率！这种想法是否也可以用在这一题里呢？</p>
+<p>显然是可以的。</p>
+<p>考虑两个模式串 <code>abcd</code> 和 <code>bce</code>，文本串为 <code>abce</code>。</p>
+<p>对于第一个模式串，当我们判断到文本串 <code>e</code> 这个字符时，发现不对了。如果按照上面的思路，我们需要从头再枚举，判断第二个模式串是否出现。但是，我们观察到，<code>bce</code> 的前两个字符在判断一个模式串时就已经被比较过了，产生了不必要的比较。因此，我们可以用一个失配指针，从第一个模式串的 <code>c</code> 指向第二个模式串的 <code>c</code>。</p>
+<p>存储模式串，我们使用 Trie 树。</p>
+<p>通过上面的这个例子，我们可以发现：当一个模式串的某一前缀为另一模式串的子串时，可以用上失配指针。</p>
+<p>具体地说，若 $S_i(1,k) &#x3D; S_j(x,x+k-1)$，就产生一个从 $S_j[x+k-1]$ 到 $S_i[k]$ 的失配指针，因为当 $S_j(1,x+k-1)$ 在文本串中时，$S_j(x,x+k-1)&#x3D;S_i(1,k)$ 也一定在文本串中，我们无需比较 $S_i$ 的前  $k$ 位。</p>
+<p>通过一段分析，我们已经大致得出了算法的思路：存模式串，建失配指针，查找。</p>
+<p>接下来就只剩细节问题了。</p>
+<h2 id="失配指针的建立"><a href="#失配指针的建立" class="headerlink" title="失配指针的建立"></a>失配指针的建立</h2><p>我们使用 BFS 建立失配指针。</p>
+<p>来看看这样的一个 Trie 树。</p>
+<p>（Trie 树的所有节点都代表了一个字符串，所有边都代表了一个字符）</p>
+<p>（图待补充）</p>
+<p>很明显，对于第一层的所有节点，失配指针只能指向根节点。</p>
+<p>对于第二层及以下的层：</p>
+<p>设当前正在考虑的节点为 $i$，它代表的字符串为 $tree[i]$，其父亲为 $fa[i]$，$x$ 的失配指针指向的节点为 $fail[x]$，连接 $x$ 和 $y$ 的边代表的字符为 $c(x,y)$。</p>
+<p>根据失配指针的定义，$tree[fa[i]] (x_0,x_0+k-1)&#x3D;tree[fail[fa[i]]] (1,k)$。</p>
+<p>若 $i$ 存在：<br>若 $fail[fa[i]]$ 的一个儿子 $r$ 满足 $c(fa[i],i)&#x3D;c(fail[fa[i]],r)$，则 $tree[i] (x_0,x_0+k)&#x3D;tree[r] (1,k+1)$，即 $i$ 的失配指针应指向 $r$。否则 $i$ 的失配指针指向根节点。同时将 $i$ 入队。</p>
+<p>若 $i$ 这个节点不存在，则给 $fa[i]$ 和 $fail[fa[i]]$ 的满足 $c(fa[i],i)&#x3D;c(fail[fa[i]],r)$ 的儿子 $r$ 连一条边。</p>
+<p>这样，经过一次 BFS，失配指针就建立好了。</p>
+<h2 id="查找答案"><a href="#查找答案" class="headerlink" title="查找答案"></a>查找答案</h2><p>和暴力的思路差不多，在 Trie 树中，一个一个字符查找文本串，如果到了一个模式串的末尾就更新答案，如果匹配不上就跳失配指针。</p>
+<h1 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h1><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;cstdio&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;cstring&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;queue&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> n;</span><br><span class="line"><span class="type">char</span> s[<span class="number">1000010</span>];</span><br><span class="line"><span class="type">int</span> tr[<span class="number">1000010</span>][<span class="number">30</span>],tg[<span class="number">1000010</span>],fail[<span class="number">1000010</span>];</span><br><span class="line"><span class="type">int</span> cnt;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">add</span><span class="params">(<span class="type">char</span> s[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">int</span> nw = <span class="number">0</span>,len = <span class="built_in">strlen</span>(s);</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>;i &lt; len;i ++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (!tr[nw][s[i] - <span class="string">&#x27;a&#x27;</span>])</span><br><span class="line">            tr[nw][s[i] - <span class="string">&#x27;a&#x27;</span>] = ++ cnt;</span><br><span class="line">        nw = tr[nw][s[i] - <span class="string">&#x27;a&#x27;</span>];</span><br><span class="line">    &#125;</span><br><span class="line">    tg[nw] ++;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">queue &lt;<span class="type">int</span>&gt; q;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">build</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>;i &lt; <span class="number">26</span>;i ++)</span><br><span class="line">        <span class="keyword">if</span> (tr[<span class="number">0</span>][i]) q.<span class="built_in">push</span>(tr[<span class="number">0</span>][i]);</span><br><span class="line">    <span class="keyword">while</span> (q.<span class="built_in">size</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">int</span> nw = q.<span class="built_in">front</span>();</span><br><span class="line">        q.<span class="built_in">pop</span>();</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>;i &lt; <span class="number">26</span>;i ++)</span><br><span class="line">            <span class="keyword">if</span> (tr[nw][i])</span><br><span class="line">                fail[tr[nw][i]] = tr[fail[nw]][i],q.<span class="built_in">push</span>(tr[nw][i]);</span><br><span class="line">            <span class="keyword">else</span> tr[nw][i] = tr[fail[nw]][i];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">query</span><span class="params">(<span class="type">char</span> s[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">int</span> nw = <span class="number">0</span>,ans = <span class="number">0</span>,len = <span class="built_in">strlen</span>(s);</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>;i &lt; len;i ++)</span><br><span class="line">    &#123;</span><br><span class="line">        nw = tr[nw][s[i] - <span class="string">&#x27;a&#x27;</span>];</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> j = nw;j &amp;&amp; tg[j] != <span class="number">-1</span>;j = fail[j])</span><br><span class="line">        &#123;</span><br><span class="line">            ans += tg[j];</span><br><span class="line">            tg[j] = <span class="number">-1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>,ans);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>,&amp;n);</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>;i &lt;= n;i ++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%s&quot;</span>,s);</span><br><span class="line">        <span class="built_in">add</span>(s);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">build</span>();</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%s&quot;</span>,s);</span><br><span class="line">    <span class="built_in">query</span>(s);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h1 id="例题"><a href="#例题" class="headerlink" title="例题"></a>例题</h1><p><a href="https://www.luogu.com.cn/problem/P3808">https://www.luogu.com.cn/problem/P3808</a>（模板）</p>
+<p><a href="https://www.luogu.com.cn/problem/P3796">https://www.luogu.com.cn/problem/P3796</a>（加强版）<br>（待补充）</p>
+]]></content>
+      <categories>
+        <category>OI</category>
+      </categories>
+      <tags>
+        <tag>字符串</tag>
+        <tag>笔记</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>CF1713D 题解</title>
     <url>/2022/08/09/CF1713D/</url>
     <content><![CDATA[<h1 id="题意"><a href="#题意" class="headerlink" title="题意"></a>题意</h1><p>这是一道交互题。</p>
@@ -259,8 +307,8 @@
         <category>OI</category>
       </categories>
       <tags>
-        <tag>DP</tag>
         <tag>笔记</tag>
+        <tag>DP</tag>
       </tags>
   </entry>
   <entry>
@@ -335,57 +383,44 @@
         <category>OI</category>
       </categories>
       <tags>
-        <tag>笔记</tag>
         <tag>字符串</tag>
+        <tag>笔记</tag>
         <tag>后缀数组（SA）</tag>
       </tags>
   </entry>
   <entry>
-    <title>AC 自动机 学习笔记</title>
-    <url>/2021/12/07/AC-Automaton/</url>
-    <content><![CDATA[<h1 id="前置知识"><a href="#前置知识" class="headerlink" title="前置知识"></a>前置知识</h1><ul>
-<li>Trie 树</li>
-<li>KMP 的思想（也许不用？）</li>
+    <title>AtCoder Beginner Contest 349 G. Palindrome Construction 题解</title>
+    <url>/2024/04/15/atcoder-beginner-contest-349-g/</url>
+    <content><![CDATA[<p>努力更新！</p>
+<p>类似的题目：</p>
+<ul>
+<li><a href="https://www.luogu.com.cn/problem/P3295">[SCOI2016] 萌萌哒</a>；</li>
+<li><a href="https://codeforces.com/gym/103388/problem/L">2021-2022 ACM-ICPC Brazil Subregional Programming Contest L. Listing Passwords</a></li>
 </ul>
-<h1 id="AC自动机是什么？"><a href="#AC自动机是什么？" class="headerlink" title="AC自动机是什么？"></a>AC自动机是什么？</h1><p><del>可以帮你自动A题的作弊玩意</del></p>
-<blockquote>
-<p>AC 自动机是 以 Trie 的结构为基础，结合 KMP 的思想 建立的。<br>简单来说，建立一个 AC 自动机有两个步骤：<br>1.基础的 Trie 结构：将所有的模式串构成一棵 Trie。<br>2.KMP 的思想：对 Trie 树上所有的结点构造失配指针。<br>然后就可以利用它进行多模式匹配了。<br>——OI-Wiki</p>
-</blockquote>
-<h1 id="模板题"><a href="#模板题" class="headerlink" title="模板题"></a>模板题</h1><p><a href="https://www.luogu.com.cn/problem/P3808">https://www.luogu.com.cn/problem/P3808</a><br>给定 $n$ 个模式串 $s_{1,\dots ,n}$ 和一个文本串 $t$，求有多少个不同的模式串在文本串里出现过。<br>两个模式串不同当且仅当他们<strong>编号</strong>不同。</p>
-<p>$1 \leq n \leq 1e6$，$1 \leq |t| \leq 1e6$，$1 \leq \sum \limits_{i&#x3D;1} ^n |s_i| \leq 1e6$。</p>
-<h1 id="算法流程"><a href="#算法流程" class="headerlink" title="算法流程"></a>算法流程</h1><p>对于上面这道题，显然我们可以对于每个模式串都判断一次是否在文本串里，时间复杂度 $O(n · |t|)$。很明显过不了。</p>
-<p>这时，我们想到：KMP 算法中，我们利用了<strong>失配指针</strong>减少了不必要的比较，提高了算法效率！这种想法是否也可以用在这一题里呢？</p>
-<p>显然是可以的。</p>
-<p>考虑两个模式串 <code>abcd</code> 和 <code>bce</code>，文本串为 <code>abce</code>。</p>
-<p>对于第一个模式串，当我们判断到文本串 <code>e</code> 这个字符时，发现不对了。如果按照上面的思路，我们需要从头再枚举，判断第二个模式串是否出现。但是，我们观察到，<code>bce</code> 的前两个字符在判断一个模式串时就已经被比较过了，产生了不必要的比较。因此，我们可以用一个失配指针，从第一个模式串的 <code>c</code> 指向第二个模式串的 <code>c</code>。</p>
-<p>存储模式串，我们使用 Trie 树。</p>
-<p>通过上面的这个例子，我们可以发现：当一个模式串的某一前缀为另一模式串的子串时，可以用上失配指针。</p>
-<p>具体地说，若 $S_i(1,k) &#x3D; S_j(x,x+k-1)$，就产生一个从 $S_j[x+k-1]$ 到 $S_i[k]$ 的失配指针，因为当 $S_j(1,x+k-1)$ 在文本串中时，$S_j(x,x+k-1)&#x3D;S_i(1,k)$ 也一定在文本串中，我们无需比较 $S_i$ 的前  $k$ 位。</p>
-<p>通过一段分析，我们已经大致得出了算法的思路：存模式串，建失配指针，查找。</p>
-<p>接下来就只剩细节问题了。</p>
-<h2 id="失配指针的建立"><a href="#失配指针的建立" class="headerlink" title="失配指针的建立"></a>失配指针的建立</h2><p>我们使用 BFS 建立失配指针。</p>
-<p>来看看这样的一个 Trie 树。</p>
-<p>（Trie 树的所有节点都代表了一个字符串，所有边都代表了一个字符）</p>
-<p>（图待补充）</p>
-<p>很明显，对于第一层的所有节点，失配指针只能指向根节点。</p>
-<p>对于第二层及以下的层：</p>
-<p>设当前正在考虑的节点为 $i$，它代表的字符串为 $tree[i]$，其父亲为 $fa[i]$，$x$ 的失配指针指向的节点为 $fail[x]$，连接 $x$ 和 $y$ 的边代表的字符为 $c(x,y)$。</p>
-<p>根据失配指针的定义，$tree[fa[i]] (x_0,x_0+k-1)&#x3D;tree[fail[fa[i]]] (1,k)$。</p>
-<p>若 $i$ 存在：<br>若 $fail[fa[i]]$ 的一个儿子 $r$ 满足 $c(fa[i],i)&#x3D;c(fail[fa[i]],r)$，则 $tree[i] (x_0,x_0+k)&#x3D;tree[r] (1,k+1)$，即 $i$ 的失配指针应指向 $r$。否则 $i$ 的失配指针指向根节点。同时将 $i$ 入队。</p>
-<p>若 $i$ 这个节点不存在，则给 $fa[i]$ 和 $fail[fa[i]]$ 的满足 $c(fa[i],i)&#x3D;c(fail[fa[i]],r)$ 的儿子 $r$ 连一条边。</p>
-<p>这样，经过一次 BFS，失配指针就建立好了。</p>
-<h2 id="查找答案"><a href="#查找答案" class="headerlink" title="查找答案"></a>查找答案</h2><p>和暴力的思路差不多，在 Trie 树中，一个一个字符查找文本串，如果到了一个模式串的末尾就更新答案，如果匹配不上就跳失配指针。</p>
-<h1 id="代码"><a href="#代码" class="headerlink" title="代码"></a>代码</h1><figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;cstdio&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;cstring&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span><span class="string">&lt;queue&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> n;</span><br><span class="line"><span class="type">char</span> s[<span class="number">1000010</span>];</span><br><span class="line"><span class="type">int</span> tr[<span class="number">1000010</span>][<span class="number">30</span>],tg[<span class="number">1000010</span>],fail[<span class="number">1000010</span>];</span><br><span class="line"><span class="type">int</span> cnt;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">add</span><span class="params">(<span class="type">char</span> s[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">int</span> nw = <span class="number">0</span>,len = <span class="built_in">strlen</span>(s);</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>;i &lt; len;i ++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">if</span> (!tr[nw][s[i] - <span class="string">&#x27;a&#x27;</span>])</span><br><span class="line">            tr[nw][s[i] - <span class="string">&#x27;a&#x27;</span>] = ++ cnt;</span><br><span class="line">        nw = tr[nw][s[i] - <span class="string">&#x27;a&#x27;</span>];</span><br><span class="line">    &#125;</span><br><span class="line">    tg[nw] ++;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">queue &lt;<span class="type">int</span>&gt; q;</span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">build</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>;i &lt; <span class="number">26</span>;i ++)</span><br><span class="line">        <span class="keyword">if</span> (tr[<span class="number">0</span>][i]) q.<span class="built_in">push</span>(tr[<span class="number">0</span>][i]);</span><br><span class="line">    <span class="keyword">while</span> (q.<span class="built_in">size</span>())</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">int</span> nw = q.<span class="built_in">front</span>();</span><br><span class="line">        q.<span class="built_in">pop</span>();</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>;i &lt; <span class="number">26</span>;i ++)</span><br><span class="line">            <span class="keyword">if</span> (tr[nw][i])</span><br><span class="line">                fail[tr[nw][i]] = tr[fail[nw]][i],q.<span class="built_in">push</span>(tr[nw][i]);</span><br><span class="line">            <span class="keyword">else</span> tr[nw][i] = tr[fail[nw]][i];</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">query</span><span class="params">(<span class="type">char</span> s[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="type">int</span> nw = <span class="number">0</span>,ans = <span class="number">0</span>,len = <span class="built_in">strlen</span>(s);</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>;i &lt; len;i ++)</span><br><span class="line">    &#123;</span><br><span class="line">        nw = tr[nw][s[i] - <span class="string">&#x27;a&#x27;</span>];</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> j = nw;j &amp;&amp; tg[j] != <span class="number">-1</span>;j = fail[j])</span><br><span class="line">        &#123;</span><br><span class="line">            ans += tg[j];</span><br><span class="line">            tg[j] = <span class="number">-1</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>,ans);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>,&amp;n);</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>;i &lt;= n;i ++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="built_in">scanf</span>(<span class="string">&quot;%s&quot;</span>,s);</span><br><span class="line">        <span class="built_in">add</span>(s);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">build</span>();</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%s&quot;</span>,s);</span><br><span class="line">    <span class="built_in">query</span>(s);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h1 id="题意"><a href="#题意" class="headerlink" title="题意"></a>题意</h1><p>定义一个序列 $T &#x3D; (T_1,T_2,\cdots,T_M)$ 是回文的，当且仅当 $\forall i &#x3D; 1,2,\cdots,M : T_i &#x3D; T_{M - i + 1}$，即翻转过来之后一样。</p>
+<p>给定一个长度为 $N$ 的序列 $A$，问是否存在一个长度为 $N$ 的序列 $S$，使得：</p>
+<ul>
+<li>对于所有 $i &#x3D; 1,2,\cdots,N$，$(S_{i - A_i},S_{i - A_i + 1},\cdots,S_{i + A_i - 1},S_{i + A_i})$ 是回文的，且 $(S_{i - A_i - 1},\cdots,S_{i + A_i + 1})$ 不是回文的。</li>
+</ul>
+<p>如果存在，输出字典序最小的一个。</p>
+<p>$1 \le N \le 2 \times 10 ^ 5$，$0 \le A_i \le \min{i - 1,N - i}$。</p>
+<h1 id="解法"><a href="#解法" class="headerlink" title="解法"></a>解法</h1><p>看见这个限制，容易想到并查集。发现每个限制是两端长度相等的区间合并，考虑用倍增优化。</p>
+<p>类似 <a href="https://www.luogu.com.cn/problem/P3295">[SCOI2016] 萌萌哒</a>，可以建 $O(\log n)$ 层并查集，把两段区间类似 ST 表合并起来，最后一层一层下传，就把每个点和其他点的关系求出来了。</p>
+<p>具体地，第 $i$ 层并查集中，$j$ 这个点代表 $[j,j + 2^i - 1]$ 这个区间。由于合并这个操作是可重复贡献的，合并两段区间 $[L_1,R_1]$ 和 $[L_2,R_2]$ 相当于在第 $k$ 层分别合并 $[L_1,L_1 + 2^k - 1]$ 和 $[L_2,L_2 + 2 ^ k - 1]$ 以及合并 $[R_1 - 2 ^ k + 1,R_1]$ 和 $[R_2 - 2 ^ k + 1,R_2]$，这里的 $k&#x3D;\lfloor \log _{2} (R_1 - L_1 + 1) \rfloor$。对于下传操作，如果第 $i$ 层中，$[L_1,R_1]$ 和 $[L_2,R_2]$ 在一个并查集里，则在第 $(i - 1)$ 层中，它们的前一半和后一半分别在两个个并查集里。所以，此时要分别合并它们的前一半和后一半。每次合并的时间复杂度是 $O(1)$，下传只需要对每一层，枚举每个区间，时间复杂度是 $O(n\log n)$。</p>
+<p>代码：</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">fnd</span><span class="params">(<span class="type">int</span> x,<span class="type">int</span> k)</span> </span>&#123;<span class="keyword">return</span> fa[k][x] = (fa[k][x] == x ? x : <span class="built_in">fnd</span>(fa[k][x],k));&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">Merge</span><span class="params">(<span class="type">int</span> l,<span class="type">int</span> r,<span class="type">int</span> k)</span> <span class="comment">// 在第 k 层上合并 [l, l + 2^k - 1] 和 [r, r + 2^k - 1]</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">// printf(&quot;*Merge %d %d %d\n&quot;,l,r,k);</span></span><br><span class="line">	l = <span class="built_in">fnd</span>(l,k),r = <span class="built_in">fnd</span>(r,k);</span><br><span class="line">	<span class="keyword">if</span> (l == r) <span class="keyword">return</span> ;</span><br><span class="line">	<span class="keyword">if</span> (l &lt; r) <span class="built_in">swap</span>(l,r);</span><br><span class="line">	fa[k][l] = r;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">merge</span><span class="params">(<span class="type">int</span> l,<span class="type">int</span> ll,<span class="type">int</span> len)</span> <span class="comment">// 合并 [l, l + len - 1] 和 [ll, ll + len - 1]</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">// printf(&quot;merge %d %d %d\n&quot;,l,ll,len);</span></span><br><span class="line">	<span class="keyword">if</span> (l == ll) <span class="keyword">return</span> ;</span><br><span class="line">	<span class="type">int</span> r = l + len - <span class="number">1</span>,rr = ll + len - <span class="number">1</span>;</span><br><span class="line">	<span class="type">int</span> L = (len == <span class="number">1</span> ? <span class="number">0</span> : <span class="built_in">log2</span>(len));</span><br><span class="line">	<span class="built_in">Merge</span>(l,ll,L);</span><br><span class="line">	<span class="built_in">Merge</span>(r - (<span class="number">1</span> &lt;&lt; L) + <span class="number">1</span>,rr - (<span class="number">1</span> &lt;&lt; L) + <span class="number">1</span>,L);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
-<h1 id="例题"><a href="#例题" class="headerlink" title="例题"></a>例题</h1><p><a href="https://www.luogu.com.cn/problem/P3808">https://www.luogu.com.cn/problem/P3808</a>（模板）</p>
-<p><a href="https://www.luogu.com.cn/problem/P3796">https://www.luogu.com.cn/problem/P3796</a>（加强版）<br>（待补充）</p>
+<p>由于合并的两端区间一个是从前往后的，一个是从后往前的，可以把整个序列反过来拼在后面，把其中一个区间翻到后一半，顺序就一样了。这样就可以直接用上面的东西做了。</p>
+<p>在算出点与点之间的关系后，只需要对于每个 $i$，判断 $(i - A_i - 1)$ 和 $(i + A_i + 1)$ 在不在一个并查集里面就行了。最后要输出字典序最小的解，只需要贪心地从前往后放当前能放的、不矛盾的最小数就行了。判断矛不矛盾可以直接暴力做，因为总共只有 $O(n)$ 条这样的限制。</p>
+<p>合并的总时间复杂度是 $O(n)$，下传是 $O(n \log n)$，求解是 $O(n)$，总时间复杂度为 $O(n \log n)$。</p>
+<p><a href="https://atcoder.jp/contests/abc349/submissions/52398116">AC 提交记录</a>。</p>
 ]]></content>
       <categories>
         <category>OI</category>
       </categories>
       <tags>
-        <tag>笔记</tag>
-        <tag>字符串</tag>
+        <tag>题解</tag>
+        <tag>AtCoder</tag>
       </tags>
   </entry>
   <entry>
@@ -481,41 +516,6 @@
       </tags>
   </entry>
   <entry>
-    <title>AtCoder Beginner Contest 349 G. Palindrome Construction 题解</title>
-    <url>/2024/04/15/atcoder-beginner-contest-349-g/</url>
-    <content><![CDATA[<p>努力更新！</p>
-<p>类似的题目：</p>
-<ul>
-<li><a href="https://www.luogu.com.cn/problem/P3295">[SCOI2016] 萌萌哒</a>；</li>
-<li><a href="https://codeforces.com/gym/103388/problem/L">2021-2022 ACM-ICPC Brazil Subregional Programming Contest L. Listing Passwords</a></li>
-</ul>
-<h1 id="题意"><a href="#题意" class="headerlink" title="题意"></a>题意</h1><p>定义一个序列 $T &#x3D; (T_1,T_2,\cdots,T_M)$ 是回文的，当且仅当 $\forall i &#x3D; 1,2,\cdots,M : T_i &#x3D; T_{M - i + 1}$，即翻转过来之后一样。</p>
-<p>给定一个长度为 $N$ 的序列 $A$，问是否存在一个长度为 $N$ 的序列 $S$，使得：</p>
-<ul>
-<li>对于所有 $i &#x3D; 1,2,\cdots,N$，$(S_{i - A_i},S_{i - A_i + 1},\cdots,S_{i + A_i - 1},S_{i + A_i})$ 是回文的，且 $(S_{i - A_i - 1},\cdots,S_{i + A_i + 1})$ 不是回文的。</li>
-</ul>
-<p>如果存在，输出字典序最小的一个。</p>
-<p>$1 \le N \le 2 \times 10 ^ 5$，$0 \le A_i \le \min{i - 1,N - i}$。</p>
-<h1 id="解法"><a href="#解法" class="headerlink" title="解法"></a>解法</h1><p>看见这个限制，容易想到并查集。发现每个限制是两端长度相等的区间合并，考虑用倍增优化。</p>
-<p>类似 <a href="https://www.luogu.com.cn/problem/P3295">[SCOI2016] 萌萌哒</a>，可以建 $O(\log n)$ 层并查集，把两段区间类似 ST 表合并起来，最后一层一层下传，就把每个点和其他点的关系求出来了。</p>
-<p>具体地，第 $i$ 层并查集中，$j$ 这个点代表 $[j,j + 2^i - 1]$ 这个区间。由于合并这个操作是可重复贡献的，合并两段区间 $[L_1,R_1]$ 和 $[L_2,R_2]$ 相当于在第 $k$ 层分别合并 $[L_1,L_1 + 2^k - 1]$ 和 $[L_2,L_2 + 2 ^ k - 1]$ 以及合并 $[R_1 - 2 ^ k + 1,R_1]$ 和 $[R_2 - 2 ^ k + 1,R_2]$，这里的 $k&#x3D;\lfloor \log _{2} (R_1 - L_1 + 1) \rfloor$。对于下传操作，如果第 $i$ 层中，$[L_1,R_1]$ 和 $[L_2,R_2]$ 在一个并查集里，则在第 $(i - 1)$ 层中，它们的前一半和后一半分别在两个个并查集里。所以，此时要分别合并它们的前一半和后一半。每次合并的时间复杂度是 $O(1)$，下传只需要对每一层，枚举每个区间，时间复杂度是 $O(n\log n)$。</p>
-<p>代码：</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">fnd</span><span class="params">(<span class="type">int</span> x,<span class="type">int</span> k)</span> </span>&#123;<span class="keyword">return</span> fa[k][x] = (fa[k][x] == x ? x : <span class="built_in">fnd</span>(fa[k][x],k));&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">Merge</span><span class="params">(<span class="type">int</span> l,<span class="type">int</span> r,<span class="type">int</span> k)</span> <span class="comment">// 在第 k 层上合并 [l, l + 2^k - 1] 和 [r, r + 2^k - 1]</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">// printf(&quot;*Merge %d %d %d\n&quot;,l,r,k);</span></span><br><span class="line">	l = <span class="built_in">fnd</span>(l,k),r = <span class="built_in">fnd</span>(r,k);</span><br><span class="line">	<span class="keyword">if</span> (l == r) <span class="keyword">return</span> ;</span><br><span class="line">	<span class="keyword">if</span> (l &lt; r) <span class="built_in">swap</span>(l,r);</span><br><span class="line">	fa[k][l] = r;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">merge</span><span class="params">(<span class="type">int</span> l,<span class="type">int</span> ll,<span class="type">int</span> len)</span> <span class="comment">// 合并 [l, l + len - 1] 和 [ll, ll + len - 1]</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">// printf(&quot;merge %d %d %d\n&quot;,l,ll,len);</span></span><br><span class="line">	<span class="keyword">if</span> (l == ll) <span class="keyword">return</span> ;</span><br><span class="line">	<span class="type">int</span> r = l + len - <span class="number">1</span>,rr = ll + len - <span class="number">1</span>;</span><br><span class="line">	<span class="type">int</span> L = (len == <span class="number">1</span> ? <span class="number">0</span> : <span class="built_in">log2</span>(len));</span><br><span class="line">	<span class="built_in">Merge</span>(l,ll,L);</span><br><span class="line">	<span class="built_in">Merge</span>(r - (<span class="number">1</span> &lt;&lt; L) + <span class="number">1</span>,rr - (<span class="number">1</span> &lt;&lt; L) + <span class="number">1</span>,L);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>由于合并的两端区间一个是从前往后的，一个是从后往前的，可以把整个序列反过来拼在后面，把其中一个区间翻到后一半，顺序就一样了。这样就可以直接用上面的东西做了。</p>
-<p>在算出点与点之间的关系后，只需要对于每个 $i$，判断 $(i - A_i - 1)$ 和 $(i + A_i + 1)$ 在不在一个并查集里面就行了。最后要输出字典序最小的解，只需要贪心地从前往后放当前能放的、不矛盾的最小数就行了。判断矛不矛盾可以直接暴力做，因为总共只有 $O(n)$ 条这样的限制。</p>
-<p>合并的总时间复杂度是 $O(n)$，下传是 $O(n \log n)$，求解是 $O(n)$，总时间复杂度为 $O(n \log n)$。</p>
-<p><a href="https://atcoder.jp/contests/abc349/submissions/52398116">AC 提交记录</a>。</p>
-]]></content>
-      <categories>
-        <category>OI</category>
-      </categories>
-      <tags>
-        <tag>题解</tag>
-        <tag>AtCoder</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>DP 套 DP 学习笔记</title>
     <url>/2024/04/16/dp-of-dp/</url>
     <content><![CDATA[<p>努力更新 x 2（</p>
@@ -543,8 +543,8 @@
         <category>OI</category>
       </categories>
       <tags>
-        <tag>DP</tag>
         <tag>笔记</tag>
+        <tag>DP</tag>
       </tags>
   </entry>
   <entry>
@@ -811,8 +811,8 @@
         <category>OI</category>
       </categories>
       <tags>
-        <tag>DP</tag>
         <tag>笔记</tag>
+        <tag>DP</tag>
         <tag>数据结构</tag>
       </tags>
   </entry>
