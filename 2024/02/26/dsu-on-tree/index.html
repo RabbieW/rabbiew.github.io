@@ -263,21 +263,17 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h1>树上启发式合并是什么？</h1>
-<p>树上启发式合并（dsu on tree）通过继承重儿子的信息，可以将某些合并更新答案次数为 $O(n^2)$ 的问题优化至 $O(n \log n)$。</p>
-<h1>算法过程</h1>
-<p>在普通 dfs 的基础上，继承重儿子传上来的信息。</p>
+        <h1 id="树上启发式合并是什么？"><a href="#树上启发式合并是什么？" class="headerlink" title="树上启发式合并是什么？"></a>树上启发式合并是什么？</h1><p>树上启发式合并（dsu on tree）通过继承重儿子的信息，可以将某些合并更新答案次数为 $O(n^2)$ 的问题优化至 $O(n \log n)$。</p>
+<h1 id="算法过程"><a href="#算法过程" class="headerlink" title="算法过程"></a>算法过程</h1><p>在普通 dfs 的基础上，继承重儿子传上来的信息。</p>
 <p>先 dfs 轻儿子并把记录的信息清空，再 dfs 重儿子且不清空信息（继承）。随后暴力搜索轻子树内的节点更新信息。</p>
 <p>这样做可以保证每次传上来的只有重儿子的信息，且算完当前子树的答案后，目前保留的信息只有这棵子树的。</p>
 <p>代码：</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">dfss</span><span class="params">(<span class="type">int</span> x)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = head[x];i;i = nxt[i])</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">int</span> u = to[i];</span><br><span class="line">        <span class="keyword">if</span> (u == son[x]) <span class="keyword">continue</span>;</span><br><span class="line">        <span class="built_in">dfss</span>(u);<span class="comment">//递归处理轻儿子</span></span><br><span class="line">        <span class="built_in">clr</span>(u);<span class="comment">//清空</span></span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">if</span> (son[x]) <span class="built_in">dfss</span>(son[x]);</span><br><span class="line">    ...<span class="comment">//加入当前节点信息</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = head[x];i;i = nxt[i])</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">int</span> u = to[i];</span><br><span class="line">        <span class="keyword">if</span> (u == son[x]) <span class="keyword">continue</span>;</span><br><span class="line">        <span class="built_in">upd</span>(u,x);<span class="comment">//更新答案</span></span><br><span class="line">        <span class="built_in">add</span>(u);<span class="comment">//更新信息</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h1>时间复杂度</h1>
-<p>对每一个节点，如果它是父亲的轻儿子，它所在子树就会在 dfs 父亲时被暴力更新一次。也就是说，一个点被暴力更新的次数即为它到根经过的轻边数，是 $O(\log n)$ 的。所以总的更新次数是 $O(n \log n)$ 的。</p>
-<h2 id="注意">注意</h2>
-<p>为了保证时间复杂度正确，继承重儿子信息这一步要保证更新次数为 $O(1)$的，所以一般存信息时，要存不会因为当前节点变化而变化很大的信息。</p>
+
+<h1 id="时间复杂度"><a href="#时间复杂度" class="headerlink" title="时间复杂度"></a>时间复杂度</h1><p>对每一个节点，如果它是父亲的轻儿子，它所在子树就会在 dfs 父亲时被暴力更新一次。也就是说，一个点被暴力更新的次数即为它到根经过的轻边数，是 $O(\log n)$ 的。所以总的更新次数是 $O(n \log n)$ 的。</p>
+<h2 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h2><p>为了保证时间复杂度正确，继承重儿子信息这一步要保证更新次数为 $O(1)$的，所以一般存信息时，要存不会因为当前节点变化而变化很大的信息。</p>
 <p>另外，清空信息的复杂度也要注意不要爆炸。一般直接 dfs 子树清空即可。</p>
-<h1>题目</h1>
-<p><a target="_blank" rel="noopener" href="https://codeforces.com/blog/entry/44351">这篇文章</a>的最后有一堆题目。</p>
+<h1 id="题目"><a href="#题目" class="headerlink" title="题目"></a>题目</h1><p><a target="_blank" rel="noopener" href="https://codeforces.com/blog/entry/44351">这篇文章</a>的最后有一堆题目。</p>
 <p><a target="_blank" rel="noopener" href="https://codeforces.com/contest/1923/problem/E">CF1923E</a></p>
 <p><a target="_blank" rel="noopener" href="https://codeforces.com/problemset/problem/778/C">CF778C</a>，甚至不用传信息</p>
 <p>p.s: 一个很像但是似乎不一样的东西：带撤销的完全背包的空间优化 <a target="_blank" rel="noopener" href="https://www.luogu.com.cn/problem/P5391">[Cnoi2019] 青染之心</a>，通过将问题转化为类似树上的问题，重链剖分后同一条链用一个数组、深度相同的用同一个数组，把空间从 $O(nV)$ 优化到 $O(V\log n)$。这里是从上到下的信息传递。</p>
@@ -370,7 +366,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">树上启发式合并是什么？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">2.</span> <span class="nav-text">算法过程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">3.</span> <span class="nav-text">时间复杂度</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F"><span class="nav-number">3.1.</span> <span class="nav-text">注意</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">4.</span> <span class="nav-text">题目</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%A0%91%E4%B8%8A%E5%90%AF%E5%8F%91%E5%BC%8F%E5%90%88%E5%B9%B6%E6%98%AF%E4%BB%80%E4%B9%88%EF%BC%9F"><span class="nav-number">1.</span> <span class="nav-text">树上启发式合并是什么？</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E7%AE%97%E6%B3%95%E8%BF%87%E7%A8%8B"><span class="nav-number">2.</span> <span class="nav-text">算法过程</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%97%B6%E9%97%B4%E5%A4%8D%E6%9D%82%E5%BA%A6"><span class="nav-number">3.</span> <span class="nav-text">时间复杂度</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F"><span class="nav-number">3.1.</span> <span class="nav-text">注意</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E9%A2%98%E7%9B%AE"><span class="nav-number">4.</span> <span class="nav-text">题目</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -454,7 +450,7 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">66k</span>
+    <span title="站点总字数">67k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
