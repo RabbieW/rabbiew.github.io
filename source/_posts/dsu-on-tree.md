@@ -63,4 +63,6 @@ void dfss(int x)
 
 [CF778C](https://codeforces.com/problemset/problem/778/C)，甚至不用传信息
 
+[[Cnoi2019] 雪松果树](https://www.luogu.com.cn/problem/P5384)，虽然我写的 $O(n)$ 做法跑得比 $O(n \log n)$ 还慢。。。
+
 p.s: 一个很像但是似乎不一样的东西：带撤销的完全背包的空间优化 [[Cnoi2019] 青染之心](https://www.luogu.com.cn/problem/P5391)，通过将问题转化为类似树上的问题，重链剖分后同一条链用一个数组、深度相同的用同一个数组，把空间从 $O(nV)$ 优化到 $O(V\log n)$。这里是从上到下的信息传递。
