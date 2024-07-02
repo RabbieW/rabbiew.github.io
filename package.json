@@ -30,7 +30,7 @@
     "hexo-symbols-count-time": "^0.7.1",
     "hexo-theme-landscape": "^1.0.0",
     "hexo-wordcount": "^6.0.1",
-    "katex": "^0.16.9",
+    "katex": "^0.16.11",
     "punycode": "^2.3.1"
   }
 }
