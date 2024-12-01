@@ -30,8 +30,8 @@
 <meta property="article:published_time" content="2024-05-31T13:25:36.000Z">
 <meta property="article:author" content="RabbieWjy">
 <meta property="article:tag" content="题解">
-<meta property="article:tag" content="DP">
 <meta property="article:tag" content="点分治">
+<meta property="article:tag" content="DP">
 <meta name="twitter:card" content="summary">
 
 <link rel="canonical" href="http://rabbiew.github.io/2024/05/31/NOI2014%E8%B4%AD%E7%A5%A8/">
@@ -265,9 +265,8 @@
 
       
         <p>题目链接：<a target="_blank" rel="noopener" href="https://www.luogu.com.cn/problem/P2305">洛谷</a>；<a target="_blank" rel="noopener" href="https://loj.ac/p/2249">LOJ</a>。</p>
-<p>一眼看错题目的式子，$dp_v+q_v$ 其实是 $d\cdot p_v+q_v$<br>
-(</p>
-<p>每个点要往上跳，考虑 DP，点 $u$ 可以从深度大于等于某个值的祖先 $v$ 转移：$f_u = \min { f_v + dis(u,v) p_u + q_u } = \min { f_v + dep(u) p_u - dep(v)p_u + q_u } = \min { f_v - dep(v)p_u } + dep(u)p_u + q_u$。直接斜率优化，$dep(v)$ 有单调性，维护下凸壳，二分找转移点，可以解决链的情况。</p>
+<p>一眼看错题目的式子，$dp_v+q_v$ 其实是 $d\cdot p_v+q_v$<br>(</p>
+<p>每个点要往上跳，考虑 DP，点 $u$ 可以从深度大于等于某个值的祖先 $v$ 转移：$f_u &#x3D; \min { f_v + dis(u,v) p_u + q_u } &#x3D; \min { f_v + dep(u) p_u - dep(v)p_u + q_u } &#x3D; \min { f_v - dep(v)p_u } + dep(u)p_u + q_u$。直接斜率优化，$dep(v)$ 有单调性，维护下凸壳，二分找转移点，可以解决链的情况。</p>
 <p>考虑怎么放到树上，这里写点分治的做法。有根树上的点分治和无根树上的很像，只是计算下面的点需要先算好上面的点，有一个先后顺序。于是可以先算上面的一部分，再算上面对下面的贡献，最后再算下面。具体步骤如下：</p>
 <ol>
 <li>找当前求解的块的重心作为分治中心；</li>
@@ -288,8 +287,8 @@
       <footer class="post-footer">
           <div class="post-tags">
               <a href="/tags/%E9%A2%98%E8%A7%A3/" rel="tag"># 题解</a>
-              <a href="/tags/DP/" rel="tag"># DP</a>
               <a href="/tags/%E7%82%B9%E5%88%86%E6%B2%BB/" rel="tag"># 点分治</a>
+              <a href="/tags/DP/" rel="tag"># DP</a>
           </div>
 
         
@@ -451,12 +450,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">71k</span>
+    <span title="站点总字数">72k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:05</span>
+    <span title="站点阅读时长">1:06</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
