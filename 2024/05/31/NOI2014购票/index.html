@@ -127,17 +127,17 @@
   </li>
         <li class="menu-item menu-item-tags">
 
-    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">13</span></a>
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签<span class="badge">12</span></a>
 
   </li>
         <li class="menu-item menu-item-categories">
 
-    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">2</span></a>
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类<span class="badge">1</span></a>
 
   </li>
         <li class="menu-item menu-item-archives">
 
-    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">17</span></a>
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档<span class="badge">16</span></a>
 
   </li>
       <li class="menu-item menu-item-search">
@@ -265,8 +265,9 @@
 
       
         <p>题目链接：<a target="_blank" rel="noopener" href="https://www.luogu.com.cn/problem/P2305">洛谷</a>；<a target="_blank" rel="noopener" href="https://loj.ac/p/2249">LOJ</a>。</p>
-<p>一眼看错题目的式子，$dp_v+q_v$ 其实是 $d\cdot p_v+q_v$<br>(</p>
-<p>每个点要往上跳，考虑 DP，点 $u$ 可以从深度大于等于某个值的祖先 $v$ 转移：$f_u &#x3D; \min { f_v + dis(u,v) p_u + q_u } &#x3D; \min { f_v + dep(u) p_u - dep(v)p_u + q_u } &#x3D; \min { f_v - dep(v)p_u } + dep(u)p_u + q_u$。直接斜率优化，$dep(v)$ 有单调性，维护下凸壳，二分找转移点，可以解决链的情况。</p>
+<p>一眼看错题目的式子，$dp_v+q_v$ 其实是 $d\cdot p_v+q_v$<br>
+(</p>
+<p>每个点要往上跳，考虑 DP，点 $u$ 可以从深度大于等于某个值的祖先 $v$ 转移：$f_u = \min { f_v + dis(u,v) p_u + q_u } = \min { f_v + dep(u) p_u - dep(v)p_u + q_u } = \min { f_v - dep(v)p_u } + dep(u)p_u + q_u$。直接斜率优化，$dep(v)$ 有单调性，维护下凸壳，二分找转移点，可以解决链的情况。</p>
 <p>考虑怎么放到树上，这里写点分治的做法。有根树上的点分治和无根树上的很像，只是计算下面的点需要先算好上面的点，有一个先后顺序。于是可以先算上面的一部分，再算上面对下面的贡献，最后再算下面。具体步骤如下：</p>
 <ol>
 <li>找当前求解的块的重心作为分治中心；</li>
@@ -380,20 +381,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">17</span>
+          <span class="site-state-item-count">16</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-count">1</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">13</span>
+        <span class="site-state-item-count">12</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -450,12 +451,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">73k</span>
+    <span title="站点总字数">71k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:06</span>
+    <span title="站点阅读时长">1:05</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
