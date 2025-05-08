@@ -1,0 +1,11 @@
+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
+
+20.205.243.166
+
+上传：hexo clean && hexo g && hexo d
+
+本地试运行：hexo server
+
+netstat -o -n -a | findstr :4000
+
+taskkill /f /pid xxxx
