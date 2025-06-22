@@ -243,7 +243,7 @@
                 <i class="far fa-file-word"></i>
               </span>
                 <span class="post-meta-item-text">本文字数：</span>
-              <span>991</span>
+              <span>996</span>
             </span>
             <span class="post-meta-item" title="阅读时长">
               <span class="post-meta-item-icon">
@@ -264,22 +264,19 @@
 
       
         <blockquote>
-<p>前置知识：<br>
-点双联通分量，Tarjan 算法</p>
+<p>前置知识：<br>点双联通分量，Tarjan 算法</p>
 </blockquote>
-<h1>圆方树是什么</h1>
-<p>（在下面的所有内容中，认为两个点由一条边连接也双联通）</p>
+<h1 id="圆方树是什么"><a href="#圆方树是什么" class="headerlink" title="圆方树是什么"></a>圆方树是什么</h1><p>（在下面的所有内容中，认为两个点由一条边连接也双联通）</p>
 <p>一个无向图可以建出一棵树，树上有圆点和方点，圆点对应原图中的点，方点对应点双联通分量，方点在树中连上在这个双联通分量中的圆点。每个方点周围会连一圈圆点，每个圆点会连一圈方点。</p>
-<h1>怎么建树</h1>
-<p>可以用 Tarjan 建圆方树。</p>
+<h1 id="怎么建树"><a href="#怎么建树" class="headerlink" title="怎么建树"></a>怎么建树</h1><p>可以用 Tarjan 建圆方树。</p>
 <p>在 Tarjan 算法中，对于每个点 $x$，我们都记录了它的 dfs 序 $dfn_x$ 和经过最多一条返祖边（对于 dfs 树来说）能到达的最小 dfs 序 $low_x$。</p>
 <p>用 Tarjan 求割点的时候，判断一个点 $x$ 是不是割点的条件是是否存在一个儿子 $u$，使得 $low_u \geq dfn_x$，即是否存在一个儿子不经过 $x$ 就不能往上走。</p>
-<p>如果一个点 $x$ 的儿子 $u$ 满足 $low_u=dfn_x$，代表 $u$ 只经过一条返祖边最高只能走到 $x$，这就有了一个点双联通分量。把栈里从栈顶一直到 $u$ 的元素出栈，和一个新的方点连边，同时把 $x$ 也连向这个方点（不出栈）就好了。</p>
+<p>如果一个点 $x$ 的儿子 $u$ 满足 $low_u&#x3D;dfn_x$，代表 $u$ 只经过一条返祖边最高只能走到 $x$，这就有了一个点双联通分量。把栈里从栈顶一直到 $u$ 的元素出栈，和一个新的方点连边，同时把 $x$ 也连向这个方点（不出栈）就好了。</p>
 <p>OI-wiki 的代码比较好看。</p>
 <p>下面是我的代码 qwq</p>
 <figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">tar</span><span class="params">(<span class="type">int</span> x)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    dfn[x] = low[x] = ++ dfncnt;</span><br><span class="line">    p[x] = <span class="number">1</span>;</span><br><span class="line">    st.<span class="built_in">push</span>(x);</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = head[x];i;i = nxt[i])</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="type">int</span> u = to[i];</span><br><span class="line">        <span class="keyword">if</span> (!dfn[u])</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="built_in">tar</span>(u);</span><br><span class="line">            low[x] = <span class="built_in">min</span>(low[x],low[u]);</span><br><span class="line">            <span class="keyword">if</span> (low[u] == dfn[x])</span><br><span class="line">            &#123;</span><br><span class="line">                cnt2 ++;</span><br><span class="line">                <span class="type">int</span> nw;</span><br><span class="line">                <span class="keyword">do</span></span><br><span class="line">                &#123;</span><br><span class="line">                    nw = st.<span class="built_in">top</span>();</span><br><span class="line">                    st.<span class="built_in">pop</span>();</span><br><span class="line">                    p[nw] = <span class="number">0</span>;</span><br><span class="line">                    <span class="built_in">Add</span>(cnt2 + n,nw),<span class="built_in">Add</span>(nw,cnt2 + n);</span><br><span class="line">                &#125; <span class="keyword">while</span> (nw != u);</span><br><span class="line">                <span class="built_in">Add</span>(x,cnt2 + n),<span class="built_in">Add</span>(cnt2 + n,x);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span> <span class="keyword">if</span> (p[u]) low[x] = <span class="built_in">min</span>(low[x],dfn[u]);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<h1>圆方树的一些性质</h1>
-<p>两个点之间所有简单路径上的点的点集，就是圆方树上两个点的路径上所有方点代表的点集的并集。</p>
+
+<h1 id="圆方树的一些性质"><a href="#圆方树的一些性质" class="headerlink" title="圆方树的一些性质"></a>圆方树的一些性质</h1><p>两个点之间所有简单路径上的点的点集，就是圆方树上两个点的路径上所有方点代表的点集的并集。</p>
 <p>（待补）</p>
 <p>题目：</p>
 <p><a target="_blank" rel="noopener" href="https://www.luogu.com.cn/problem/P4630">[APIO2018] 铁人两项</a></p>
@@ -376,7 +373,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">1.</span> <span class="nav-text">圆方树是什么</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">2.</span> <span class="nav-text">怎么建树</span></a></li><li class="nav-item nav-level-1"><a class="nav-link"><span class="nav-number">3.</span> <span class="nav-text">圆方树的一些性质</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9C%86%E6%96%B9%E6%A0%91%E6%98%AF%E4%BB%80%E4%B9%88"><span class="nav-number">1.</span> <span class="nav-text">圆方树是什么</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%80%8E%E4%B9%88%E5%BB%BA%E6%A0%91"><span class="nav-number">2.</span> <span class="nav-text">怎么建树</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E5%9C%86%E6%96%B9%E6%A0%91%E7%9A%84%E4%B8%80%E4%BA%9B%E6%80%A7%E8%B4%A8"><span class="nav-number">3.</span> <span class="nav-text">圆方树的一些性质</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
@@ -460,12 +457,12 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-area"></i>
     </span>
-    <span title="站点总字数">78k</span>
+    <span title="站点总字数">79k</span>
     <span class="post-meta-divider">|</span>
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">1:11</span>
+    <span title="站点阅读时长">1:12</span>
 </div>
   <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
   </div>
