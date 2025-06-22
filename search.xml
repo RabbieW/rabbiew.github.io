@@ -157,6 +157,25 @@
       </tags>
   </entry>
   <entry>
+    <title>CF1975F Set</title>
+    <url>/2024/05/31/CF1975F/</url>
+    <content><![CDATA[<p><strong>题意</strong></p>
+<p>对于集合 $T \subseteq { 0,1,2,\cdots }$，定义函数 $f(T) &#x3D; \sum \limits _{i \in T} 2^i$，也就是每个数出没出现对应一个二进制数。</p>
+<p>给定集合 $V_0,V_1,\cdots,V_{2^n - 1}$，求所有的集合 $S$，使得对于所有 $T \subseteq { 0,1,2,\cdots}$，都有 $|S\cap T| \in V_{f(T)}$。也就是，对于每一个 $T$，你的 $S$ 和 $T$ 的共同元素个数是 $V_{f(T)}$ 中的某一个。</p>
+<p><strong>解法</strong></p>
+<p>从 $0$ 开始依次考虑每一个元素是否在 $S$ 里面。如果 $i$ 在 $S$ 里面，所有包含 $i$ 的 $T$ 对应的 $V_{f(T)}$ 可以选的数就都要减一，因为选了一个 $i$。对于两个集合 $T_1$ 和 $T_2$，如果它们只在有没有 $i$ 上不一样，其中 $T_1$ 包含 $i$，那么两个集合可以合并成一个：$V_{f(T’)}&#x3D;(V_{f(T_1)} &gt;&gt; 1) \cap V_{f(T_2)}$。同理，如果 $i$ 不在 $S$ 里面，则 $V_{f(T’)}&#x3D;V_{f(T_1)} \cap V_{f(T_2)}$。</p>
+<p>发现两个集合可以合并成另外两个集合，每考虑一个 $i$ 后集合总数不变。可以把新合并出来的集合存在原来两个集合的位置，类似 FFT（？）。对于每个 $i$ 直接暴力合并，总时间复杂度为 $O(n 2^n)$。</p>
+<p>代码：</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cstdio&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> n;</span><br><span class="line"><span class="type">int</span> a[<span class="number">2000010</span>],nw[<span class="number">2000010</span>];</span><br><span class="line">vector &lt;<span class="type">int</span>&gt; Ans;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>,&amp;n);</span><br><span class="line">    a[<span class="number">0</span>] = (<span class="number">1</span> &lt;&lt; (n + <span class="number">1</span>)) - <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>;i &lt; (<span class="number">1</span> &lt;&lt; n);i ++) <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>,a + i);</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>;i &lt; n;i ++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> w = <span class="number">0</span>;w &lt; (<span class="number">1</span> &lt;&lt; n);w += (<span class="number">1</span> &lt;&lt; (i + <span class="number">1</span>)))</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> j = w;j &lt; w + (<span class="number">1</span> &lt;&lt; i);j ++)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="type">int</span> k = j + (<span class="number">1</span> &lt;&lt; i);</span><br><span class="line">                <span class="type">int</span> tmpa = a[j],tmpb = a[k];</span><br><span class="line">                a[k] = (tmpa &amp; (tmpb &gt;&gt; <span class="number">1</span>));</span><br><span class="line">                a[j] = (tmpa &amp; tmpb);</span><br><span class="line">                nw[k] = nw[k] ^ (<span class="number">1</span> &lt;&lt; i);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>;i &lt; (<span class="number">1</span> &lt;&lt; n);i ++)</span><br><span class="line">        <span class="keyword">if</span> (a[i] &amp; <span class="number">1</span>) Ans.<span class="built_in">push_back</span>(nw[i]);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>,Ans.<span class="built_in">size</span>());</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i : Ans) <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>,i);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>OI</category>
+      </categories>
+      <tags>
+        <tag>题解</tag>
+        <tag>Codeforces</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>DP 优化</title>
     <url>/2022/02/19/DP%E4%BC%98%E5%8C%96/</url>
     <content><![CDATA[<p>upd on 20220405 修了炸了的图和 LaTeX</p>
@@ -328,25 +347,6 @@
       </categories>
       <tags>
         <tag>题解</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>CF1975F Set</title>
-    <url>/2024/05/31/CF1975F/</url>
-    <content><![CDATA[<p><strong>题意</strong></p>
-<p>对于集合 $T \subseteq { 0,1,2,\cdots }$，定义函数 $f(T) &#x3D; \sum \limits _{i \in T} 2^i$，也就是每个数出没出现对应一个二进制数。</p>
-<p>给定集合 $V_0,V_1,\cdots,V_{2^n - 1}$，求所有的集合 $S$，使得对于所有 $T \subseteq { 0,1,2,\cdots}$，都有 $|S\cap T| \in V_{f(T)}$。也就是，对于每一个 $T$，你的 $S$ 和 $T$ 的共同元素个数是 $V_{f(T)}$ 中的某一个。</p>
-<p><strong>解法</strong></p>
-<p>从 $0$ 开始依次考虑每一个元素是否在 $S$ 里面。如果 $i$ 在 $S$ 里面，所有包含 $i$ 的 $T$ 对应的 $V_{f(T)}$ 可以选的数就都要减一，因为选了一个 $i$。对于两个集合 $T_1$ 和 $T_2$，如果它们只在有没有 $i$ 上不一样，其中 $T_1$ 包含 $i$，那么两个集合可以合并成一个：$V_{f(T’)}&#x3D;(V_{f(T_1)} &gt;&gt; 1) \cap V_{f(T_2)}$。同理，如果 $i$ 不在 $S$ 里面，则 $V_{f(T’)}&#x3D;V_{f(T_1)} \cap V_{f(T_2)}$。</p>
-<p>发现两个集合可以合并成另外两个集合，每考虑一个 $i$ 后集合总数不变。可以把新合并出来的集合存在原来两个集合的位置，类似 FFT（？）。对于每个 $i$ 直接暴力合并，总时间复杂度为 $O(n 2^n)$。</p>
-<p>代码：</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;cstdio&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="keyword">include</span> <span class="string">&lt;vector&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="type">int</span> n;</span><br><span class="line"><span class="type">int</span> a[<span class="number">2000010</span>],nw[<span class="number">2000010</span>];</span><br><span class="line">vector &lt;<span class="type">int</span>&gt; Ans;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>,&amp;n);</span><br><span class="line">    a[<span class="number">0</span>] = (<span class="number">1</span> &lt;&lt; (n + <span class="number">1</span>)) - <span class="number">1</span>;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">1</span>;i &lt; (<span class="number">1</span> &lt;&lt; n);i ++) <span class="built_in">scanf</span>(<span class="string">&quot;%d&quot;</span>,a + i);</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>;i &lt; n;i ++)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">for</span> (<span class="type">int</span> w = <span class="number">0</span>;w &lt; (<span class="number">1</span> &lt;&lt; n);w += (<span class="number">1</span> &lt;&lt; (i + <span class="number">1</span>)))</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="keyword">for</span> (<span class="type">int</span> j = w;j &lt; w + (<span class="number">1</span> &lt;&lt; i);j ++)</span><br><span class="line">            &#123;</span><br><span class="line">                <span class="type">int</span> k = j + (<span class="number">1</span> &lt;&lt; i);</span><br><span class="line">                <span class="type">int</span> tmpa = a[j],tmpb = a[k];</span><br><span class="line">                a[k] = (tmpa &amp; (tmpb &gt;&gt; <span class="number">1</span>));</span><br><span class="line">                a[j] = (tmpa &amp; tmpb);</span><br><span class="line">                nw[k] = nw[k] ^ (<span class="number">1</span> &lt;&lt; i);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i = <span class="number">0</span>;i &lt; (<span class="number">1</span> &lt;&lt; n);i ++)</span><br><span class="line">        <span class="keyword">if</span> (a[i] &amp; <span class="number">1</span>) Ans.<span class="built_in">push_back</span>(nw[i]);</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>,Ans.<span class="built_in">size</span>());</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> i : Ans) <span class="built_in">printf</span>(<span class="string">&quot;%d\n&quot;</span>,i);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>]]></content>
-      <categories>
-        <category>OI</category>
-      </categories>
-      <tags>
-        <tag>题解</tag>
-        <tag>Codeforces</tag>
       </tags>
   </entry>
   <entry>
@@ -616,6 +616,41 @@
       </tags>
   </entry>
   <entry>
+    <title>AtCoder Beginner Contest 349 G. Palindrome Construction 题解</title>
+    <url>/2024/04/15/atcoder-beginner-contest-349-g/</url>
+    <content><![CDATA[<p>努力更新！</p>
+<p>类似的题目：</p>
+<ul>
+<li><a href="https://www.luogu.com.cn/problem/P3295">[SCOI2016] 萌萌哒</a>；</li>
+<li><a href="https://codeforces.com/gym/103388/problem/L">2021-2022 ACM-ICPC Brazil Subregional Programming Contest L. Listing Passwords</a></li>
+</ul>
+<h1 id="题意"><a href="#题意" class="headerlink" title="题意"></a>题意</h1><p>定义一个序列 $T &#x3D; (T_1,T_2,\cdots,T_M)$ 是回文的，当且仅当 $\forall i &#x3D; 1,2,\cdots,M : T_i &#x3D; T_{M - i + 1}$，即翻转过来之后一样。</p>
+<p>给定一个长度为 $N$ 的序列 $A$，问是否存在一个长度为 $N$ 的序列 $S$，使得：</p>
+<ul>
+<li>对于所有 $i &#x3D; 1,2,\cdots,N$，$(S_{i - A_i},S_{i - A_i + 1},\cdots,S_{i + A_i - 1},S_{i + A_i})$ 是回文的，且 $(S_{i - A_i - 1},\cdots,S_{i + A_i + 1})$ 不是回文的。</li>
+</ul>
+<p>如果存在，输出字典序最小的一个。</p>
+<p>$1 \le N \le 2 \times 10 ^ 5$，$0 \le A_i \le \min{i - 1,N - i}$。</p>
+<h1 id="解法"><a href="#解法" class="headerlink" title="解法"></a>解法</h1><p>看见这个限制，容易想到并查集。发现每个限制是两端长度相等的区间合并，考虑用倍增优化。</p>
+<p>类似 <a href="https://www.luogu.com.cn/problem/P3295">[SCOI2016] 萌萌哒</a>，可以建 $O(\log n)$ 层并查集，把两段区间类似 ST 表合并起来，最后一层一层下传，就把每个点和其他点的关系求出来了。</p>
+<p>具体地，第 $i$ 层并查集中，$j$ 这个点代表 $[j,j + 2^i - 1]$ 这个区间。由于合并这个操作是可重复贡献的，合并两段区间 $[L_1,R_1]$ 和 $[L_2,R_2]$ 相当于在第 $k$ 层分别合并 $[L_1,L_1 + 2^k - 1]$ 和 $[L_2,L_2 + 2 ^ k - 1]$ 以及合并 $[R_1 - 2 ^ k + 1,R_1]$ 和 $[R_2 - 2 ^ k + 1,R_2]$，这里的 $k&#x3D;\lfloor \log _{2} (R_1 - L_1 + 1) \rfloor$。对于下传操作，如果第 $i$ 层中，$[L_1,R_1]$ 和 $[L_2,R_2]$ 在一个并查集里，则在第 $(i - 1)$ 层中，它们的前一半和后一半分别在两个个并查集里。所以，此时要分别合并它们的前一半和后一半。每次合并的时间复杂度是 $O(1)$，下传只需要对每一层，枚举每个区间，时间复杂度是 $O(n\log n)$。</p>
+<p>代码：</p>
+<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">fnd</span><span class="params">(<span class="type">int</span> x,<span class="type">int</span> k)</span> </span>&#123;<span class="keyword">return</span> fa[k][x] = (fa[k][x] == x ? x : <span class="built_in">fnd</span>(fa[k][x],k));&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">Merge</span><span class="params">(<span class="type">int</span> l,<span class="type">int</span> r,<span class="type">int</span> k)</span> <span class="comment">// 在第 k 层上合并 [l, l + 2^k - 1] 和 [r, r + 2^k - 1]</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">// printf(&quot;*Merge %d %d %d\n&quot;,l,r,k);</span></span><br><span class="line">	l = <span class="built_in">fnd</span>(l,k),r = <span class="built_in">fnd</span>(r,k);</span><br><span class="line">	<span class="keyword">if</span> (l == r) <span class="keyword">return</span> ;</span><br><span class="line">	<span class="keyword">if</span> (l &lt; r) <span class="built_in">swap</span>(l,r);</span><br><span class="line">	fa[k][l] = r;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">merge</span><span class="params">(<span class="type">int</span> l,<span class="type">int</span> ll,<span class="type">int</span> len)</span> <span class="comment">// 合并 [l, l + len - 1] 和 [ll, ll + len - 1]</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">// printf(&quot;merge %d %d %d\n&quot;,l,ll,len);</span></span><br><span class="line">	<span class="keyword">if</span> (l == ll) <span class="keyword">return</span> ;</span><br><span class="line">	<span class="type">int</span> r = l + len - <span class="number">1</span>,rr = ll + len - <span class="number">1</span>;</span><br><span class="line">	<span class="type">int</span> L = (len == <span class="number">1</span> ? <span class="number">0</span> : <span class="built_in">log2</span>(len));</span><br><span class="line">	<span class="built_in">Merge</span>(l,ll,L);</span><br><span class="line">	<span class="built_in">Merge</span>(r - (<span class="number">1</span> &lt;&lt; L) + <span class="number">1</span>,rr - (<span class="number">1</span> &lt;&lt; L) + <span class="number">1</span>,L);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>由于合并的两端区间一个是从前往后的，一个是从后往前的，可以把整个序列反过来拼在后面，把其中一个区间翻到后一半，顺序就一样了。这样就可以直接用上面的东西做了。</p>
+<p>在算出点与点之间的关系后，只需要对于每个 $i$，判断 $(i - A_i - 1)$ 和 $(i + A_i + 1)$ 在不在一个并查集里面就行了。最后要输出字典序最小的解，只需要贪心地从前往后放当前能放的、不矛盾的最小数就行了。判断矛不矛盾可以直接暴力做，因为总共只有 $O(n)$ 条这样的限制。</p>
+<p>合并的总时间复杂度是 $O(n)$，下传是 $O(n \log n)$，求解是 $O(n)$，总时间复杂度为 $O(n \log n)$。</p>
+<p><a href="https://atcoder.jp/contests/abc349/submissions/52398116">AC 提交记录</a>。</p>
+]]></content>
+      <categories>
+        <category>OI</category>
+      </categories>
+      <tags>
+        <tag>题解</tag>
+        <tag>AtCoder</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>AtCoder Regular Contest 171 全场题解</title>
     <url>/2024/04/05/atcoder-regular-contest-171/</url>
     <content><![CDATA[<p>某天 vp 了一下这场比赛，题解拖到了现在（）</p>
@@ -708,41 +743,6 @@
       </tags>
   </entry>
   <entry>
-    <title>AtCoder Beginner Contest 349 G. Palindrome Construction 题解</title>
-    <url>/2024/04/15/atcoder-beginner-contest-349-g/</url>
-    <content><![CDATA[<p>努力更新！</p>
-<p>类似的题目：</p>
-<ul>
-<li><a href="https://www.luogu.com.cn/problem/P3295">[SCOI2016] 萌萌哒</a>；</li>
-<li><a href="https://codeforces.com/gym/103388/problem/L">2021-2022 ACM-ICPC Brazil Subregional Programming Contest L. Listing Passwords</a></li>
-</ul>
-<h1 id="题意"><a href="#题意" class="headerlink" title="题意"></a>题意</h1><p>定义一个序列 $T &#x3D; (T_1,T_2,\cdots,T_M)$ 是回文的，当且仅当 $\forall i &#x3D; 1,2,\cdots,M : T_i &#x3D; T_{M - i + 1}$，即翻转过来之后一样。</p>
-<p>给定一个长度为 $N$ 的序列 $A$，问是否存在一个长度为 $N$ 的序列 $S$，使得：</p>
-<ul>
-<li>对于所有 $i &#x3D; 1,2,\cdots,N$，$(S_{i - A_i},S_{i - A_i + 1},\cdots,S_{i + A_i - 1},S_{i + A_i})$ 是回文的，且 $(S_{i - A_i - 1},\cdots,S_{i + A_i + 1})$ 不是回文的。</li>
-</ul>
-<p>如果存在，输出字典序最小的一个。</p>
-<p>$1 \le N \le 2 \times 10 ^ 5$，$0 \le A_i \le \min{i - 1,N - i}$。</p>
-<h1 id="解法"><a href="#解法" class="headerlink" title="解法"></a>解法</h1><p>看见这个限制，容易想到并查集。发现每个限制是两端长度相等的区间合并，考虑用倍增优化。</p>
-<p>类似 <a href="https://www.luogu.com.cn/problem/P3295">[SCOI2016] 萌萌哒</a>，可以建 $O(\log n)$ 层并查集，把两段区间类似 ST 表合并起来，最后一层一层下传，就把每个点和其他点的关系求出来了。</p>
-<p>具体地，第 $i$ 层并查集中，$j$ 这个点代表 $[j,j + 2^i - 1]$ 这个区间。由于合并这个操作是可重复贡献的，合并两段区间 $[L_1,R_1]$ 和 $[L_2,R_2]$ 相当于在第 $k$ 层分别合并 $[L_1,L_1 + 2^k - 1]$ 和 $[L_2,L_2 + 2 ^ k - 1]$ 以及合并 $[R_1 - 2 ^ k + 1,R_1]$ 和 $[R_2 - 2 ^ k + 1,R_2]$，这里的 $k&#x3D;\lfloor \log _{2} (R_1 - L_1 + 1) \rfloor$。对于下传操作，如果第 $i$ 层中，$[L_1,R_1]$ 和 $[L_2,R_2]$ 在一个并查集里，则在第 $(i - 1)$ 层中，它们的前一半和后一半分别在两个个并查集里。所以，此时要分别合并它们的前一半和后一半。每次合并的时间复杂度是 $O(1)$，下传只需要对每一层，枚举每个区间，时间复杂度是 $O(n\log n)$。</p>
-<p>代码：</p>
-<figure class="highlight cpp"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="type">int</span> <span class="title">fnd</span><span class="params">(<span class="type">int</span> x,<span class="type">int</span> k)</span> </span>&#123;<span class="keyword">return</span> fa[k][x] = (fa[k][x] == x ? x : <span class="built_in">fnd</span>(fa[k][x],k));&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">Merge</span><span class="params">(<span class="type">int</span> l,<span class="type">int</span> r,<span class="type">int</span> k)</span> <span class="comment">// 在第 k 层上合并 [l, l + 2^k - 1] 和 [r, r + 2^k - 1]</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">// printf(&quot;*Merge %d %d %d\n&quot;,l,r,k);</span></span><br><span class="line">	l = <span class="built_in">fnd</span>(l,k),r = <span class="built_in">fnd</span>(r,k);</span><br><span class="line">	<span class="keyword">if</span> (l == r) <span class="keyword">return</span> ;</span><br><span class="line">	<span class="keyword">if</span> (l &lt; r) <span class="built_in">swap</span>(l,r);</span><br><span class="line">	fa[k][l] = r;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">merge</span><span class="params">(<span class="type">int</span> l,<span class="type">int</span> ll,<span class="type">int</span> len)</span> <span class="comment">// 合并 [l, l + len - 1] 和 [ll, ll + len - 1]</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="comment">// printf(&quot;merge %d %d %d\n&quot;,l,ll,len);</span></span><br><span class="line">	<span class="keyword">if</span> (l == ll) <span class="keyword">return</span> ;</span><br><span class="line">	<span class="type">int</span> r = l + len - <span class="number">1</span>,rr = ll + len - <span class="number">1</span>;</span><br><span class="line">	<span class="type">int</span> L = (len == <span class="number">1</span> ? <span class="number">0</span> : <span class="built_in">log2</span>(len));</span><br><span class="line">	<span class="built_in">Merge</span>(l,ll,L);</span><br><span class="line">	<span class="built_in">Merge</span>(r - (<span class="number">1</span> &lt;&lt; L) + <span class="number">1</span>,rr - (<span class="number">1</span> &lt;&lt; L) + <span class="number">1</span>,L);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>由于合并的两端区间一个是从前往后的，一个是从后往前的，可以把整个序列反过来拼在后面，把其中一个区间翻到后一半，顺序就一样了。这样就可以直接用上面的东西做了。</p>
-<p>在算出点与点之间的关系后，只需要对于每个 $i$，判断 $(i - A_i - 1)$ 和 $(i + A_i + 1)$ 在不在一个并查集里面就行了。最后要输出字典序最小的解，只需要贪心地从前往后放当前能放的、不矛盾的最小数就行了。判断矛不矛盾可以直接暴力做，因为总共只有 $O(n)$ 条这样的限制。</p>
-<p>合并的总时间复杂度是 $O(n)$，下传是 $O(n \log n)$，求解是 $O(n)$，总时间复杂度为 $O(n \log n)$。</p>
-<p><a href="https://atcoder.jp/contests/abc349/submissions/52398116">AC 提交记录</a>。</p>
-]]></content>
-      <categories>
-        <category>OI</category>
-      </categories>
-      <tags>
-        <tag>题解</tag>
-        <tag>AtCoder</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>DP 套 DP 学习笔记</title>
     <url>/2024/04/16/dp-of-dp/</url>
     <content><![CDATA[<p>努力更新 x 2（</p>
@@ -799,6 +799,24 @@
       <tags>
         <tag>笔记</tag>
         <tag>树</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>2025，你好！</title>
+    <url>/2025/01/02/hello-2025/</url>
+    <content><![CDATA[<p>2025 年来啦！决定随便写点东西（虽然今天已经 2 号了 awa）</p>
+<p>作为一个即将退役的高二 OIer，2024 年可以说是 OI 生涯中的<del>经典年</del>最重要的一年了。我的收获不能说非常非常大，但是也不是很小。最重要的，大概是 7 月的那枚银牌。</p>
+<p>快两年前，我在报送考的面试时说自己的目标大概是拿个国赛银牌。当时，我并没有什么一定要实现目标的决心，对于未来也没有什么理想，这个目标实际上是一个自我感觉不是没有可能，但也没什么壮志的目标。在真正比赛的两天，我在 Day1 考炸掉之后再宿舍的阳台边打电话边哭，才后知后觉地想到了自己对实现目标的淡淡决心。直到现在，我也还没有什么远大的目标，但是拿到牌那天的喜悦仍然时而浮现在脑海。在这种时候，我总是一下冒出来“不过是银牌，还不是能放下心来开心的时候”的念头，又想到自己当时相比于其他人并没有全身心地向着目标冲刺，只是在一如既往地正常学习、生活，有一种奇怪的感觉。不过国赛之后，我感觉自己似乎有一种燃尽的感觉（虽然并没有怎么燃），有点在逃避 OI。然后 NOIP 就很当然地炸了（</p>
+<p>除了 OI，另一个从 23 年底开始的东西也占了我生活的一部分，那就是电吉他。虽然出去外面集训的时候并没有在练，在家里也一天练一天不练地，但相较于小学一周只弹那么两天已经很多了 &#x2F;xk。我从小学开始想学电吉他，直到高一终于下定决心开始自学，终于练会了几首一直想弹的歌，也在 24 年最后一天的迎新班会上弹了 Roselia 的《LOUDER》，有一种实现梦想的感觉。</p>
+<p>说到学东西，我有一种啥都想学一学的冲动，甚至我某一天想到，小时候的我说不定不是想学编程，而只是想学新东西。2025 年，我也想接触学习各种新东西，也深入学习之前已经开始接触的东西。前面说，我还没有什么远大的目标，连自己真正喜欢什么、人生的方向都还没有找到。趁着高中，我也想通过接触各种东西，试着找找看。</p>
+<p>总之，在还没有退役的这一段时间里，我也会认真地搞 OI，之后我也会认真地搞各种各样的东西。这个博客或许之后的一段时间都不会有 OI 相关文章了，但是其他的我尽量努力写！毕竟，2025 年才开了个头呢。</p>
+<p>——但是我感冒了 qwq</p>
+]]></content>
+      <categories>
+        <category>随记</category>
+      </categories>
+      <tags>
+        <tag>记录</tag>
       </tags>
   </entry>
   <entry>
@@ -878,24 +896,6 @@
 <hr>
 <p>顺带一提，考拉（Koala）这个名字在澳大利亚土著的语言里面是“不喝水”的意思，指考拉主要通过吃桉树叶补充水分，不怎么喝水。</p>
 <p>这周就这样吧，下周希望还能再见ヾ(￣▽￣)</p>
-]]></content>
-      <categories>
-        <category>随记</category>
-      </categories>
-      <tags>
-        <tag>记录</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>2025，你好！</title>
-    <url>/2025/01/02/hello-2025/</url>
-    <content><![CDATA[<p>2025 年来啦！决定随便写点东西（虽然今天已经 2 号了 awa）</p>
-<p>作为一个即将退役的高二 OIer，2024 年可以说是 OI 生涯中的<del>经典年</del>最重要的一年了。我的收获不能说非常非常大，但是也不是很小。最重要的，大概是 7 月的那枚银牌。</p>
-<p>快两年前，我在报送考的面试时说自己的目标大概是拿个国赛银牌。当时，我并没有什么一定要实现目标的决心，对于未来也没有什么理想，这个目标实际上是一个自我感觉不是没有可能，但也没什么壮志的目标。在真正比赛的两天，我在 Day1 考炸掉之后再宿舍的阳台边打电话边哭，才后知后觉地想到了自己对实现目标的淡淡决心。直到现在，我也还没有什么远大的目标，但是拿到牌那天的喜悦仍然时而浮现在脑海。在这种时候，我总是一下冒出来“不过是银牌，还不是能放下心来开心的时候”的念头，又想到自己当时相比于其他人并没有全身心地向着目标冲刺，只是在一如既往地正常学习、生活，有一种奇怪的感觉。不过国赛之后，我感觉自己似乎有一种燃尽的感觉（虽然并没有怎么燃），有点在逃避 OI。然后 NOIP 就很当然地炸了（</p>
-<p>除了 OI，另一个从 23 年底开始的东西也占了我生活的一部分，那就是电吉他。虽然出去外面集训的时候并没有在练，在家里也一天练一天不练地，但相较于小学一周只弹那么两天已经很多了 &#x2F;xk。我从小学开始想学电吉他，直到高一终于下定决心开始自学，终于练会了几首一直想弹的歌，也在 24 年最后一天的迎新班会上弹了 Roselia 的《LOUDER》，有一种实现梦想的感觉。</p>
-<p>说到学东西，我有一种啥都想学一学的冲动，甚至我某一天想到，小时候的我说不定不是想学编程，而只是想学新东西。2025 年，我也想接触学习各种新东西，也深入学习之前已经开始接触的东西。前面说，我还没有什么远大的目标，连自己真正喜欢什么、人生的方向都还没有找到。趁着高中，我也想通过接触各种东西，试着找找看。</p>
-<p>总之，在还没有退役的这一段时间里，我也会认真地搞 OI，之后我也会认真地搞各种各样的东西。这个博客或许之后的一段时间都不会有 OI 相关文章了，但是其他的我尽量努力写！毕竟，2025 年才开了个头呢。</p>
-<p>——但是我感冒了 qwq</p>
 ]]></content>
       <categories>
         <category>随记</category>
